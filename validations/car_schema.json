@@ -11,6 +11,9 @@
                     },
                     {
                         "$ref": "#/definitions/date_validator"
+                    },
+                    {
+                        "$ref": "#/definitions/number_validator"
                     }
                 ]
             }
@@ -27,6 +30,27 @@
             },
             "required": [
                 "field"
+            ]
+        },
+        "number_validator": {
+            "$ref": "#/definitions/validator",
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "enum": ["number"]
+                },
+                "max": {
+                    "type": "number"
+                },
+                "min": {
+                    "type": "number"
+                }
+            },
+            "required": [
+                "type",
+                "max",
+                "min"
             ]
         },
         "string_validator": {
