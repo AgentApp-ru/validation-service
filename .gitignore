@@ -1,5 +1,9 @@
+/configs/config.toml
+
 # Dependency directories (remove the comment below to include it)
 vendor/
 
 /.idea
+/.vscode
+
 .env

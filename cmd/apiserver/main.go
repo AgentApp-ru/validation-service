@@ -2,7 +2,7 @@ package main
 
 import (
 	"log"
-	"validation_service/pkg/apiserver"
+	"validation_service/internal/apiserver"
 )
 
 func main() {

@@ -10,6 +10,7 @@ type Config struct {
 	Env        string `toml:"env"`
 	BindAddr   string `toml:"apiserver_port"`
 	SendToChat bool   `toml:"send_to_chat"`
+	BasePath   string `toml:"base_path"`
 }
 
 var (
