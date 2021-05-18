@@ -1,6 +1,5 @@
 package views
 
-
 func Ping() string {
-	return "pong"
+    return "pong"
 }
