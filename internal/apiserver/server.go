@@ -32,6 +32,7 @@ func (s *server) configureRouter() {
 	v1Router.HandleFunc("/validations/car", s.handleCarValidation()).Methods("GET")
 	v1Router.HandleFunc("/validations/person", s.handlePersonValidation()).Methods("GET")
 	v1Router.HandleFunc("/validations/driver", s.handleDriverValidation()).Methods("GET")
+	v1Router.HandleFunc("/validations/general-conditions", s.handleGeneralConditionsValidation()).Methods("GET")
 }
 
 func (s *server) handlePing() http.HandlerFunc {
@@ -66,6 +67,17 @@ func (s *server) handlePersonValidation() http.HandlerFunc {
 func (s *server) handleDriverValidation() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		content, err := views.GetDriver()
+		if err != nil {
+			s.error(w, err)
+			return
+		}
+		s.respond(w, http.StatusOK, content)
+	}
+}
+
+func (s *server) handleGeneralConditionsValidation() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		content, err := views.GetGeneralConditions()
 		if err != nil {
 			s.error(w, err)
 			return
