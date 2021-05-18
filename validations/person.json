@@ -1,0 +1,206 @@
+{
+    "$schema": "./person_schema.json",
+    "validators": [
+        {
+            "field": "first_name",
+            "type": "string",
+            "patterns": [
+                {
+                    "name": "name",
+                    "allow_white_spaces": true,
+                    "patterns": [
+                        {
+                            "chars": "[а-яА-ЯёЁ -'`]",
+                            "min": 1,
+                            "max": 60
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "field": "last_name",
+            "type": "string",
+            "patterns": [
+                {
+                    "name": "name",
+                    "allow_white_spaces": true,
+                    "patterns": [
+                        {
+                            "chars": "[а-яА-ЯёЁ -'`]",
+                            "min": 0,
+                            "max": 60
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "field": "patronymic",
+            "type": "string",
+            "patterns": [
+                {
+                    "name": "name",
+                    "allow_white_spaces": true,
+                    "patterns": [
+                        {
+                            "chars": "[а-яА-ЯёЁ -'`]",
+                            "min": 0,
+                            "max": 60
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "field": "birth_date",
+            "type": "date",
+            "max": [],
+            "min": [
+                "1923-01-01"
+            ]
+        },
+        {
+            "field": "russian_internal_passport",
+            "type": "string",
+            "patterns": [
+                {
+                    "name": "series",
+                    "allow_white_spaces": false,
+                    "patterns": [
+                        {
+                            "chars": "[0-9]",
+                            "size": 4
+                        }
+                    ]
+                },
+                {
+                    "name": "number",
+                    "allow_white_spaces": false,
+                    "patterns": [
+                        {
+                            "chars": "[0-9]",
+                            "size": 6
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "field": "foreign_external_passport",
+            "type": "string",
+            "patterns": [
+                {
+                    "name": "number",
+                    "allow_white_spaces": false,
+                    "patterns": [
+                        {
+                            "chars": "[0-9A-Za-z]",
+                            "min": 1,
+                            "max": 60
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "field": "credential__issue_date",
+            "type": "date",
+            "max": [
+                "now"
+            ],
+            "min": [
+                "person.birth_date",
+                "this.birth_date"
+            ]
+        },
+        {
+            "field": "credential__issue_point",
+            "type": "string",
+            "patterns": [
+                {
+                    "name": "issue_point",
+                    "allow_white_spaces": true,
+                    "patterns": [
+                        {
+                            "chars": "[а-яА-ЯёЁ -'`]",
+                            "min": 1,
+                            "max": 255
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "field": "address",
+            "type": "string",
+            "patterns": [
+                {
+                    "name": "issue_point",
+                    "allow_white_spaces": true,
+                    "patterns": [
+                        {
+                            "chars": "[а-яА-ЯёЁ0-9-/() №,.'`]",
+                            "min": 5,
+                            "max": 1000
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "field": "phone",
+            "type": "string",
+            "patterns": [
+                {
+                    "name": "phone",
+                    "allow_white_spaces": true,
+                    "patterns": [
+                        {
+                            "chars": "[0-9]",
+                            "min": 11,
+                            "max": 18
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "field": "email",
+            "type": "string",
+            "patterns": [
+                {
+                    "name": "email",
+                    "allow_white_spaces": true,
+                    "patterns": [
+                        {
+                            "chars": "[a-zA-Z0-9_.+-]",
+                            "min": 11,
+                            "max": 18
+                        },
+                        {
+                            "chars": "[@]",
+                            "min": 1,
+                            "max": 1
+                        },
+                        {
+                            "chars": "[a-zA-Z0-9-]",
+                            "min": 11,
+                            "max": 18
+                        },
+                        {
+                            "chars": "[.]",
+                            "min": 1,
+                            "max": 1
+                        },
+                        {
+                            "chars": "[a-zA-Z0-9-.]",
+                            "min": 11,
+                            "max": 18
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
