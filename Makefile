@@ -19,7 +19,7 @@ TODAY = $(shell date -u +"%Y.%m.%d")
 .PHONY: build_app
 build_app:
 	${INFO} "Building app..."
-	@CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o ./validation-service ./cmd/apiserver/main.go
+	@CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -a -installsuffix cgo -o ./validation-service ./cmd/apiserver/main.go
 	${INFO} "Built"
 
 .PHONY: build

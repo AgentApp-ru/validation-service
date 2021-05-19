@@ -10,7 +10,7 @@ RUN go mod verify
 COPY . .
 
 ARG TARGET
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o ./validation-service ./cmd/apiserver/main.go
+RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -a -installsuffix cgo -o ./validation-service ./cmd/apiserver/main.go
 
 # Final image
 FROM alpine AS runtime-image
