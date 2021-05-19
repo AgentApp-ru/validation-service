@@ -47,7 +47,3 @@ func Init() {
 
 	Settings.BasePath = workingDir
 }
-
-func Get() {
-	println(Settings)
-}

@@ -6,6 +6,7 @@ import (
 	"os"
 	"syscall"
 	"validation_service/internal/apiserver"
+	"validation_service/internal/validator"
 	"validation_service/pkg/config"
 	"validation_service/pkg/consul"
 	"validation_service/pkg/log"
@@ -14,9 +15,11 @@ import (
 
 func main() {
 	config.Init()
-	log.Init(config.Settings)
 
+	log.Init()
 	consul.Init()
+
+	validator.Init(consul.Storage)
 
 	server := apiserver.NewServer()
 
