@@ -9,12 +9,12 @@ import (
 
 var Logger *zap.SugaredLogger
 
-func init() {
+func Init(cfg *config.Config) {
 	var (
 		instance  *zap.Logger
 		logConfig zap.Config
 	)
-	if config.Settings.Env == "production" {
+	if cfg.Env == "production" {
 		logConfig = zap.NewProductionConfig()
 	} else {
 		logConfig = zap.NewDevelopmentConfig()

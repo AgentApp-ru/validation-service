@@ -10,7 +10,7 @@ import (
 
 var validationsPath string
 
-func init() {
+func Init() {
 	validationsPath = filepath.Join(config.Settings.BasePath, "validations")
 }
 

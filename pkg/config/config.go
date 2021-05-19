@@ -22,7 +22,7 @@ var (
 	defaultconfigPath    = "configs/config.toml"
 )
 
-func init() {
+func Init() {
 	workingDir := os.Getenv("WORKING_DIR")
 	if workingDir == "" {
 		workingDir = defaultWorkingDir
