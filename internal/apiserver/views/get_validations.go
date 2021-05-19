@@ -1,21 +1,21 @@
 package views
 
 import (
-	"validation_service/internal/validations"
+	"validation_service/pkg/consul"
 )
 
 func GetCar() (interface{}, error) {
-	return validations.GetValidation("car")
+	return consul.Get("car")
 }
 
 func GetInsurerOwner() (interface{}, error) {
-	return validations.GetValidation("person")
+	return consul.Get("person")
 }
 
 func GetDriver() (interface{}, error) {
-	return validations.GetValidation("driver")
+	return consul.Get("driver")
 }
 
 func GetGeneralConditions() (interface{}, error) {
-	return validations.GetValidation("general")
+	return consul.Get("general")
 }
