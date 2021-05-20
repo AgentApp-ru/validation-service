@@ -30,6 +30,7 @@ func (s *server) configureRouter() {
     apiRouter.HandleFunc("/ping", s.handlePing()).Methods("GET")
     v1Router := apiRouter.PathPrefix("/v1").Subrouter()
     v1Router.HandleFunc("/car-validation", s.handleCarValidation()).Methods("GET")
+    v1Router.HandleFunc("/person-validation", s.handlePersonValidation()).Methods("GET")
 }
 
 func (s *server) handlePing() http.HandlerFunc {
@@ -42,6 +43,17 @@ func (s *server) handlePing() http.HandlerFunc {
 func (s *server) handleCarValidation() http.HandlerFunc {
     return func(w http.ResponseWriter, r *http.Request) {
         content, err := views.GetCar()
+        if err != nil {
+            s.error(w, err)
+            return
+        }
+        s.respond(w, http.StatusOK, content)
+    }
+}
+
+func (s *server) handlePersonValidation() http.HandlerFunc {
+    return func(w http.ResponseWriter, r *http.Request) {
+        content, err := views.GetInsurerOwner()
         if err != nil {
             s.error(w, err)
             return
