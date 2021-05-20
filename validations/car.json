@@ -2,6 +2,20 @@
     "$schema": "./car_schema.json",
     "validators": [
         {
+            "field": "manufacturing_year",
+            "type": "date",
+            "max": [],
+            "min": [
+                "1930-01-01"
+            ]
+        },
+        {
+            "field": "engine_power",
+            "type": "number",
+            "min": 10,
+            "max": 999
+        },
+        {
             "field": "number_plate",
             "type": "string",
             "patterns": [

@@ -85,12 +85,19 @@
                                         },
                                         "size": {
                                             "type": "number",
+                                            "minimum": 0
+                                        },
+                                        "min": {
+                                            "type": "number",
+                                            "minimum": 0
+                                        },
+                                        "max": {
+                                            "type": "number",
                                             "minimum": 1
                                         }
                                     },
                                     "required": [
-                                        "chars",
-                                        "size"
+                                        "chars"
                                     ]
                                 }
                             }
