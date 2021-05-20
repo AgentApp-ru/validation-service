@@ -8,10 +8,16 @@ import (
 	"validation_service/pkg/config"
 )
 
+var validationsPath string
+
+func init() {
+	validationsPath = filepath.Join(config.Settings.BasePath, "validations")
+}
+
 func GetValidation(object string) (interface{}, error) {
 	var data interface{}
 
-	content, err := ioutil.ReadFile(filepath.Join(config.Settings.BasePath, "validations", fmt.Sprintf("%s.json", object)))
+	content, err := ioutil.ReadFile(filepath.Join(validationsPath, fmt.Sprintf("%s.json", object)))
 	if err != nil {
 		return nil, err
 	}

@@ -1,13 +1,13 @@
 package views
 
 import (
-    "validation_service/internal/validations"
+	"validation_service/internal/validations"
 )
 
 func GetCar() (interface{}, error) {
-    return validations.GetValidation("car")
+	return validations.GetValidation("car")
 }
 
 func GetInsurerOwner() (interface{}, error) {
-    return validations.GetValidation("person")
+	return validations.GetValidation("person")
 }
