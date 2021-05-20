@@ -1,99 +1,99 @@
 package apiserver
 
 import (
-	"encoding/json"
+	"fmt"
 	"net/http"
+	"time"
 	"validation_service/internal/apiserver/views"
+	"validation_service/pkg/config"
+	"validation_service/pkg/http_response"
 
 	"github.com/gorilla/mux"
 )
 
 type server struct {
-	router *mux.Router
+	HttpServer http.Server
 }
 
-func newServer() *server {
-	s := &server{
-		router: mux.NewRouter(),
+func NewServer() *server {
+	r := mux.NewRouter()
+	configureRouter(r)
+
+	httpServer := &http.Server{
+		Handler:      r,
+		Addr:         fmt.Sprintf("127.0.0.1%s", config.Settings.BindAddr),
+		WriteTimeout: 5 * time.Second,
+		ReadTimeout:  5 * time.Second,
 	}
 
-	s.configureRouter()
+	s := &server{
+		HttpServer: *httpServer,
+	}
+
 	return s
 }
 
 func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	s.router.ServeHTTP(w, r)
+	s.HttpServer.Handler.ServeHTTP(w, r)
 }
 
-func (s *server) configureRouter() {
-	apiRouter := s.router.PathPrefix("/api").Subrouter()
-	apiRouter.HandleFunc("/ping", s.handlePing()).Methods("GET")
+func configureRouter(router *mux.Router) {
+	apiRouter := router.PathPrefix("/api").Subrouter()
+	apiRouter.HandleFunc("/ping", handlePing()).Methods("GET")
 	v1Router := apiRouter.PathPrefix("/v1").Subrouter()
-	v1Router.HandleFunc("/validations/car", s.handleCarValidation()).Methods("GET")
-	v1Router.HandleFunc("/validations/person", s.handlePersonValidation()).Methods("GET")
-	v1Router.HandleFunc("/validations/driver", s.handleDriverValidation()).Methods("GET")
-	v1Router.HandleFunc("/validations/general-conditions", s.handleGeneralConditionsValidation()).Methods("GET")
+	v1Router.HandleFunc("/validations/car", handleCarValidation()).Methods("GET")
+	v1Router.HandleFunc("/validations/person", handlePersonValidation()).Methods("GET")
+	v1Router.HandleFunc("/validations/driver", handleDriverValidation()).Methods("GET")
+	v1Router.HandleFunc("/validations/general-conditions", handleGeneralConditionsValidation()).Methods("GET")
 }
 
-func (s *server) handlePing() http.HandlerFunc {
+func handlePing() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		pong := views.Ping()
-		s.respond(w, http.StatusOK, pong)
+		http_response.HttpRespond(w, http.StatusOK, pong)
 	}
 }
 
-func (s *server) handleCarValidation() http.HandlerFunc {
+func handleCarValidation() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		content, err := views.GetCar()
 		if err != nil {
-			s.error(w, err)
+			http_response.HttpError(w, err)
 			return
 		}
-		s.respond(w, http.StatusOK, content)
+		http_response.HttpRespond(w, http.StatusOK, content)
 	}
 }
 
-func (s *server) handlePersonValidation() http.HandlerFunc {
+func handlePersonValidation() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		content, err := views.GetInsurerOwner()
 		if err != nil {
-			s.error(w, err)
+			http_response.HttpError(w, err)
 			return
 		}
-		s.respond(w, http.StatusOK, content)
+		http_response.HttpRespond(w, http.StatusOK, content)
 	}
 }
 
-func (s *server) handleDriverValidation() http.HandlerFunc {
+func handleDriverValidation() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		content, err := views.GetDriver()
 		if err != nil {
-			s.error(w, err)
+			http_response.HttpError(w, err)
 			return
 		}
-		s.respond(w, http.StatusOK, content)
+		http_response.HttpRespond(w, http.StatusOK, content)
 	}
 }
 
-func (s *server) handleGeneralConditionsValidation() http.HandlerFunc {
+func handleGeneralConditionsValidation() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		content, err := views.GetGeneralConditions()
 		if err != nil {
-			s.error(w, err)
+			http_response.HttpError(w, err)
 			return
 		}
-		s.respond(w, http.StatusOK, content)
-	}
-}
-
-func (s *server) error(w http.ResponseWriter, err error) {
-	s.respond(w, http.StatusBadRequest, map[string]string{"error": err.Error()})
-}
-
-func (s *server) respond(w http.ResponseWriter, code int, data interface{}) {
-	w.Header().Add("Content-Type", "application/json")
-	w.WriteHeader(code)
-	if data != nil {
-		json.NewEncoder(w).Encode(data)
+		http_response.HttpRespond(w, http.StatusOK, content)
 	}
 }
