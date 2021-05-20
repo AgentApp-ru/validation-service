@@ -2,3 +2,4 @@ env = "development"  # production
 log_level = "debug"
 apiserver_port = ":12000"
 send_to_chat = false
+base_path = ""

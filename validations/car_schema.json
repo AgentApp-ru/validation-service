@@ -1,0 +1,141 @@
+{
+    "title": "Validators Schema",
+    "type": "object",
+    "properties": {
+        "validators": {
+            "type": "array",
+            "items": {
+                "anyOf": [
+                    {
+                        "$ref": "#/definitions/string_validator"
+                    },
+                    {
+                        "$ref": "#/definitions/date_validator"
+                    },
+                    {
+                        "$ref": "#/definitions/number_validator"
+                    }
+                ]
+            }
+        }
+    },
+    "definitions": {
+        "validator": {
+            "type": "object",
+            "properties": {
+                "field": {
+                    "type": "string",
+                    "minLength": 1
+                }
+            },
+            "required": [
+                "field"
+            ]
+        },
+        "number_validator": {
+            "$ref": "#/definitions/validator",
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "enum": ["number"]
+                },
+                "max": {
+                    "type": "number"
+                },
+                "min": {
+                    "type": "number"
+                }
+            },
+            "required": [
+                "type",
+                "max",
+                "min"
+            ]
+        },
+        "string_validator": {
+            "$ref": "#/definitions/validator",
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "enum": ["string"]
+                },
+                "patterns": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string",
+                                "minLength": 1
+                            },
+                            "allow_white_spaces": {
+                                "type": "boolean"
+                            },
+                            "patterns": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "chars": {
+                                            "type": "string",
+                                            "minLength": 1,
+                                            "pattern": "^\\[.*\\]$"
+                                        },
+                                        "size": {
+                                            "type": "number",
+                                            "minimum": 1
+                                        }
+                                    },
+                                    "required": [
+                                        "chars",
+                                        "size"
+                                    ]
+                                }
+                            }
+                        },
+                        "required": [
+                            "allow_white_spaces",
+                            "name",
+                            "patterns"
+                        ]
+                    }
+                }
+            },
+            "required": [
+                "type",
+                "patterns"
+            ]
+        },
+        "date_validator": {
+            "$ref": "#/definitions/validator",
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "date"
+                    ]
+                },
+                "max": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "min": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "required": [
+                "type",
+                "max",
+                "min"
+            ]
+        }
+    }
+}
