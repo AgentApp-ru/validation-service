@@ -15,3 +15,7 @@ func GetInsurerOwner() (interface{}, error) {
 func GetDriver() (interface{}, error) {
 	return validations.GetValidation("driver")
 }
+
+func GetGeneralConditions() (interface{}, error) {
+	return validations.GetValidation("general")
+}
