@@ -1,0 +1,145 @@
+{
+    "$schema": "./_schema.json",
+    "validators": [
+        {
+            "field": "first_name",
+            "type": "string",
+            "patterns": [
+                {
+                    "name": "name",
+                    "allow_white_spaces": true,
+                    "patterns": [
+                        {
+                            "chars": "[а-яА-ЯёЁ -'`]",
+                            "min": 1,
+                            "max": 60
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "field": "last_name",
+            "type": "string",
+            "patterns": [
+                {
+                    "name": "name",
+                    "allow_white_spaces": true,
+                    "patterns": [
+                        {
+                            "chars": "[а-яА-ЯёЁ -'`]",
+                            "min": 0,
+                            "max": 60
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "field": "patronymic",
+            "type": "string",
+            "patterns": [
+                {
+                    "name": "name",
+                    "allow_white_spaces": true,
+                    "patterns": [
+                        {
+                            "chars": "[а-яА-ЯёЁ -'`]",
+                            "min": 0,
+                            "max": 60
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "field": "birth_date",
+            "type": "date",
+            "max": [
+                "now",
+                "- 16y"
+            ],
+            "min": [
+                "1923-01-01"
+            ]
+        },
+        {
+            "field": "driver_license",
+            "type": "string",
+            "patterns": [
+                {
+                    "name": "series",
+                    "allow_white_spaces": false,
+                    "patterns": [
+                        {
+                            "chars": "[0-9]",
+                            "size": 2
+                        },
+                        {
+                            "chars": "[а-яА-ЯёЁ]",
+                            "size": 2
+                        }
+                    ]
+                },
+                {
+                    "name": "number",
+                    "allow_white_spaces": false,
+                    "patterns": [
+                        {
+                            "chars": "[0-9]",
+                            "size": 6
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "field": "foreign_driver_license",
+            "type": "string",
+            "patterns": [
+                {
+                    "name": "number",
+                    "allow_white_spaces": false,
+                    "patterns": [
+                        {
+                            "chars": "[0-9A-Za-z]",
+                            "min": 1,
+                            "max": 60
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "field": "driving_experience_started",
+            "type": "date",
+            "maxCondition": {
+                "field": "car.car_type",
+                "conditions": {
+                    "A1":	16,
+                    "M":	16,
+                    "A":	18,
+                    "B":	18,
+                    "BE":	19,
+                    "B1":	18,
+                    "C":	18,
+                    "CE":	19,
+                    "C1":	18,
+                    "C1E":	19,
+                    "D":	21,
+                    "D1":	21,
+                    "DE":	22,
+                    "D1E":	22,
+                    "Tm":	21,
+                    "Tb":	21,
+                    "T":	16,
+                    "TE":	17
+                },
+                "formula": "now - condition"
+            },
+            "min": [
+                "1923-01-01"
+            ]
+        }
+    ]
+}

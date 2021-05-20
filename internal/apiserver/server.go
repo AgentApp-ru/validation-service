@@ -29,8 +29,9 @@ func (s *server) configureRouter() {
 	apiRouter := s.router.PathPrefix("/api").Subrouter()
 	apiRouter.HandleFunc("/ping", s.handlePing()).Methods("GET")
 	v1Router := apiRouter.PathPrefix("/v1").Subrouter()
-	v1Router.HandleFunc("/car-validation", s.handleCarValidation()).Methods("GET")
-	v1Router.HandleFunc("/person-validation", s.handlePersonValidation()).Methods("GET")
+	v1Router.HandleFunc("/validations/car", s.handleCarValidation()).Methods("GET")
+	v1Router.HandleFunc("/validations/person", s.handlePersonValidation()).Methods("GET")
+	v1Router.HandleFunc("/validations/driver", s.handleDriverValidation()).Methods("GET")
 }
 
 func (s *server) handlePing() http.HandlerFunc {
@@ -54,6 +55,17 @@ func (s *server) handleCarValidation() http.HandlerFunc {
 func (s *server) handlePersonValidation() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		content, err := views.GetInsurerOwner()
+		if err != nil {
+			s.error(w, err)
+			return
+		}
+		s.respond(w, http.StatusOK, content)
+	}
+}
+
+func (s *server) handleDriverValidation() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		content, err := views.GetDriver()
 		if err != nil {
 			s.error(w, err)
 			return

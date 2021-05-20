@@ -11,3 +11,7 @@ func GetCar() (interface{}, error) {
 func GetInsurerOwner() (interface{}, error) {
 	return validations.GetValidation("person")
 }
+
+func GetDriver() (interface{}, error) {
+	return validations.GetValidation("driver")
+}
