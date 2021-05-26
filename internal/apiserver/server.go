@@ -19,18 +19,14 @@ func NewServer() *server {
 	r := mux.NewRouter()
 	configureRouter(r)
 
-	httpServer := &http.Server{
-		Handler:      r,
-		Addr:         fmt.Sprintf("0.0.0.0%s", config.Settings.BindAddr),
-		WriteTimeout: 5 * time.Second,
-		ReadTimeout:  5 * time.Second,
+	return &server{
+		HttpServer: http.Server{
+			Handler:      r,
+			Addr:         fmt.Sprintf("0.0.0.0%s", config.Settings.BindAddr),
+			WriteTimeout: 5 * time.Second,
+			ReadTimeout:  5 * time.Second,
+		},
 	}
-
-	s := &server{
-		HttpServer: *httpServer,
-	}
-
-	return s
 }
 
 func (s *server) ServeHTTP() error {
