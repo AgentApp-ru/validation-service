@@ -19,22 +19,18 @@ func NewServer() *server {
 	r := mux.NewRouter()
 	configureRouter(r)
 
-	httpServer := &http.Server{
-		Handler:      r,
-		Addr:         fmt.Sprintf("127.0.0.1%s", config.Settings.BindAddr),
-		WriteTimeout: 5 * time.Second,
-		ReadTimeout:  5 * time.Second,
+	return &server{
+		HttpServer: http.Server{
+			Handler:      r,
+			Addr:         fmt.Sprintf("0.0.0.0%s", config.Settings.BindAddr),
+			WriteTimeout: 5 * time.Second,
+			ReadTimeout:  5 * time.Second,
+		},
 	}
-
-	s := &server{
-		HttpServer: *httpServer,
-	}
-
-	return s
 }
 
-func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	s.HttpServer.Handler.ServeHTTP(w, r)
+func (s *server) ServeHTTP() error {
+	return s.HttpServer.ListenAndServe()
 }
 
 func configureRouter(router *mux.Router) {

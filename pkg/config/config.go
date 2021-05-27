@@ -8,11 +8,17 @@ import (
 	"github.com/BurntSushi/toml"
 )
 
+type consulInfo struct {
+	Address string
+	Token   string
+}
+
 type Config struct {
-	Env        string `toml:"env"`
+	Env        string
 	BindAddr   string `toml:"apiserver_port"`
 	SendToChat bool   `toml:"send_to_chat"`
 	BasePath   string
+	ConsulInfo consulInfo `toml:"consul"`
 }
 
 var (
