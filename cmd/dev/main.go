@@ -1,15 +1,11 @@
 package main
 
 import (
-	"validation_service/internal/validator"
-	"validation_service/pkg/config"
-	"validation_service/pkg/consul"
+	"fmt"
+	"regexp"
 )
 
 func main() {
-	config.Init()
-
-	consul.Init()
-
-	validator.Init(consul.Storage)
+	matched, err := regexp.Match(`[\dA-HJ-NPR-Z]{13,13}`, []byte(`TMBED45J2B320`))
+	fmt.Println(matched, err)
 }

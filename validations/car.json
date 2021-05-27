@@ -1,0 +1,25 @@
+{
+    "$schema": "../../schema.json",
+    "validators": [
+      {
+        "field": "vin",
+        "type": "string",
+        "patterns": [
+          {
+            "name": "number",
+            "allow_white_spaces": false,
+            "patterns": [
+              {
+                "chars": "[\\dA-HJ-NPR-Z]",
+                "max": 13
+              },
+              {
+                "chars": "[\\d]",
+                "max": 4
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
