@@ -1,7 +1,9 @@
 package apiserver
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"time"
 	"validation_service/internal/apiserver/views"
@@ -75,14 +77,21 @@ func handleCarValidation() http.HandlerFunc {
 
 func handleCarValidate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		body := map[string]interface{}{
-			// "vin": "TMBED45J2B3209311", // valid
-			"vin": "TMBED45J2", // invalid
-			// "number_plate": "Е271ХМ178", // valid
-			"number_plate": "ERT", // invalid
+		defer r.Body.Close()
+
+		body, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			http_response.HttpError(w, fmt.Errorf("error read body: %s", err))
+			return
 		}
 
-		isValid, fieldsWithErrors := views.ValidateCar(body)
+		var b map[string]interface{}
+		if err := json.Unmarshal(body, &b); err != nil {
+			http_response.HttpError(w, fmt.Errorf("error convert to json body: %s", err))
+			return
+		}
+
+		isValid, fieldsWithErrors := views.ValidateCar(b)
 
 		if !isValid {
 			http_response.HttpError(w, fmt.Errorf("error fields: %s", fieldsWithErrors))
