@@ -2,6 +2,24 @@
     "$schema": "../../schema.json",
     "validators": [
         {
+            "field": "max_weight",
+            "type": "number",
+            "patterns": [
+                {
+                    "max": 12000
+                }
+            ]
+        },
+        {
+            "field": "max_seats_count",
+            "type": "number",
+            "patterns": [
+                {
+                    "max": 16
+                }
+            ]
+        },
+        {
             "field": "chassis_number",
             "type": "string",
             "patterns": [

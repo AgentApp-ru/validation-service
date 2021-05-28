@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math"
 	"regexp"
+	"strconv"
 	validator_module "validation_service/internal/validator"
 	"validation_service/pkg/log"
 )
@@ -21,10 +22,16 @@ type StringPattern struct {
 	Patterns           []*Pattern `json:"patterns"`
 }
 
+type IntPattern struct {
+	Min int `json:"min"`
+	Max int `json:"max"`
+}
+
 type FieldValidator struct {
-	FieldName      string           `json:"field"`
-	FieldType      string           `json:"type"`
-	StringPatterns []*StringPattern `json:"patterns"`
+	FieldName string          `json:"field"`
+	FieldType string          `json:"type"`
+	Patterns  json.RawMessage `json:"patterns"`
+	// StringPatterns []*StringPattern `json:"patterns"`
 }
 
 type validatorClass struct {
@@ -85,13 +92,18 @@ func validate(field interface{}, fieldValidator *FieldValidator) bool {
 	var (
 		ok       bool
 		strField string
+		intField int
 	)
 
+	strField, ok = field.(string)
 	if fieldValidator.FieldType == "string" {
-		strField, ok = field.(string)
-		println(strField)
-		// } else if fieldValidator.FieldType == "number" {
-		// 	field, ok = field.(int)
+		return validateString(strField, fieldValidator)
+	} else if fieldValidator.FieldType == "number" {
+		// println("raw", strField)
+		intField, _ = strconv.Atoi(strField)
+		// println("int", intField)
+		// println("convert to int", ok)
+		return validateNumber(intField, fieldValidator)
 		// } else if fieldValidator.fieldType == "date" {
 		// 	field, ok := field.(string)
 	} else {
@@ -104,10 +116,24 @@ func validate(field interface{}, fieldValidator *FieldValidator) bool {
 		return false
 	}
 
-	for _, stringPattern := range fieldValidator.StringPatterns {
+	return false
+}
+
+func validateString(field string, fieldValidator *FieldValidator) bool {
+	var (
+		ok             bool
+		stringPatterns []*StringPattern
+	)
+
+	err := json.Unmarshal([]byte(fieldValidator.Patterns), &stringPatterns)
+	if err != nil {
+		return false
+	}
+
+	for _, stringPattern := range stringPatterns {
 		println(stringPattern.Name)
 		ok = true
-		leftBody := []rune(field.(string))
+		leftBody := []rune(field)
 
 		for _, pattern := range stringPattern.Patterns {
 			// println(pattern.Chars)
@@ -144,4 +170,26 @@ func validate(field interface{}, fieldValidator *FieldValidator) bool {
 	}
 
 	return false
+}
+
+func validateNumber(field int, fieldValidator *FieldValidator) bool {
+	var (
+		intPatterns []*IntPattern
+	)
+
+	err := json.Unmarshal([]byte(fieldValidator.Patterns), &intPatterns)
+	if err != nil {
+		// println(err)
+		return false
+	}
+
+	pattern := intPatterns[0]
+
+	// println("min", pattern.Min)
+	// println("field", field)
+	// println("max", pattern.Max)
+	// println("1", pattern.Min < field)
+	// println("2", field < pattern.Max)
+
+	return pattern.Min <= field && field <= pattern.Max
 }
