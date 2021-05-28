@@ -3,6 +3,7 @@ package views
 import (
 	"encoding/json"
 	"fmt"
+	"math"
 	"regexp"
 	validator_module "validation_service/internal/validator"
 	"validation_service/pkg/log"
@@ -10,9 +11,8 @@ import (
 
 type Pattern struct {
 	Chars string `json:"chars"`
-	Min   string `json:"min"`
-	min   int
-	Max   int `json:"max"`
+	Min   int    `json:"min"`
+	Max   int    `json:"max"`
 }
 
 type StringPattern struct {
@@ -111,25 +111,27 @@ func validate(field interface{}, fieldValidator *FieldValidator) bool {
 
 		for _, pattern := range stringPattern.Patterns {
 			// println(pattern.Chars)
-			if pattern.Min == "" {
-				pattern.min = pattern.Max
+			if pattern.Min == 0 {
+				pattern.Min = pattern.Max
 			}
 
 			// check-size
 
-			if len(leftBody) < pattern.min {
+			if len(leftBody) < pattern.Min {
 				ok = false
 				break
 			}
 
-			// println("regexp ", fmt.Sprintf("%s{%d,%d}", pattern.Chars, pattern.min, pattern.Max), string(leftBody), string(leftBody[:pattern.Max]))
+			asd := int(math.Min(float64(len(leftBody)), float64(pattern.Max)))
+			stringToCheck := []byte(string(leftBody[:asd]))
+			// println("regexp ", fmt.Sprintf("%s{%d,%d}", pattern.Chars, pattern.Min, pattern.Max), string(leftBody), string(stringToCheck))
 
-			matched, err := regexp.Match(fmt.Sprintf("%s{%d,%d}", pattern.Chars, pattern.min, pattern.Max), []byte(string(leftBody[:pattern.Max])))
+			matched, err := regexp.Match(fmt.Sprintf("%s{%d,%d}", pattern.Chars, pattern.Min, pattern.Max), stringToCheck)
 			if !matched || err != nil {
 				ok = false
 			}
 
-			leftBody = leftBody[pattern.Max:]
+			leftBody = leftBody[asd:]
 		}
 
 		if len(leftBody) > 0 {
