@@ -6,8 +6,12 @@ import (
 	"math"
 	"regexp"
 	"strconv"
+	"strings"
+	"time"
 	validator_module "validation_service/internal/validator"
 	"validation_service/pkg/log"
+
+	"github.com/oleiade/reflections"
 )
 
 type Pattern struct {
@@ -27,6 +31,23 @@ type IntPattern struct {
 	Max int `json:"max"`
 }
 
+type DateDateValue string
+
+type DateDependingValue struct {
+	Scope string `json:"scope"`
+	Key   string `json:"key"`
+}
+
+type DateMinMaxPattern struct {
+	PatternType string          `json:"type"`
+	Value       json.RawMessage `json:"value"`
+}
+
+type DatePattern struct {
+	Min []*DateMinMaxPattern `json:"min"`
+	Max []*DateMinMaxPattern `json:"max"`
+}
+
 type FieldValidator struct {
 	FieldName string          `json:"field"`
 	FieldType string          `json:"type"`
@@ -40,10 +61,17 @@ type validatorClass struct {
 	FieldValidatorsMap map[string]*FieldValidator
 }
 
-func ValidateCar(data map[string]interface{}) (bool, []string) {
-	fieldsWithErrors := []string{}
+type Car struct {
+	Manufacturing_year    time.Time
+	Credential_issue_date time.Time
+}
 
-	// return true, fieldsWithErrors
+var car Car
+
+func ValidateCar(data map[string]interface{}) (bool, []string) {
+	car = Car{}
+
+	fieldsWithErrors := []string{}
 
 	rawValidator, err := validator_module.Validator.GetRaw("car")
 	if err != nil {
@@ -91,32 +119,31 @@ func getValidator(data []byte) *validatorClass {
 func validate(field interface{}, fieldValidator *FieldValidator) bool {
 	var (
 		ok       bool
+		err      error
 		strField string
 		intField int
 	)
 
 	strField, ok = field.(string)
-	if fieldValidator.FieldType == "string" {
-		return validateString(strField, fieldValidator)
-	} else if fieldValidator.FieldType == "number" {
-		// println("raw", strField)
-		intField, _ = strconv.Atoi(strField)
-		// println("int", intField)
-		// println("convert to int", ok)
-		return validateNumber(intField, fieldValidator)
-		// } else if fieldValidator.fieldType == "date" {
-		// 	field, ok := field.(string)
-	} else {
-		log.Logger.Errorf("unknown type: %s for field: %s", fieldValidator.FieldType, fieldValidator.FieldName)
-		return false
-	}
-
 	if !ok {
 		log.Logger.Error("type conversion failed")
 		return false
 	}
 
-	return false
+	if fieldValidator.FieldType == "string" {
+		return validateString(strField, fieldValidator)
+	} else if fieldValidator.FieldType == "number" {
+		intField, err = strconv.Atoi(strField)
+		if err != nil {
+			return false
+		}
+		return validateNumber(intField, fieldValidator)
+	} else if fieldValidator.FieldType == "date" {
+		return validateDate(strField, fieldValidator)
+	} else {
+		log.Logger.Errorf("unknown type: %s for field: %s", fieldValidator.FieldType, fieldValidator.FieldName)
+		return false
+	}
 }
 
 func validateString(field string, fieldValidator *FieldValidator) bool {
@@ -179,17 +206,121 @@ func validateNumber(field int, fieldValidator *FieldValidator) bool {
 
 	err := json.Unmarshal([]byte(fieldValidator.Patterns), &intPatterns)
 	if err != nil {
-		// println(err)
 		return false
 	}
 
 	pattern := intPatterns[0]
 
-	// println("min", pattern.Min)
-	// println("field", field)
-	// println("max", pattern.Max)
-	// println("1", pattern.Min < field)
-	// println("2", field < pattern.Max)
-
 	return pattern.Min <= field && field <= pattern.Max
+}
+
+func validateDate(field string, fieldValidator *FieldValidator) bool {
+	fmt.Printf("man_year: %v\n", car.Manufacturing_year)
+	fmt.Printf("cred_year: %v\n", car.Credential_issue_date)
+
+	var (
+		fieldDate    time.Time
+		datePatterns []*DatePattern
+		err          error
+	)
+
+	err = json.Unmarshal([]byte(fieldValidator.Patterns), &datePatterns)
+	if err != nil {
+		// println(err)
+		return false
+	}
+
+	fieldDate, err = time.Parse("2006-01-02", field)
+	if err != nil {
+		return false
+	}
+
+	pattern := datePatterns[0]
+
+	for _, maxPattern := range pattern.Max {
+		if maxPattern.PatternType == "date" {
+			if !validateMaxDate(fieldDate, maxPattern.Value) {
+				return false
+			}
+		} else if maxPattern.PatternType == "now" {
+			if !validateMaxNow(fieldDate, maxPattern.Value) {
+				return false
+			}
+		} else {
+			log.Logger.Errorf("unknown date type: %s", maxPattern.PatternType)
+		}
+	}
+	for _, minPattern := range pattern.Min {
+		if minPattern.PatternType == "date" {
+			if !validateMinDate(fieldDate, minPattern.Value) {
+				return false
+			}
+		} else if minPattern.PatternType == "now" {
+			if !validateMinNow(fieldDate, minPattern.Value) {
+				return false
+			}
+		} else if minPattern.PatternType == "depending" {
+			if !validateMinDepending(fieldDate, minPattern.Value) {
+				return false
+			}
+		} else {
+			log.Logger.Errorf("unknown date type: %s", minPattern.PatternType)
+			return false
+		}
+	}
+
+	err = reflections.SetField(&car, strings.Title(fieldValidator.FieldName), fieldDate)
+	if err != nil {
+		log.Logger.Error(err)
+	}
+
+	return true
+}
+
+func validateMinDate(fieldDate time.Time, rawValue json.RawMessage) bool {
+	var value DateDateValue
+	json.Unmarshal(rawValue, &value)
+
+	expectedDate, err := time.Parse("2006-01-02", string(value))
+	if err != nil {
+		return false
+	}
+
+	return fieldDate.After(expectedDate)
+}
+
+func validateMinNow(fieldDate time.Time, rawValue json.RawMessage) bool {
+	return fieldDate.After(time.Now())
+}
+
+func validateMinDepending(fieldDate time.Time, rawValue json.RawMessage) bool {
+	var value DateDependingValue
+	json.Unmarshal(rawValue, &value)
+
+	if value.Scope == "car" {
+		expectedDate, err := reflections.GetField(&car, strings.Title(value.Key))
+		if err != nil {
+			return false
+		}
+		return fieldDate.After(expectedDate.(time.Time))
+	} else {
+		log.Logger.Errorf("unknown scope of depending: %s", value.Scope)
+		return false
+	}
+}
+
+func validateMaxDate(fieldDate time.Time, rawValue json.RawMessage) bool {
+	var value DateDateValue
+	json.Unmarshal(rawValue, &value)
+
+	expectedDate, err := time.Parse("2006-01-02", string(value))
+	if err != nil {
+		return false
+	}
+
+	return fieldDate.Before(expectedDate)
+}
+
+func validateMaxNow(fieldDate time.Time, rawValue json.RawMessage) bool {
+	return fieldDate.Before(time.Now())
 }

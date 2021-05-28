@@ -1,31 +1,391 @@
 {
-    "$schema": "../../schema.json",
+    "$schema": "../schema.json",
     "validators": [
         {
-            "field": "max_weight",
-            "type": "number",
-            "patterns": [
-                {
-                    "max": 12000
-                }
-            ]
-        },
-        {
-            "field": "max_seats_count",
-            "type": "number",
-            "patterns": [
-                {
-                    "max": 16
-                }
-            ]
-        },
-        {
-            "field": "chassis_number",
+            "field": "number_plate",
             "type": "string",
             "patterns": [
                 {
                     "name": "number",
-                    "allow_white_spaces": false,
+                    "patterns": [
+                        {
+                            "chars": "[АВЕКМНОРСТУХ]",
+                            "max": 1
+                        },
+                        {
+                            "chars": "[0-9]",
+                            "max": 3
+                        },
+                        {
+                            "chars": "[АВЕКМНОРСТУХ]",
+                            "max": 2
+                        },
+                        {
+                            "chars": "[0-9]",
+                            "max": 2
+                        }
+                    ]
+                },
+                {
+                    "name": "number",
+                    "patterns": [
+                        {
+                            "chars": "[АВЕКМНОРСТУХ]",
+                            "max": 1
+                        },
+                        {
+                            "chars": "[0-9]",
+                            "max": 3
+                        },
+                        {
+                            "chars": "[АВЕКМНОРСТУХ]",
+                            "max": 2
+                        },
+                        {
+                            "chars": "[0-9]",
+                            "max": 3
+                        }
+                    ]
+                },
+                {
+                    "name": "number",
+                    "patterns": [
+                        {
+                            "chars": "[АВЕКМНОРСТУХ]",
+                            "max": 2
+                        },
+                        {
+                            "chars": "[0-9]",
+                            "max": 3
+                        },
+                        {
+                            "chars": "[0-9]",
+                            "max": 5
+                        }
+                    ]
+                },
+                {
+                    "name": "number",
+                    "patterns": [
+                        {
+                            "chars": "[АВЕКМНОРСТУХ]",
+                            "max": 2
+                        },
+                        {
+                            "chars": "[0-9]",
+                            "max": 6
+                        }
+                    ]
+                },
+                {
+                    "name": "number",
+                    "patterns": [
+                        {
+                            "chars": "[0-9]",
+                            "max": 4
+                        },
+                        {
+                            "chars": "[АВЕКМНОРСТУХ]",
+                            "max": 2
+                        },
+                        {
+                            "chars": "[0-9]",
+                            "max": 2
+                        }
+                    ]
+                },
+                {
+                    "name": "number",
+                    "patterns": [
+                        {
+                            "chars": "[АВЕКМНОРСТУХ]",
+                            "max": 2
+                        },
+                        {
+                            "chars": "[0-9]",
+                            "max": 2
+                        },
+                        {
+                            "chars": "[АВЕКМНОРСТУХ]",
+                            "max": 2
+                        },
+                        {
+                            "chars": "[0-9]",
+                            "max": 2
+                        }
+                    ]
+                },
+                {
+                    "name": "number",
+                    "patterns": [
+                        {
+                            "chars": "[0-9]",
+                            "max": 3
+                        },
+                        {
+                            "chars": "[АВЕКМНОРСТУХ]",
+                            "max": 2
+                        },
+                        {
+                            "chars": "[0-9]",
+                            "max": 3
+                        }
+                    ]
+                },
+                {
+                    "name": "number",
+                    "patterns": [
+                        {
+                            "chars": "[АВЕКМНОРСТУХ]",
+                            "max": 2
+                        },
+                        {
+                            "chars": "[0-9]",
+                            "max": 6
+                        }
+                    ]
+                },
+                {
+                    "name": "number",
+                    "patterns": [
+                        {
+                            "chars": "[Т]",
+                            "max": 1
+                        },
+                        {
+                            "chars": "[АВЕКМНОРСТУХ]",
+                            "max": 2
+                        },
+                        {
+                            "chars": "[0-9]",
+                            "max": 5
+                        }
+                    ]
+                },
+                {
+                    "name": "number",
+                    "patterns": [
+                        {
+                            "chars": "[Т]",
+                            "max": 1
+                        },
+                        {
+                            "chars": "[АВЕКМНОРСТУХ]",
+                            "max": 2
+                        },
+                        {
+                            "chars": "[0-9]",
+                            "max": 5
+                        }
+                    ]
+                },
+                {
+                    "name": "number",
+                    "patterns": [
+                        {
+                            "chars": "[0-9]",
+                            "max": 3
+                        },
+                        {
+                            "chars": "[АВЕКМНОРСТУХ]",
+                            "max": 1
+                        },
+                        {
+                            "chars": "[0-9]",
+                            "max": 2
+                        }
+                    ]
+                },
+                {
+                    "name": "number",
+                    "patterns": [
+                        {
+                            "chars": "[0-9]",
+                            "max": 4
+                        },
+                        {
+                            "chars": "[АВЕКМНОРСТУХ]",
+                            "max": 1
+                        },
+                        {
+                            "chars": "[0-9]",
+                            "max": 2
+                        }
+                    ]
+                },
+                {
+                    "name": "number",
+                    "patterns": [
+                        {
+                            "chars": "[К]",
+                            "max": 1
+                        },
+                        {
+                            "chars": "[АВЕКМНОРСТУХ]",
+                            "max": 2
+                        },
+                        {
+                            "chars": "[0-9]",
+                            "max": 5
+                        }
+                    ]
+                },
+                {
+                    "name": "number",
+                    "patterns": [
+                        {
+                            "chars": "[К]",
+                            "max": 1
+                        },
+                        {
+                            "chars": "[0-9]",
+                            "max": 3
+                        },
+                        {
+                            "chars": "[АВЕКМНОРСТУХ]",
+                            "max": 2
+                        },
+                        {
+                            "chars": "[0-9]",
+                            "max": 2
+                        }
+                    ]
+                },
+                {
+                    "name": "number",
+                    "patterns": [
+                        {
+                            "chars": "[С]",
+                            "max": 1
+                        },
+                        {
+                            "chars": "[АВЕКМНОРСТУХ]",
+                            "max": 2
+                        },
+                        {
+                            "chars": "[0-9]",
+                            "max": 5
+                        }
+                    ]
+                },
+                {
+                    "name": "number",
+                    "patterns": [
+                        {
+                            "chars": "[АВЕКМНОРСТУХ]",
+                            "max": 2
+                        },
+                        {
+                            "chars": "[0-9]",
+                            "max": 4
+                        }
+                    ]
+                },
+                {
+                    "name": "number",
+                    "patterns": [
+                        {
+                            "chars": "[АВЕКМНОРСТУХ]",
+                            "max": 3
+                        }
+                    ]
+                },
+                {
+                    "name": "number",
+                    "patterns": [
+                        {
+                            "chars": "[0-9]",
+                            "max": 4
+                        },
+                        {
+                            "chars": "[АВЕКМНОРСТУХ]",
+                            "max": 3
+                        }
+                    ]
+                },
+                {
+                    "name": "number",
+                    "patterns": [
+                        {
+                            "chars": "[0-9]",
+                            "max": 4
+                        },
+                        {
+                            "chars": "[АВЕКМНОРСТУХ]",
+                            "max": 2
+                        }
+                    ]
+                },
+                {
+                    "name": "number",
+                    "patterns": [
+                        {
+                            "chars": "[АВЕКМНОРСТУХ]",
+                            "max": 1
+                        },
+                        {
+                            "chars": "[0-9]",
+                            "max": 4
+                        },
+                        {
+                            "chars": "[АВЕКМНОРСТУХ]",
+                            "max": 2
+                        }
+                    ]
+                },
+                {
+                    "name": "number",
+                    "patterns": [
+                        {
+                            "chars": "[АВЕКМНОРСТУХ]",
+                            "max": 3
+                        },
+                        {
+                            "chars": "[0-9]",
+                            "max": 4
+                        }
+                    ]
+                },
+                {
+                    "name": "number",
+                    "patterns": [
+                        {
+                            "chars": "[0-9]",
+                            "max": 4
+                        },
+                        {
+                            "chars": "[АВЕКМНОРСТУХ]",
+                            "max": 2
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "field": "vin",
+            "type": "string",
+            "patterns": [
+                {
+                    "name": "number",
+                    "patterns": [
+                        {
+                            "chars": "[\\dA-HJ-NPR-Z]",
+                            "max": 13
+                        },
+                        {
+                            "chars": "[\\d]",
+                            "max": 4
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "field": "body_number",
+            "type": "string",
+            "patterns": [
+                {
+                    "name": "number",
                     "patterns": [
                         {
                             "chars": "[0-9A-Za-z]",
@@ -36,7 +396,32 @@
                 },
                 {
                     "name": "number",
-                    "allow_white_spaces": false,
+                    "patterns": [
+                        {
+                            "chars": "[0-9АВЕКМНОРСТУХавекмнорстух]",
+                            "max": 50,
+                            "min": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "field": "chassis_number",
+            "type": "string",
+            "patterns": [
+                {
+                    "name": "number",
+                    "patterns": [
+                        {
+                            "chars": "[0-9A-Za-z]",
+                            "max": 50,
+                            "min": 1
+                        }
+                    ]
+                },
+                {
+                    "name": "number",
                     "patterns": [
                         {
                             "chars": "[0-9АВЕКМНОРСТУХавекмнорстух]",
@@ -53,7 +438,6 @@
             "patterns": [
                 {
                     "name": "number",
-                    "allow_white_spaces": false,
                     "patterns": [
                         {
                             "chars": "[0-9]",
@@ -63,7 +447,6 @@
                 },
                 {
                     "name": "number",
-                    "allow_white_spaces": false,
                     "patterns": [
                         {
                             "chars": "[0-9]",
@@ -76,10 +459,10 @@
         {
             "field": "vehicle_registration",
             "type": "string",
+            "allow_white_spaces": true,
             "patterns": [
                 {
                     "name": "series",
-                    "allow_white_spaces": true,
                     "patterns": [
                         {
                             "chars": "[0-9]",
@@ -93,7 +476,6 @@
                 },
                 {
                     "name": "series",
-                    "allow_white_spaces": true,
                     "patterns": [
                         {
                             "chars": "[0-9]",
@@ -107,7 +489,6 @@
                 },
                 {
                     "name": "number",
-                    "allow_white_spaces": true,
                     "patterns": [
                         {
                             "chars": "[0-9]",
@@ -120,10 +501,10 @@
         {
             "field": "vehicle_passport",
             "type": "string",
+            "allow_white_spaces": true,
             "patterns": [
                 {
                     "name": "series",
-                    "allow_white_spaces": true,
                     "patterns": [
                         {
                             "chars": "[0-9]",
@@ -137,7 +518,6 @@
                 },
                 {
                     "name": "series",
-                    "allow_white_spaces": true,
                     "patterns": [
                         {
                             "chars": "[0-9]",
@@ -151,7 +531,6 @@
                 },
                 {
                     "name": "number",
-                    "allow_white_spaces": true,
                     "patterns": [
                         {
                             "chars": "[0-9]",
@@ -164,10 +543,10 @@
         {
             "field": "self_propelled_car_passport",
             "type": "string",
+            "allow_white_spaces": true,
             "patterns": [
                 {
                     "name": "series",
-                    "allow_white_spaces": true,
                     "patterns": [
                         {
                             "chars": "[АВЕКМНОРСТУХ0-9]",
@@ -177,7 +556,6 @@
                 },
                 {
                     "name": "series",
-                    "allow_white_spaces": true,
                     "patterns": [
                         {
                             "chars": "[АВЕКМНОРСТУХ0-9]",
@@ -187,7 +565,6 @@
                 },
                 {
                     "name": "series",
-                    "allow_white_spaces": true,
                     "patterns": [
                         {
                             "chars": "[ABEKMHOPCTYX0-9]",
@@ -197,7 +574,6 @@
                 },
                 {
                     "name": "series",
-                    "allow_white_spaces": true,
                     "patterns": [
                         {
                             "chars": "[ABEKMHOPCTYX0-9]",
@@ -207,7 +583,6 @@
                 },
                 {
                     "name": "number",
-                    "allow_white_spaces": true,
                     "patterns": [
                         {
                             "chars": "[0-9]",
@@ -223,7 +598,6 @@
             "patterns": [
                 {
                     "name": "number",
-                    "allow_white_spaces": false,
                     "patterns": [
                         {
                             "chars": "[1-3]",
@@ -255,7 +629,6 @@
             "patterns": [
                 {
                     "name": "title",
-                    "allow_white_spaces": false,
                     "patterns": [
                         {
                             "chars": "[a-zA-Zа-яА-Я0-9\\-\\/\\s\\\\]",
@@ -272,7 +645,6 @@
             "patterns": [
                 {
                     "name": "title",
-                    "allow_white_spaces": false,
                     "patterns": [
                         {
                             "chars": "[a-zA-Zа-яА-Я0-9\\-\\/\\s\\\\]",
@@ -289,7 +661,6 @@
             "patterns": [
                 {
                     "name": "title",
-                    "allow_white_spaces": false,
                     "patterns": [
                         {
                             "chars": "[a-zA-Zа-яА-Я0-9\\-\\/\\s\\\\]",
@@ -306,7 +677,6 @@
             "patterns": [
                 {
                     "name": "title",
-                    "allow_white_spaces": false,
                     "patterns": [
                         {
                             "chars": "[a-zA-Zа-яА-Я0-9\\-\\/\\s\\\\]",
@@ -318,434 +688,94 @@
             ]
         },
         {
-            "field": "body_number",
-            "type": "string",
+            "field": "max_weight",
+            "type": "number",
             "patterns": [
                 {
-                    "name": "number",
-                    "allow_white_spaces": false,
-                    "patterns": [
-                        {
-                            "chars": "[0-9A-Za-z]",
-                            "max": 50,
-                            "min": 1
-                        }
-                    ]
-                },
+                    "max": 12000
+                }
+            ]
+        },
+        {
+            "field": "max_seats_count",
+            "type": "number",
+            "patterns": [
                 {
-                    "name": "number",
-                    "allow_white_spaces": false,
-                    "patterns": [
+                    "max": 16
+                }
+            ]
+        },
+        {
+            "field": "diagnostic_chart_valid_to",
+            "type": "date",
+            "patterns": [
+                {
+                    "max": [
+
+                    ],
+                    "min": [
                         {
-                            "chars": "[0-9АВЕКМНОРСТУХавекмнорстух]",
-                            "max": 50,
-                            "min": 1
+                            "type": "now",
+                            "value": null
+                        },
+                        {
+                            "type": "depending",
+                            "value": {
+                                "scope": "agreement",
+                                "key": "start_date"
+                            }
                         }
                     ]
                 }
             ]
         },
         {
-            "field": "number_plate",
-            "type": "string",
+            "field": "credential_issue_date",
+            "type": "date",
             "patterns": [
                 {
-                    "name": "number",
-                    "allow_white_spaces": false,
-                    "patterns": [
+                    "max": [
                         {
-                            "chars": "[АВЕКМНОРСТУХ]",
-                            "max": 1
-                        },
-                        {
-                            "chars": "[0-9]",
-                            "max": 3
-                        },
-                        {
-                            "chars": "[АВЕКМНОРСТУХ]",
-                            "max": 2
-                        },
-                        {
-                            "chars": "[0-9]",
-                            "max": 2
+                            "type": "now",
+                            "value": null
                         }
-                    ]
-                },
-                {
-                    "name": "number",
-                    "allow_white_spaces": false,
-                    "patterns": [
+                    ],
+                    "min": [
                         {
-                            "chars": "[АВЕКМНОРСТУХ]",
-                            "max": 1
-                        },
-                        {
-                            "chars": "[0-9]",
-                            "max": 3
-                        },
-                        {
-                            "chars": "[АВЕКМНОРСТУХ]",
-                            "max": 2
-                        },
-                        {
-                            "chars": "[0-9]",
-                            "max": 3
-                        }
-                    ]
-                },
-                {
-                    "name": "number",
-                    "allow_white_spaces": false,
-                    "patterns": [
-                        {
-                            "chars": "[АВЕКМНОРСТУХ]",
-                            "max": 2
-                        },
-                        {
-                            "chars": "[0-9]",
-                            "max": 3
-                        },
-                        {
-                            "chars": "[0-9]",
-                            "max": 5
-                        }
-                    ]
-                },
-                {
-                    "name": "number",
-                    "allow_white_spaces": false,
-                    "patterns": [
-                        {
-                            "chars": "[АВЕКМНОРСТУХ]",
-                            "max": 2
-                        },
-                        {
-                            "chars": "[0-9]",
-                            "max": 6
-                        }
-                    ]
-                },
-                {
-                    "name": "number",
-                    "allow_white_spaces": false,
-                    "patterns": [
-                        {
-                            "chars": "[0-9]",
-                            "max": 4
-                        },
-                        {
-                            "chars": "[АВЕКМНОРСТУХ]",
-                            "max": 2
-                        },
-                        {
-                            "chars": "[0-9]",
-                            "max": 2
-                        }
-                    ]
-                },
-                {
-                    "name": "number",
-                    "allow_white_spaces": false,
-                    "patterns": [
-                        {
-                            "chars": "[АВЕКМНОРСТУХ]",
-                            "max": 2
-                        },
-                        {
-                            "chars": "[0-9]",
-                            "max": 2
-                        },
-                        {
-                            "chars": "[АВЕКМНОРСТУХ]",
-                            "max": 2
-                        },
-                        {
-                            "chars": "[0-9]",
-                            "max": 2
-                        }
-                    ]
-                },
-                {
-                    "name": "number",
-                    "allow_white_spaces": false,
-                    "patterns": [
-                        {
-                            "chars": "[0-9]",
-                            "max": 3
-                        },
-                        {
-                            "chars": "[АВЕКМНОРСТУХ]",
-                            "max": 2
-                        },
-                        {
-                            "chars": "[0-9]",
-                            "max": 3
-                        }
-                    ]
-                },
-                {
-                    "name": "number",
-                    "allow_white_spaces": false,
-                    "patterns": [
-                        {
-                            "chars": "[АВЕКМНОРСТУХ]",
-                            "max": 2
-                        },
-                        {
-                            "chars": "[0-9]",
-                            "max": 6
-                        }
-                    ]
-                },
-                {
-                    "name": "number",
-                    "allow_white_spaces": false,
-                    "patterns": [
-                        {
-                            "chars": "[Т]",
-                            "max": 1
-                        },
-                        {
-                            "chars": "[АВЕКМНОРСТУХ]",
-                            "max": 2
-                        },
-                        {
-                            "chars": "[0-9]",
-                            "max": 5
-                        }
-                    ]
-                },
-                {
-                    "name": "number",
-                    "allow_white_spaces": false,
-                    "patterns": [
-                        {
-                            "chars": "[Т]",
-                            "max": 1
-                        },
-                        {
-                            "chars": "[АВЕКМНОРСТУХ]",
-                            "max": 2
-                        },
-                        {
-                            "chars": "[0-9]",
-                            "max": 5
-                        }
-                    ]
-                },
-                {
-                    "name": "number",
-                    "allow_white_spaces": false,
-                    "patterns": [
-                        {
-                            "chars": "[0-9]",
-                            "max": 3
-                        },
-                        {
-                            "chars": "[АВЕКМНОРСТУХ]",
-                            "max": 1
-                        },
-                        {
-                            "chars": "[0-9]",
-                            "max": 2
-                        }
-                    ]
-                },
-                {
-                    "name": "number",
-                    "allow_white_spaces": false,
-                    "patterns": [
-                        {
-                            "chars": "[0-9]",
-                            "max": 4
-                        },
-                        {
-                            "chars": "[АВЕКМНОРСТУХ]",
-                            "max": 1
-                        },
-                        {
-                            "chars": "[0-9]",
-                            "max": 2
-                        }
-                    ]
-                },
-                {
-                    "name": "number",
-                    "allow_white_spaces": false,
-                    "patterns": [
-                        {
-                            "chars": "[К]",
-                            "max": 1
-                        },
-                        {
-                            "chars": "[АВЕКМНОРСТУХ]",
-                            "max": 2
-                        },
-                        {
-                            "chars": "[0-9]",
-                            "max": 5
-                        }
-                    ]
-                },
-                {
-                    "name": "number",
-                    "allow_white_spaces": false,
-                    "patterns": [
-                        {
-                            "chars": "[К]",
-                            "max": 1
-                        },
-                        {
-                            "chars": "[0-9]",
-                            "max": 3
-                        },
-                        {
-                            "chars": "[АВЕКМНОРСТУХ]",
-                            "max": 2
-                        },
-                        {
-                            "chars": "[0-9]",
-                            "max": 2
-                        }
-                    ]
-                },
-                {
-                    "name": "number",
-                    "allow_white_spaces": false,
-                    "patterns": [
-                        {
-                            "chars": "[С]",
-                            "max": 1
-                        },
-                        {
-                            "chars": "[АВЕКМНОРСТУХ]",
-                            "max": 2
-                        },
-                        {
-                            "chars": "[0-9]",
-                            "max": 5
-                        }
-                    ]
-                },
-                {
-                    "name": "number",
-                    "allow_white_spaces": false,
-                    "patterns": [
-                        {
-                            "chars": "[АВЕКМНОРСТУХ]",
-                            "max": 2
-                        },
-                        {
-                            "chars": "[0-9]",
-                            "max": 4
-                        }
-                    ]
-                },
-                {
-                    "name": "number",
-                    "allow_white_spaces": false,
-                    "patterns": [
-                        {
-                            "chars": "[АВЕКМНОРСТУХ]",
-                            "max": 3
-                        }
-                    ]
-                },
-                {
-                    "name": "number",
-                    "allow_white_spaces": false,
-                    "patterns": [
-                        {
-                            "chars": "[0-9]",
-                            "max": 4
-                        },
-                        {
-                            "chars": "[АВЕКМНОРСТУХ]",
-                            "max": 3
-                        }
-                    ]
-                },
-                {
-                    "name": "number",
-                    "allow_white_spaces": false,
-                    "patterns": [
-                        {
-                            "chars": "[0-9]",
-                            "max": 4
-                        },
-                        {
-                            "chars": "[АВЕКМНОРСТУХ]",
-                            "max": 2
-                        }
-                    ]
-                },
-                {
-                    "name": "number",
-                    "allow_white_spaces": false,
-                    "patterns": [
-                        {
-                            "chars": "[АВЕКМНОРСТУХ]",
-                            "max": 1
-                        },
-                        {
-                            "chars": "[0-9]",
-                            "max": 4
-                        },
-                        {
-                            "chars": "[АВЕКМНОРСТУХ]",
-                            "max": 2
-                        }
-                    ]
-                },
-                {
-                    "name": "number",
-                    "allow_white_spaces": false,
-                    "patterns": [
-                        {
-                            "chars": "[АВЕКМНОРСТУХ]",
-                            "max": 3
-                        },
-                        {
-                            "chars": "[0-9]",
-                            "max": 4
-                        }
-                    ]
-                },
-                {
-                    "name": "number",
-                    "allow_white_spaces": false,
-                    "patterns": [
-                        {
-                            "chars": "[0-9]",
-                            "max": 4
-                        },
-                        {
-                            "chars": "[АВЕКМНОРСТУХ]",
-                            "max": 2
+                            "type": "depending",
+                            "value": {
+                                "scope": "car",
+                                "key": "manufacturing_year"
+                            }
                         }
                     ]
                 }
             ]
         },
-      {
-        "field": "vin",
-        "type": "string",
-        "patterns": [
-          {
-            "name": "number",
-            "allow_white_spaces": false,
+        {
+            "field": "manufacturing_year",
+            "type": "date",
             "patterns": [
-              {
-                "chars": "[\\dA-HJ-NPR-Z]",
-                "max": 13
-              },
-              {
-                "chars": "[\\d]",
-                "max": 4
-              }
+                {
+                    "max": [],
+                    "min": [
+                        {
+                            "type": "date",
+                            "value": "1930-01-01"
+                        }
+                    ]
+                }
             ]
-          }
-        ]
-      }
+        },
+        {
+            "field": "engine_power",
+            "patterns": [
+                {
+                    "max": 999,
+                    "min": 10
+                }
+            ],
+            "type": "number"
+        }
     ]
-  }
+}

@@ -1,10 +1,21 @@
 package main
 
+import (
+	"encoding/json"
+	"validation_service/internal/apiserver/views"
+)
+
 func main() {
-	var a interface{}
+	a := []byte(`{
+		"type": "date",
+		"value": "1930-01-01"
+	}`)
 
-	a = 123
+	var j views.DateMinMaxPattern
+	var v views.DateDateValue
 
-	println(a)
-	println(a.(int))
+	json.Unmarshal(a, &j)
+	println(j.PatternType)
+	json.Unmarshal(j.Value, &v)
+	println(v)
 }
