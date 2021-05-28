@@ -76,12 +76,16 @@ func handleCarValidation() http.HandlerFunc {
 func handleCarValidate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		body := map[string]interface{}{
-			"vin": "TMBED45J2B3209311", // valid
-			// "vin": "TMBED45J2B3209311",  // invalid
+			// "vin": "TMBED45J2B3209311", // valid
+			"vin": "TMBED45J2", // invalid
+			// "number_plate": "Е271ХМ178", // valid
+			"number_plate": "ERT", // invalid
 		}
 
-		if !views.ValidateCar(body) {
-			http_response.HttpError(w, fmt.Errorf("no validation"))
+		isValid, fieldsWithErrors := views.ValidateCar(body)
+
+		if !isValid {
+			http_response.HttpError(w, fmt.Errorf("error fields: %s", fieldsWithErrors))
 			return
 		}
 		http_response.HttpRespond(w, http.StatusOK, nil)

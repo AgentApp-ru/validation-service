@@ -2,6 +2,7 @@ package views
 
 import (
 	"encoding/json"
+	"fmt"
 	"regexp"
 	validator_module "validation_service/internal/validator"
 	"validation_service/pkg/log"
@@ -32,29 +33,36 @@ type validatorClass struct {
 	FieldValidatorsMap map[string]*FieldValidator
 }
 
-func ValidateCar(data map[string]interface{}) bool {
+func ValidateCar(data map[string]interface{}) (bool, []string) {
+	fieldsWithErrors := []string{}
+
+	// return true, fieldsWithErrors
+
 	rawValidator, err := validator_module.Validator.GetRaw("car")
 	if err != nil {
-		return false
+		return false, fieldsWithErrors
 	}
 
 	validator := getValidator(rawValidator)
 	if validator == nil {
-		return false
+		return false, fieldsWithErrors
 	}
 
 	for k, v := range data {
-		log.Logger.Infof("validating %s: %s", k, v)
+		println("validating ", k, v)
 		fieldValidator, ok := validator.FieldValidatorsMap[k]
 		if !ok {
 			log.Logger.Info("TODO: что-то сделать")
 		}
 
 		ok = validate(v, fieldValidator)
-		log.Logger.Info(ok)
+		println(ok)
+		if !ok {
+			fieldsWithErrors = append(fieldsWithErrors, k)
+		}
 	}
 
-	return true
+	return len(fieldsWithErrors) == 0, fieldsWithErrors
 }
 
 func getValidator(data []byte) *validatorClass {
@@ -67,7 +75,6 @@ func getValidator(data []byte) *validatorClass {
 
 	v.FieldValidatorsMap = map[string]*FieldValidator{}
 	for _, field := range v.FieldValidators {
-		println("field ", field.FieldName)
 		v.FieldValidatorsMap[field.FieldName] = field
 	}
 
@@ -75,14 +82,16 @@ func getValidator(data []byte) *validatorClass {
 }
 
 func validate(field interface{}, fieldValidator *FieldValidator) bool {
-	var ok bool
-
-	log.Logger.Info(field)
+	var (
+		ok       bool
+		strField string
+	)
 
 	if fieldValidator.FieldType == "string" {
-		field, ok = field.(string)
-	} else if fieldValidator.FieldType == "number" {
-		field, ok = field.(int)
+		strField, ok = field.(string)
+		println(strField)
+		// } else if fieldValidator.FieldType == "number" {
+		// 	field, ok = field.(int)
 		// } else if fieldValidator.fieldType == "date" {
 		// 	field, ok := field.(string)
 	} else {
@@ -91,23 +100,46 @@ func validate(field interface{}, fieldValidator *FieldValidator) bool {
 	}
 
 	if !ok {
-		log.Logger.Info("type conversion failed")
+		log.Logger.Error("type conversion failed")
 		return false
 	}
 
-	leftBody := field.(string)
-	for _, pattern := range fieldValidator.StringPatterns[0].Patterns {
-		println(leftBody, pattern.Chars)
+	for _, stringPattern := range fieldValidator.StringPatterns {
+		println(stringPattern.Name)
+		ok = true
+		leftBody := []rune(field.(string))
 
-		if pattern.Min == "" {
-			pattern.min = pattern.Max
+		for _, pattern := range stringPattern.Patterns {
+			// println(pattern.Chars)
+			if pattern.Min == "" {
+				pattern.min = pattern.Max
+			}
+
+			// check-size
+
+			if len(leftBody) < pattern.min {
+				ok = false
+				break
+			}
+
+			// println("regexp ", fmt.Sprintf("%s{%d,%d}", pattern.Chars, pattern.min, pattern.Max), string(leftBody), string(leftBody[:pattern.Max]))
+
+			matched, err := regexp.Match(fmt.Sprintf("%s{%d,%d}", pattern.Chars, pattern.min, pattern.Max), []byte(string(leftBody[:pattern.Max])))
+			if !matched || err != nil {
+				ok = false
+			}
+
+			leftBody = leftBody[pattern.Max:]
 		}
 
-		matched, err := regexp.Match(pattern.Chars, []byte(leftBody[:pattern.Max]))
-		println(matched, err)
+		if len(leftBody) > 0 {
+			ok = false
+		}
 
-		leftBody = leftBody[pattern.Max:]
+		if ok {
+			return true
+		}
 	}
 
-	return true
+	return false
 }

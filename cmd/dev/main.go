@@ -1,11 +1,15 @@
 package main
 
 import (
-	"fmt"
 	"regexp"
 )
 
 func main() {
-	matched, err := regexp.Match(`[\dA-HJ-NPR-Z]{13,13}`, []byte(`TMBED45J2B320`))
-	fmt.Println(matched, err)
+	a := "Е271ХМ178"
+	b := []rune(a)
+	c := b[:1]
+	d := string(c)
+	println(d)
+	matched, err := regexp.Match("[АВЕКМНОРСТУХ]{1,1}", []byte(d))
+	println(matched, err)
 }
