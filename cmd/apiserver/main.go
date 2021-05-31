@@ -8,18 +8,26 @@ import (
 	"validation_service/internal/apiserver"
 	"validation_service/internal/validator"
 	"validation_service/pkg/config"
-	"validation_service/pkg/consul"
 	"validation_service/pkg/log"
 	"validation_service/pkg/shutdown"
+	"validation_service/pkg/storage/consul"
+	"validation_service/pkg/storage/file"
 )
 
 func main() {
 	config.Init()
-
 	log.Init()
-	consul.Init()
 
-	validator.Init(consul.Storage)
+	switch config.Settings.StrorageInfo.Backend {
+	case "consul":
+		consul.Init()
+		validator.Init(consul.Storage)
+	case "file":
+		file.Init()
+		validator.Init(file.Storage)
+	default:
+		log.Logger.Fatalf("unknown storage backend: %s", config.Settings.StrorageInfo.Backend)
+	}
 
 	server := apiserver.NewServer()
 
