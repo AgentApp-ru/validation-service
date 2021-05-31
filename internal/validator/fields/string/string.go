@@ -8,11 +8,11 @@ import (
 	"validation_service/internal/validator/fields"
 )
 
-
 type Pattern struct {
-	Chars string `json:"chars"`
-	Min   int    `json:"min"`
-	Max   int    `json:"max"`
+	Chars  string `json:"chars"`
+	MinPtr *int   `json:"min"`
+	Min    int    `json:"-"`
+	Max    int    `json:"max"`
 }
 
 type StringPattern struct {
@@ -23,7 +23,6 @@ type StringPattern struct {
 
 func Validate(field string, fieldValidator *fields.FieldValidator) bool {
 	var (
-		ok             bool
 		stringPatterns []*StringPattern
 	)
 
@@ -33,43 +32,50 @@ func Validate(field string, fieldValidator *fields.FieldValidator) bool {
 	}
 
 	for _, stringPattern := range stringPatterns {
-		println(stringPattern.Name)
-		ok = true
-		leftBody := []rune(field)
-
-		for _, pattern := range stringPattern.Patterns {
-			// println(pattern.Chars)
-			if pattern.Min == 0 {
-				pattern.Min = pattern.Max
-			}
-
-			// check-size
-
-			if len(leftBody) < pattern.Min {
-				ok = false
-				break
-			}
-
-			asd := int(math.Min(float64(len(leftBody)), float64(pattern.Max)))
-			stringToCheck := []byte(string(leftBody[:asd]))
-			// println("regexp ", fmt.Sprintf("%s{%d,%d}", pattern.Chars, pattern.Min, pattern.Max), string(leftBody), string(stringToCheck))
-
-			matched, err := regexp.Match(fmt.Sprintf("%s{%d,%d}", pattern.Chars, pattern.Min, pattern.Max), stringToCheck)
-			if !matched || err != nil {
-				ok = false
-			}
-
-			leftBody = leftBody[asd:]
-		}
-
-		if len(leftBody) > 0 {
-			ok = false
-		}
-
-		if ok {
+		if validateStringWithPatterns(field, stringPattern.Patterns) {
 			return true
 		}
 	}
 
 	return false
+}
+
+func validateStringWithPatterns(field string, patterns []*Pattern) bool {
+	leftBody := []rune(field)
+
+	for _, pattern := range patterns {
+		if pattern.MinPtr == nil {
+			pattern.Min = pattern.Max
+		} else {
+			pattern.Min = *pattern.MinPtr
+		}
+
+		// check-size
+		if len(leftBody) < pattern.Min {
+			// println("no len")
+			return false
+		}
+
+		lenToCheck := int(math.Min(float64(len(leftBody)), float64(pattern.Max)))
+		stringToCheck := []byte(string(leftBody[:lenToCheck]))
+		minDimensionToCheck := int(
+			math.Min(
+				math.Max(float64(len(leftBody)), float64(pattern.Min)),
+				float64(pattern.Max),
+			),
+		)
+		// println("regexp ", fmt.Sprintf("%s{%d,%d}", pattern.Chars, minDimensionToCheck, pattern.Max), string(leftBody), string(stringToCheck))
+
+		matched, err := regexp.Match(
+			fmt.Sprintf("%s{%d,%d}", pattern.Chars, minDimensionToCheck, pattern.Max), stringToCheck,
+		)
+		if !matched || err != nil {
+			// println("no match")
+			return false
+		}
+
+		leftBody = leftBody[lenToCheck:]
+	}
+
+	return len(leftBody) == 0
 }

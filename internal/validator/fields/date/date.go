@@ -19,6 +19,52 @@ type DateDependingValue struct {
 	Key   string `json:"key"`
 }
 
+type dependency struct {
+	Type  string `json:"type"`
+	Value string `json:"value"`
+}
+
+func (d *dependency) getInitialDate() (time.Time, error) {
+	switch d.Type {
+	case "now":
+		return time.Now(), nil
+	default:
+		return time.Time{}, fmt.Errorf("no logic for dependency: %v", d.Type)
+	}
+}
+
+type DateDependingFormulaValue struct {
+	Dependency dependency `json:"depending"`
+	Operation  string     `json:"operation"`
+	Value      int        `json:"value"`
+	Unit       string     `json:"unit"`
+}
+
+func (f *DateDependingFormulaValue) getExpectedDate() (time.Time, error) {
+	var (
+		years, months, days int
+	)
+
+	initialDate, err := f.Dependency.getInitialDate()
+	if err != nil {
+		return time.Time{}, err
+	}
+
+	switch f.Unit {
+	case "year":
+		years = f.Value
+	}
+
+	switch f.Operation {
+	case "subtract":
+		years = 0 - years
+		months = 0 - months
+		days = 0 - days
+	}
+
+	return initialDate.AddDate(years, months, days), nil
+}
+
 type DateMinMaxPattern struct {
 	PatternType string          `json:"type"`
 	Value       json.RawMessage `json:"value"`
@@ -36,9 +82,8 @@ func init() {
 }
 
 func Validate(field string, fieldValidator *fields.FieldValidator) bool {
-
-	fmt.Printf("man_year: %v\n", car.Manufacturing_year)
-	fmt.Printf("cred_year: %v\n", car.Credential_issue_date)
+	// fmt.Printf("man_year: %v\n", car.Manufacturing_year)
+	// fmt.Printf("cred_year: %v\n", car.Credential_issue_date)
 
 	var (
 		fieldDate    time.Time
@@ -69,6 +114,10 @@ func Validate(field string, fieldValidator *fields.FieldValidator) bool {
 			if !validateMaxNow(fieldDate, maxPattern.Value) {
 				return false
 			}
+		case "depending_formula":
+			if !validateMaxDependingFormula(fieldDate, maxPattern.Value) {
+				return false
+			}
 		default:
 			log.Logger.Errorf("unknown date type: %s", maxPattern.PatternType)
 			return false
@@ -94,17 +143,20 @@ func Validate(field string, fieldValidator *fields.FieldValidator) bool {
 		}
 	}
 
-	err = reflections.SetField(&car, strings.Title(fieldValidator.FieldName), fieldDate)
-	if err != nil {
-		log.Logger.Error(err)
-	}
+	// err = reflections.SetField(&car, strings.Title(fieldValidator.FieldName), fieldDate)
+	// if err != nil {
+	// 	log.Logger.Error(err)
+	// }
 
 	return true
 }
 
 func validateMinDate(fieldDate time.Time, rawValue json.RawMessage) bool {
 	var value DateDateValue
-	json.Unmarshal(rawValue, &value)
+	err := json.Unmarshal(rawValue, &value)
+	if err != nil {
+		return false
+	}
 
 	expectedDate, err := time.Parse("2006-01-02", string(value))
 	if err != nil {
@@ -148,4 +200,17 @@ func validateMaxDate(fieldDate time.Time, rawValue json.RawMessage) bool {
 
 func validateMaxNow(fieldDate time.Time, rawValue json.RawMessage) bool {
 	return fieldDate.Before(time.Now())
+}
+
+func validateMaxDependingFormula(fieldDate time.Time, rawValue json.RawMessage) bool {
+	var formula DateDependingFormulaValue
+	json.Unmarshal(rawValue, &formula)
+
+	expectedDate, err := formula.getExpectedDate()
+	if err != nil {
+		log.Logger.Errorf("error on with calculating formula: %s", err.Error())
+		return false
+	}
+
+	return fieldDate.Before(expectedDate)
 }

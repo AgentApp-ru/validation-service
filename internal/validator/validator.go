@@ -2,6 +2,11 @@ package validator
 
 import (
 	"encoding/json"
+	"validation_service/internal/validator/fields"
+	date_validation "validation_service/internal/validator/fields/date"
+	num_validation "validation_service/internal/validator/fields/number"
+	str_validation "validation_service/internal/validator/fields/string"
+	"validation_service/pkg/log"
 	"validation_service/pkg/storage"
 )
 
@@ -42,4 +47,51 @@ func (v *validator) Get(object string) (interface{}, error) {
 	err = json.Unmarshal(rawData, &result)
 
 	return result, err
+}
+
+type validatorClass struct {
+	Schema             string                   `json:"$schema"`
+	FieldValidators    []*fields.FieldValidator `json:"validators"`
+	FieldValidatorsMap map[string]*fields.FieldValidator
+}
+
+func (v *validator) GetValidatorClass(data []byte) *validatorClass {
+	vc := &validatorClass{}
+
+	err := json.Unmarshal(data, vc)
+	if err != nil {
+		log.Logger.Error(err)
+	}
+
+	vc.FieldValidatorsMap = map[string]*fields.FieldValidator{}
+	for _, field := range vc.FieldValidators {
+		vc.FieldValidatorsMap[field.FieldName] = field
+	}
+
+	return vc
+}
+
+func (vc *validatorClass) Validate(field interface{}, fieldValidator *fields.FieldValidator) bool {
+	var (
+		ok       bool
+		strField string
+	)
+
+	strField, ok = field.(string)
+	if !ok {
+		log.Logger.Error("type conversion failed")
+		return false
+	}
+
+	switch fieldValidator.FieldType {
+	case "string":
+		return str_validation.Validate(strField, fieldValidator)
+	case "number":
+		return num_validation.Validate(strField, fieldValidator)
+	case "date":
+		return date_validation.Validate(strField, fieldValidator)
+	default:
+		log.Logger.Errorf("unknown type: %s for field: %s", fieldValidator.FieldType, fieldValidator.FieldName)
+		return false
+	}
 }
