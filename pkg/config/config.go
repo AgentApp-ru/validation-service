@@ -22,6 +22,7 @@ type Config struct {
 	BindAddr     string `toml:"apiserver_port"`
 	SendToChat   bool   `toml:"send_to_chat"`
 	BasePath     string
+	LogstageUrl  string      `toml:"logstash_url"`
 	StrorageInfo storageInfo `toml:"storage"`
 	ConsulInfo   consulInfo  `toml:"consul"`
 }
