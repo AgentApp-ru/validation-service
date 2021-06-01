@@ -56,6 +56,7 @@ func configureRouter(router *mux.Router) {
 
 	v1Router.HandleFunc("/validations/car", handleValidate("car")).Methods("POST")
 	v1Router.HandleFunc("/validations/person", handleValidate("person")).Methods("POST")
+	v1Router.HandleFunc("/validations/driver", handleValidate("driver")).Methods("POST")
 }
 
 func handlePing() http.HandlerFunc {
