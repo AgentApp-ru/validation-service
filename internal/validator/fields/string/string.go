@@ -6,6 +6,7 @@ import (
 	"math"
 	"regexp"
 	"validation_service/internal/validator/fields"
+	"validation_service/pkg/log"
 )
 
 type Pattern struct {
@@ -21,18 +22,24 @@ type StringPattern struct {
 	Patterns           []*Pattern `json:"patterns"`
 }
 
-func Validate(field string, fieldValidator *fields.FieldValidator) bool {
+func Validate(field interface{}, fieldValidator *fields.FieldValidator) bool {
 	var (
 		stringPatterns []*StringPattern
+		ok             bool
+		strField       string
 	)
 
-	err := json.Unmarshal([]byte(fieldValidator.Patterns), &stringPatterns)
-	if err != nil {
+	if strField, ok = field.(string); !ok {
+		log.Logger.Error("type conversion failed")
+		return false
+	}
+
+	if err := json.Unmarshal([]byte(fieldValidator.Patterns), &stringPatterns); err != nil {
 		return false
 	}
 
 	for _, stringPattern := range stringPatterns {
-		if validateStringWithPatterns(field, stringPattern.Patterns) {
+		if validateStringWithPatterns(strField, stringPattern.Patterns) {
 			return true
 		}
 	}

@@ -2,8 +2,8 @@ package number
 
 import (
 	"encoding/json"
-	"strconv"
 	"validation_service/internal/validator/fields"
+	"validation_service/pkg/log"
 )
 
 type IntPattern struct {
@@ -11,24 +11,26 @@ type IntPattern struct {
 	Max int `json:"max"`
 }
 
-func Validate(field string, fieldValidator *fields.FieldValidator) bool {
+func Validate(field interface{}, fieldValidator *fields.FieldValidator) bool {
 	var (
+		floatField  float64
 		intField    int
-		err         error
+		ok          bool
 		intPatterns []*IntPattern
 	)
 
-	intField, err = strconv.Atoi(field)
-	if err != nil {
+	if floatField, ok = field.(float64); !ok {
+		log.Logger.Error("type conversion failed")
 		return false
 	}
 
-	err = json.Unmarshal([]byte(fieldValidator.Patterns), &intPatterns)
-	if err != nil {
+	if err := json.Unmarshal([]byte(fieldValidator.Patterns), &intPatterns); err != nil {
+		log.Logger.Error("json parsing error")
 		return false
 	}
 
 	pattern := intPatterns[0]
 
+	intField = int(floatField)
 	return pattern.Min <= intField && intField <= pattern.Max
 }

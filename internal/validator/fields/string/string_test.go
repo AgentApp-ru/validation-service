@@ -111,6 +111,45 @@ func TestValidateInValidStringWithInvalidLetters(t *testing.T) {
 	}
 }
 
+// func TestValidateValidEmail(t *testing.T) {
+// 	field := "vf@b2bpolis.ru"
+// 	min1 := 1
+// 	min2 := 2
+
+// 	patterns := []*Pattern{
+// 		{
+// 			Chars: "[a-zA-Z0-9_.+-]",
+// 			Max: 18,
+// 			MinPtr: &min2,
+// 		  },
+// 		  {
+// 			Chars: "[@]",
+// 			Max: 1,
+// 			MinPtr: &min1,
+// 		  },
+// 		  {
+// 			Chars: "[a-zA-Z0-9-]",
+// 			Max: 18,
+// 			MinPtr: &min2,
+// 		  },
+// 		  {
+// 			Chars: "[.]",
+// 			Max: 1,
+// 			MinPtr: &min1,
+// 		  },
+// 		  {
+// 			Chars: "[a-zA-Z0-9-.]",
+// 			Max: 18,
+// 			MinPtr: &min2,
+// 		  },
+// 	}
+
+// 	if !validateStringWithPatterns(field, patterns) {
+// 		pattern := patterns[0]
+// 		t.Errorf("should be invalid regexp: '%s' for '%s'", fmt.Sprintf("%s{%d,%d}", pattern.Chars, pattern.Min, pattern.Max), field)
+// 	}
+// }
+
 // func TestValidateValidVIN(t *testing.T) {
 // 	field := "TMBED45J2B3209311"
 

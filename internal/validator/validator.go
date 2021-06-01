@@ -72,24 +72,13 @@ func (v *validator) GetValidatorClass(data []byte) *validatorClass {
 }
 
 func (vc *validatorClass) Validate(field interface{}, fieldValidator *fields.FieldValidator) bool {
-	var (
-		ok       bool
-		strField string
-	)
-
-	strField, ok = field.(string)
-	if !ok {
-		log.Logger.Error("type conversion failed")
-		return false
-	}
-
 	switch fieldValidator.FieldType {
 	case "string":
-		return str_validation.Validate(strField, fieldValidator)
+		return str_validation.Validate(field, fieldValidator)
 	case "number":
-		return num_validation.Validate(strField, fieldValidator)
+		return num_validation.Validate(field, fieldValidator)
 	case "date":
-		return date_validation.Validate(strField, fieldValidator)
+		return date_validation.Validate(field, fieldValidator)
 	default:
 		log.Logger.Errorf("unknown type: %s for field: %s", fieldValidator.FieldType, fieldValidator.FieldName)
 		return false

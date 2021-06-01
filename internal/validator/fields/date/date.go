@@ -81,7 +81,7 @@ func init() {
 	car = models.Car{} // TODO: убрать это. Одно ТС на один запрос, а не навсегда
 }
 
-func Validate(field string, fieldValidator *fields.FieldValidator) bool {
+func Validate(field interface{}, fieldValidator *fields.FieldValidator) bool {
 	// fmt.Printf("man_year: %v\n", car.Manufacturing_year)
 	// fmt.Printf("cred_year: %v\n", car.Credential_issue_date)
 
@@ -89,16 +89,21 @@ func Validate(field string, fieldValidator *fields.FieldValidator) bool {
 		fieldDate    time.Time
 		datePatterns []*DatePattern
 		err          error
+		ok           bool
+		strField     string
 	)
 
-	err = json.Unmarshal([]byte(fieldValidator.Patterns), &datePatterns)
-	if err != nil {
+	if strField, ok = field.(string); !ok {
+		log.Logger.Error("type conversion failed")
+		return false
+	}
+
+	if err = json.Unmarshal([]byte(fieldValidator.Patterns), &datePatterns); err != nil {
 		// println(err)
 		return false
 	}
 
-	fieldDate, err = time.Parse("2006-01-02", field)
-	if err != nil {
+	if fieldDate, err = time.Parse("2006-01-02", strField); err != nil {
 		return false
 	}
 
