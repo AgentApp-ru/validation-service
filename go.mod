@@ -6,6 +6,7 @@ require (
 	github.com/BurntSushi/toml v0.3.1
 	github.com/gorilla/mux v1.8.0
 	github.com/hashicorp/consul/api v1.8.1
-	github.com/nsf/jsondiff v0.0.0-20210303162244-6ea32392771e
+	github.com/nsf/jsondiff v0.0.0-20210303162244-6ea32392771e // indirect
+	github.com/oleiade/reflections v1.0.1
 	go.uber.org/zap v1.16.0
 )

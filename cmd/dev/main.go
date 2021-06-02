@@ -1,15 +1,21 @@
 package main
 
 import (
-	"validation_service/internal/validator"
-	"validation_service/pkg/config"
-	"validation_service/pkg/consul"
+	"encoding/json"
+	"validation_service/internal/apiserver/views"
 )
 
 func main() {
-	config.Init()
+	a := []byte(`{
+		"type": "date",
+		"value": "1930-01-01"
+	}`)
 
-	consul.Init()
+	var j views.DateMinMaxPattern
+	var v views.DateDateValue
 
-	validator.Init(consul.Storage)
+	json.Unmarshal(a, &j)
+	println(j.PatternType)
+	json.Unmarshal(j.Value, &v)
+	println(v)
 }

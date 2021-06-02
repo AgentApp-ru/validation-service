@@ -1,12 +1,15 @@
 package apiserver
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"time"
 	"validation_service/internal/apiserver/views"
 	"validation_service/pkg/config"
 	"validation_service/pkg/http_response"
+	"validation_service/pkg/log"
 
 	"github.com/gorilla/mux"
 )
@@ -33,14 +36,25 @@ func (s *server) ServeHTTP() error {
 	return s.HttpServer.ListenAndServe()
 }
 
+func LogRequestMiddleware(h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		h.ServeHTTP(w, r)
+		log.Logger.Infof("%s %s", r.Method, r.URL)
+	})
+}
+
 func configureRouter(router *mux.Router) {
 	apiRouter := router.PathPrefix("/api").Subrouter()
+	apiRouter.Use(LogRequestMiddleware)
 	apiRouter.HandleFunc("/ping", handlePing()).Methods("GET")
+
 	v1Router := apiRouter.PathPrefix("/v1").Subrouter()
 	v1Router.HandleFunc("/validations/car", handleCarValidation()).Methods("GET")
 	v1Router.HandleFunc("/validations/person", handlePersonValidation()).Methods("GET")
 	v1Router.HandleFunc("/validations/driver", handleDriverValidation()).Methods("GET")
 	v1Router.HandleFunc("/validations/general-conditions", handleGeneralConditionsValidation()).Methods("GET")
+
+	v1Router.HandleFunc("/validations/car", handleCarValidate()).Methods("POST")
 }
 
 func handlePing() http.HandlerFunc {
@@ -58,6 +72,32 @@ func handleCarValidation() http.HandlerFunc {
 			return
 		}
 		http_response.HttpRespond(w, http.StatusOK, content)
+	}
+}
+
+func handleCarValidate() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		defer r.Body.Close()
+
+		body, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			http_response.HttpError(w, fmt.Errorf("error read body: %s", err))
+			return
+		}
+
+		var b map[string]interface{}
+		if err := json.Unmarshal(body, &b); err != nil {
+			http_response.HttpError(w, fmt.Errorf("error convert to json body: %s", err))
+			return
+		}
+
+		isValid, fieldsWithErrors := views.ValidateCar(b)
+
+		if !isValid {
+			http_response.HttpError(w, fmt.Errorf("error fields: %s", fieldsWithErrors))
+			return
+		}
+		http_response.HttpRespond(w, http.StatusOK, nil)
 	}
 }
 
