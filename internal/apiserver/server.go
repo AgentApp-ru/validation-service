@@ -107,7 +107,6 @@ func handleValidate(object string) http.HandlerFunc {
 				"error fields": fieldsWithErrors,
 			}
 			http_response.HttpRespond(w, http.StatusOK, errors)
-			// http_response.HttpError(w, fmt.Errorf(": %s", fieldsWithErrors))
 			return
 		}
 

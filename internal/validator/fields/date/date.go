@@ -82,9 +82,6 @@ func init() {
 }
 
 func Validate(field interface{}, fieldValidator *fields.FieldValidator) bool {
-	// fmt.Printf("man_year: %v\n", car.Manufacturing_year)
-	// fmt.Printf("cred_year: %v\n", car.Credential_issue_date)
-
 	var (
 		fieldDate    time.Time
 		datePatterns []*DatePattern
@@ -99,7 +96,6 @@ func Validate(field interface{}, fieldValidator *fields.FieldValidator) bool {
 	}
 
 	if err = json.Unmarshal([]byte(fieldValidator.Patterns), &datePatterns); err != nil {
-		// println(err)
 		return false
 	}
 
@@ -147,11 +143,6 @@ func Validate(field interface{}, fieldValidator *fields.FieldValidator) bool {
 			return false
 		}
 	}
-
-	// err = reflections.SetField(&car, strings.Title(fieldValidator.FieldName), fieldDate)
-	// if err != nil {
-	// 	log.Logger.Error(err)
-	// }
 
 	return true
 }

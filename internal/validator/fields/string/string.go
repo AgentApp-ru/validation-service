@@ -57,9 +57,7 @@ func validateStringWithPatterns(field string, patterns []*Pattern) bool {
 			pattern.Min = *pattern.MinPtr
 		}
 
-		// check-size
 		if len(leftBody) < pattern.Min {
-			// println("no len")
 			return false
 		}
 
@@ -71,13 +69,10 @@ func validateStringWithPatterns(field string, patterns []*Pattern) bool {
 				float64(pattern.Max),
 			),
 		)
-		// println("regexp ", fmt.Sprintf("%s{%d,%d}", pattern.Chars, minDimensionToCheck, pattern.Max), string(leftBody), string(stringToCheck))
-
 		matched, err := regexp.Match(
 			fmt.Sprintf("%s{%d,%d}", pattern.Chars, minDimensionToCheck, pattern.Max), stringToCheck,
 		)
 		if !matched || err != nil {
-			// println("no match")
 			return false
 		}
 
