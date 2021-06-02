@@ -54,7 +54,9 @@ func configureRouter(router *mux.Router) {
 	v1Router.HandleFunc("/validations/driver", handleDriverValidation()).Methods("GET")
 	v1Router.HandleFunc("/validations/general-conditions", handleGeneralConditionsValidation()).Methods("GET")
 
-	v1Router.HandleFunc("/validations/car", handleCarValidate()).Methods("POST")
+	v1Router.HandleFunc("/validations/car", handleValidate("car")).Methods("POST")
+	v1Router.HandleFunc("/validations/person", handleValidate("person")).Methods("POST")
+	v1Router.HandleFunc("/validations/driver", handleValidate("driver")).Methods("POST")
 }
 
 func handlePing() http.HandlerFunc {
@@ -75,28 +77,39 @@ func handleCarValidation() http.HandlerFunc {
 	}
 }
 
-func handleCarValidate() http.HandlerFunc {
+func handleValidate(object string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		var (
+			body []byte
+			err  error
+		)
 		defer r.Body.Close()
 
-		body, err := ioutil.ReadAll(r.Body)
+		body, err = ioutil.ReadAll(r.Body)
 		if err != nil {
 			http_response.HttpError(w, fmt.Errorf("error read body: %s", err))
 			return
 		}
 
 		var b map[string]interface{}
-		if err := json.Unmarshal(body, &b); err != nil {
+		if err = json.Unmarshal(body, &b); err != nil {
 			http_response.HttpError(w, fmt.Errorf("error convert to json body: %s", err))
 			return
 		}
 
-		isValid, fieldsWithErrors := views.ValidateCar(b)
-
-		if !isValid {
-			http_response.HttpError(w, fmt.Errorf("error fields: %s", fieldsWithErrors))
+		fieldsWithErrors, err := views.Validate(object, b)
+		if err != nil {
+			http_response.HttpError(w, fmt.Errorf("errors while validating: %s", err))
 			return
 		}
+		if len(fieldsWithErrors) != 0 {
+			errors := map[string][]string{
+				"error fields": fieldsWithErrors,
+			}
+			http_response.HttpRespond(w, http.StatusOK, errors)
+			return
+		}
+
 		http_response.HttpRespond(w, http.StatusOK, nil)
 	}
 }

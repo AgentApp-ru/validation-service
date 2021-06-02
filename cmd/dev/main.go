@@ -1,21 +1,10 @@
 package main
 
 import (
-	"encoding/json"
-	"validation_service/internal/apiserver/views"
+	"regexp"
 )
 
 func main() {
-	a := []byte(`{
-		"type": "date",
-		"value": "1930-01-01"
-	}`)
-
-	var j views.DateMinMaxPattern
-	var v views.DateDateValue
-
-	json.Unmarshal(a, &j)
-	println(j.PatternType)
-	json.Unmarshal(j.Value, &v)
-	println(v)
+	matched, err := regexp.Match("[a-zA-Z0-9_.+-]{2,18}", []byte("vf@b2bpolis.ru"))
+	println(matched, err)
 }

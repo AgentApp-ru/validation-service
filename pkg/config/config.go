@@ -13,12 +13,17 @@ type consulInfo struct {
 	Token   string
 }
 
+type storageInfo struct {
+	Backend string
+}
+
 type Config struct {
-	Env        string
-	BindAddr   string `toml:"apiserver_port"`
-	SendToChat bool   `toml:"send_to_chat"`
-	BasePath   string
-	ConsulInfo consulInfo `toml:"consul"`
+	Env          string
+	BindAddr     string `toml:"apiserver_port"`
+	SendToChat   bool   `toml:"send_to_chat"`
+	BasePath     string
+	StrorageInfo storageInfo `toml:"storage"`
+	ConsulInfo   consulInfo  `toml:"consul"`
 }
 
 var (
