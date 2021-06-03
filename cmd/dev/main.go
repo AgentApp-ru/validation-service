@@ -1,23 +1,23 @@
 package main
 
 import (
-	"net"
-
-	"github.com/bshuster-repo/logrus-logstash-hook"
-	"github.com/sirupsen/logrus"
+	"fmt"
+	"regexp"
 )
 
 func main() {
-	log := logrus.New()
-	conn, err := net.Dial("tcp", "elk.b2bpolis.ru:5000")
-	if err != nil {
-		log.Fatal(err)
-	}
-	hook := logrustash.New(conn, logrustash.DefaultFormatter(logrus.Fields{"type": "validation"}))
+	// pattern := "[а-яА-ЯёЁ -`]"
+	// stringToCheck := []byte(string([]rune("Римский-'`Корсаков")))
 
-	log.Hooks.Add(hook)
-	ctx := log.WithFields(logrus.Fields{
-		"partner_store": "lo-vf",
-	})
-	ctx.Info("Hello World!")
+	pattern := "[а-яА-ЯёЁ '`-]"
+	re := regexp.MustCompile(fmt.Sprintf("%s{%d,%d}", pattern, 5, 5))
+	stringToCheck := []byte(string([]rune("а-'`а")))
+
+	println(re.Match(stringToCheck))
+
+	// matched, _ := regexp.Match(
+	// 	fmt.Sprintf("%s{%d,%d}", pattern, 5, 5), stringToCheck,
+	// )
+	//
+	// println(matched)
 }

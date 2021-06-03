@@ -7,7 +7,7 @@ import (
 )
 
 func TestValidateValidString(t *testing.T) {
-	field := "русский"
+	field := unicodeString("русский")
 	min := 3
 
 	patterns := []*Pattern{
@@ -18,14 +18,14 @@ func TestValidateValidString(t *testing.T) {
 		},
 	}
 
-	if !validateStringWithPatterns(field, patterns) {
+	if leftBody, ok := validateStringWithPatterns(field, patterns); !ok || len(leftBody) != 0 {
 		pattern := patterns[0]
-		t.Errorf("should be valid regexp: '%s' for '%s'", fmt.Sprintf("%s{%d,%d}", pattern.Chars, pattern.Min, pattern.Max), field)
+		t.Errorf("should be valid regexp: '%s' for '%s'", fmt.Sprintf("%s{%d,%d}", pattern.Chars, pattern.Min, pattern.Max), string(field))
 	}
 }
 
 func TestValidateTooLongString(t *testing.T) {
-	field := "русский"
+	field := unicodeString("русский")
 	min := 3
 
 	patterns := []*Pattern{
@@ -36,14 +36,14 @@ func TestValidateTooLongString(t *testing.T) {
 		},
 	}
 
-	if validateStringWithPatterns(field, patterns) {
+	if leftBody, ok := validateStringWithPatterns(field, patterns); ok && len(leftBody) == 0 {
 		pattern := patterns[0]
-		t.Errorf("should be invalid regexp: '%s' for '%s'", fmt.Sprintf("%s{%d,%d}", pattern.Chars, pattern.Min, pattern.Max), field)
+		t.Errorf("should be invalid regexp: '%s' for '%s'", fmt.Sprintf("%s{%d,%d}", pattern.Chars, pattern.Min, pattern.Max), string(field))
 	}
 }
 
 func TestValidateTooShortString(t *testing.T) {
-	field := "русский"
+	field := unicodeString("русский")
 	min := 10
 
 	patterns := []*Pattern{
@@ -54,14 +54,14 @@ func TestValidateTooShortString(t *testing.T) {
 		},
 	}
 
-	if validateStringWithPatterns(field, patterns) {
+	if _, ok := validateStringWithPatterns(field, patterns); ok {
 		pattern := patterns[0]
-		t.Errorf("should be invalid regexp: '%s' for '%s'", fmt.Sprintf("%s{%d,%d}", pattern.Chars, pattern.Min, pattern.Max), field)
+		t.Errorf("should be invalid regexp: '%s' for '%s'", fmt.Sprintf("%s{%d,%d}", pattern.Chars, pattern.Min, pattern.Max), string(field))
 	}
 }
 
 func TestValidateValidStringWithExactSize(t *testing.T) {
-	field := "русский"
+	field := unicodeString("русский")
 
 	patterns := []*Pattern{
 		{
@@ -71,14 +71,14 @@ func TestValidateValidStringWithExactSize(t *testing.T) {
 		},
 	}
 
-	if !validateStringWithPatterns(field, patterns) {
+	if leftBody, ok := validateStringWithPatterns(field, patterns); !ok || len(leftBody) != 0 {
 		pattern := patterns[0]
-		t.Errorf("should be invalid regexp: '%s' for '%s'", fmt.Sprintf("%s{%d,%d}", pattern.Chars, pattern.Min, pattern.Max), field)
+		t.Errorf("should be valid regexp: '%s' for '%s'", fmt.Sprintf("%s{%d,%d}", pattern.Chars, pattern.Min, pattern.Max), string(field))
 	}
 }
 
 func TestValidateInValidStringWithExactSize(t *testing.T) {
-	field := "русский"
+	field := unicodeString("русск")
 
 	patterns := []*Pattern{
 		{
@@ -88,14 +88,14 @@ func TestValidateInValidStringWithExactSize(t *testing.T) {
 		},
 	}
 
-	if !validateStringWithPatterns(field, patterns) {
+	if _, ok := validateStringWithPatterns(field, patterns); ok {
 		pattern := patterns[0]
-		t.Errorf("should be invalid regexp: '%s' for '%s'", fmt.Sprintf("%s{%d,%d}", pattern.Chars, pattern.Min, pattern.Max), field)
+		t.Errorf("should be invalid regexp: '%s' for '%s'", fmt.Sprintf("%s{%d,%d}", pattern.Chars, pattern.Min, pattern.Max), string(field))
 	}
 }
 
 func TestValidateInValidStringWithInvalidLetters(t *testing.T) {
-	field := "english"
+	field := unicodeString("english")
 	min := 0
 
 	patterns := []*Pattern{
@@ -106,419 +106,9 @@ func TestValidateInValidStringWithInvalidLetters(t *testing.T) {
 		},
 	}
 
-	if validateStringWithPatterns(field, patterns) {
+	if leftBody, ok := validateStringWithPatterns(field, patterns); ok && len(leftBody) == 0 {
 		pattern := patterns[0]
-		t.Errorf("should be invalid regexp: '%s' for '%s'", fmt.Sprintf("%s{%d,%d}", pattern.Chars, pattern.Min, pattern.Max), field)
-	}
-}
-
-
-func TestValidateValidEmail(t *testing.T) {
-	field := "doqwi@opdw.ru"
-	min_first := 2
-	min_second := 1
-	patterns := []*Pattern{
-		{
-			Chars:  "[a-zA-Z0-9_.+-]",
-			MinPtr: &min_first,
-			Max:    18,
-		},
-		{
-			Chars:  "[@]",
-			MinPtr: &min_second,
-			Max:    1,
-		},
-		{
-			Chars:  "[a-zA-Z0-9-]",
-			MinPtr: &min_first,
-			Max:    18,
-		},
-		{
-			Chars:  "[.]",
-			MinPtr: &min_second,
-			Max:    1,
-		},
-		{
-			Chars:  "[a-zA-Z0-9-.]",
-			MinPtr: &min_first,
-			Max:    18,
-		},
-	}
-
-	if !validateStringWithPatterns(field, patterns) {
-		pattern := patterns[0]
-		t.Errorf("should be invalid regexp: '%s' for '%s'", fmt.Sprintf("%s{%d,%d}", pattern.Chars, pattern.Min, pattern.Max), field)
-	}
-}
-
-func TestAnotherValidateValidEmail(t *testing.T) {
-	field := "testmail@mail.ru"
-	min_first := 2
-	min_second := 1
-	patterns := []*Pattern{
-		{
-			Chars:  "[a-zA-Z0-9_.+-]",
-			MinPtr: &min_first,
-			Max:    18,
-		},
-		{
-			Chars:  "[@]",
-			MinPtr: &min_second,
-			Max:    1,
-		},
-		{
-			Chars:  "[a-zA-Z0-9-]",
-			MinPtr: &min_first,
-			Max:    18,
-		},
-		{
-			Chars:  "[.]",
-			MinPtr: &min_second,
-			Max:    1,
-		},
-		{
-			Chars:  "[a-zA-Z0-9-.]",
-			MinPtr: &min_first,
-			Max:    18,
-		},
-	}
-
-	if !validateStringWithPatterns(field, patterns) {
-		pattern := patterns[0]
-		t.Errorf("should be invalid regexp: '%s' for '%s'", fmt.Sprintf("%s{%d,%d}", pattern.Chars, pattern.Min, pattern.Max), field)
-	}
-}
-
-func TestValidateInValidEmailWithInValidCharacters(t *testing.T) {
-	field := "doqwi$%@o$%pdw.ru"
-	min_first := 2
-	min_second := 1
-	patterns := []*Pattern{
-		{
-			Chars:  "[a-zA-Z0-9_.+-]",
-			MinPtr: &min_first,
-			Max:    18,
-		},
-		{
-			Chars:  "[@]",
-			MinPtr: &min_second,
-			Max:    1,
-		},
-		{
-			Chars:  "[a-zA-Z0-9-]",
-			MinPtr: &min_first,
-			Max:    18,
-		},
-		{
-			Chars:  "[.]",
-			MinPtr: &min_second,
-			Max:    1,
-		},
-		{
-			Chars:  "[a-zA-Z0-9-.]",
-			MinPtr: &min_first,
-			Max:    18,
-		},
-	}
-	if validateStringWithPatterns(field, patterns) {
-		pattern := patterns[0]
-		t.Errorf("should be invalid regexp: '%s' for '%s'", fmt.Sprintf("%s{%d,%d}", pattern.Chars, pattern.Min, pattern.Max), field)
-	}
-}
-
-func TestValidateInValidEmailTooLongBeforePaw(t *testing.T) {
-	field := "doqwisadsadsadsadwqdwqeqwe23ewqd123@opdw.ru"
-	min_first := 2
-	min_second := 1
-	patterns := []*Pattern{
-		{
-			Chars:  "[a-zA-Z0-9_.+-]",
-			MinPtr: &min_first,
-			Max:    18,
-		},
-		{
-			Chars:  "[@]",
-			MinPtr: &min_second,
-			Max:    1,
-		},
-		{
-			Chars:  "[a-zA-Z0-9-]",
-			MinPtr: &min_first,
-			Max:    18,
-		},
-		{
-			Chars:  "[.]",
-			MinPtr: &min_second,
-			Max:    1,
-		},
-		{
-			Chars:  "[a-zA-Z0-9-.]",
-			MinPtr: &min_first,
-			Max:    18,
-		},
-	}
-	if validateStringWithPatterns(field, patterns) {
-		pattern := patterns[0]
-		t.Errorf("should be invalid regexp: '%s' for '%s'", fmt.Sprintf("%s{%d,%d}", pattern.Chars, pattern.Min, pattern.Max), field)
-	}
-}
-
-func TestValidateInValidEmailTooShortBeforePaw(t *testing.T) {
-	field := "a@opdw.ru"
-	min_first := 2
-	min_second := 1
-	patterns := []*Pattern{
-		{
-			Chars:  "[a-zA-Z0-9_.+-]",
-			MinPtr: &min_first,
-			Max:    18,
-		},
-		{
-			Chars:  "[@]",
-			MinPtr: &min_second,
-			Max:    1,
-		},
-		{
-			Chars:  "[a-zA-Z0-9-]",
-			MinPtr: &min_first,
-			Max:    18,
-		},
-		{
-			Chars:  "[.]",
-			MinPtr: &min_second,
-			Max:    1,
-		},
-		{
-			Chars:  "[a-zA-Z0-9-.]",
-			MinPtr: &min_first,
-			Max:    18,
-		},
-	}
-	if validateStringWithPatterns(field, patterns) {
-		pattern := patterns[0]
-		t.Errorf("should be invalid regexp: '%s' for '%s'", fmt.Sprintf("%s{%d,%d}", pattern.Chars, pattern.Min, pattern.Max), field)
-	}
-}
-
-func TestValidateInValidEmailTooLongAfterPaw(t *testing.T) {
-	field := "aasd@oasdsadasdsadasdasdadadaasdasdpdw.ru"
-	min_first := 2
-	min_second := 1
-	patterns := []*Pattern{
-		{
-			Chars:  "[a-zA-Z0-9_.+-]",
-			MinPtr: &min_first,
-			Max:    18,
-		},
-		{
-			Chars:  "[@]",
-			MinPtr: &min_second,
-			Max:    1,
-		},
-		{
-			Chars:  "[a-zA-Z0-9-]",
-			MinPtr: &min_first,
-			Max:    18,
-		},
-		{
-			Chars:  "[.]",
-			MinPtr: &min_second,
-			Max:    1,
-		},
-		{
-			Chars:  "[a-zA-Z0-9-.]",
-			MinPtr: &min_first,
-			Max:    18,
-		},
-	}
-	if validateStringWithPatterns(field, patterns) {
-		pattern := patterns[0]
-		t.Errorf("should be invalid regexp: '%s' for '%s'", fmt.Sprintf("%s{%d,%d}", pattern.Chars, pattern.Min, pattern.Max), field)
-	}
-}
-
-func TestValidateInValidEmailTooShortAfterPaw(t *testing.T) {
-	field := "sadasda@o.ru"
-	min_first := 2
-	min_second := 1
-	patterns := []*Pattern{
-		{
-			Chars:  "[a-zA-Z0-9_.+-]",
-			MinPtr: &min_first,
-			Max:    18,
-		},
-		{
-			Chars:  "[@]",
-			MinPtr: &min_second,
-			Max:    1,
-		},
-		{
-			Chars:  "[a-zA-Z0-9-]",
-			MinPtr: &min_first,
-			Max:    18,
-		},
-		{
-			Chars:  "[.]",
-			MinPtr: &min_second,
-			Max:    1,
-		},
-		{
-			Chars:  "[a-zA-Z0-9-.]",
-			MinPtr: &min_first,
-			Max:    18,
-		},
-	}
-	if validateStringWithPatterns(field, patterns) {
-		pattern := patterns[0]
-		t.Errorf("should be invalid regexp: '%s' for '%s'", fmt.Sprintf("%s{%d,%d}", pattern.Chars, pattern.Min, pattern.Max), field)
-	}
-}
-
-func TestValidateInValidEmailWithoutDot(t *testing.T) {
-	field := "sadasda@asdoasdru"
-	min_first := 2
-	min_second := 1
-	patterns := []*Pattern{
-		{
-			Chars:  "[a-zA-Z0-9_.+-]",
-			MinPtr: &min_first,
-			Max:    18,
-		},
-		{
-			Chars:  "[@]",
-			MinPtr: &min_second,
-			Max:    1,
-		},
-		{
-			Chars:  "[a-zA-Z0-9-]",
-			MinPtr: &min_first,
-			Max:    18,
-		},
-		{
-			Chars:  "[.]",
-			MinPtr: &min_second,
-			Max:    1,
-		},
-		{
-			Chars:  "[a-zA-Z0-9-.]",
-			MinPtr: &min_first,
-			Max:    18,
-		},
-	}
-	if validateStringWithPatterns(field, patterns) {
-		pattern := patterns[0]
-		t.Errorf("should be invalid regexp: '%s' for '%s'", fmt.Sprintf("%s{%d,%d}", pattern.Chars, pattern.Min, pattern.Max), field)
-	}
-}
-
-func TestValidateInValidEmailWithoutPaw(t *testing.T) {
-	field := "sadasdao.ru"
-	min_first := 2
-	min_second := 1
-	patterns := []*Pattern{
-		{
-			Chars:  "[a-zA-Z0-9_.+-]",
-			MinPtr: &min_first,
-			Max:    18,
-		},
-		{
-			Chars:  "[@]",
-			MinPtr: &min_second,
-			Max:    1,
-		},
-		{
-			Chars:  "[a-zA-Z0-9-]",
-			MinPtr: &min_first,
-			Max:    18,
-		},
-		{
-			Chars:  "[.]",
-			MinPtr: &min_second,
-			Max:    1,
-		},
-		{
-			Chars:  "[a-zA-Z0-9-.]",
-			MinPtr: &min_first,
-			Max:    18,
-		},
-	}
-	if validateStringWithPatterns(field, patterns) {
-		pattern := patterns[0]
-		t.Errorf("should be invalid regexp: '%s' for '%s'", fmt.Sprintf("%s{%d,%d}", pattern.Chars, pattern.Min, pattern.Max), field)
-	}
-}
-
-func TestValidateValidEmailOnlyNumbers(t *testing.T) {
-	field := "123123@mail.ru"
-	min_first := 2
-	min_second := 1
-	patterns := []*Pattern{
-		{
-			Chars:  "[a-zA-Z0-9_.+-]",
-			MinPtr: &min_first,
-			Max:    18,
-		},
-		{
-			Chars:  "[@]",
-			MinPtr: &min_second,
-			Max:    1,
-		},
-		{
-			Chars:  "[a-zA-Z0-9-]",
-			MinPtr: &min_first,
-			Max:    18,
-		},
-		{
-			Chars:  "[.]",
-			MinPtr: &min_second,
-			Max:    1,
-		},
-		{
-			Chars:  "[a-zA-Z0-9-.]",
-			MinPtr: &min_first,
-			Max:    18,
-		},
-	}
-	if !validateStringWithPatterns(field, patterns) {
-		pattern := patterns[0]
-		t.Errorf("should be invalid regexp: '%s' for '%s'", fmt.Sprintf("%s{%d,%d}", pattern.Chars, pattern.Min, pattern.Max), field)
-	}
-}
-
-func TestValidateValidEmailOnlySpecialCharacters(t *testing.T) {
-	field := "-.+-@mail.ru"
-	min_first := 2
-	min_second := 1
-	patterns := []*Pattern{
-		{
-			Chars:  "[a-zA-Z0-9_.+-]",
-			MinPtr: &min_first,
-			Max:    18,
-		},
-		{
-			Chars:  "[@]",
-			MinPtr: &min_second,
-			Max:    1,
-		},
-		{
-			Chars:  "[a-zA-Z0-9-]",
-			MinPtr: &min_first,
-			Max:    18,
-		},
-		{
-			Chars:  "[.]",
-			MinPtr: &min_second,
-			Max:    1,
-		},
-		{
-			Chars:  "[a-zA-Z0-9-.]",
-			MinPtr: &min_first,
-			Max:    18,
-		},
-	}
-	if !validateStringWithPatterns(field, patterns) {
-		pattern := patterns[0]
-		t.Errorf("should be invalid regexp: '%s' for '%s'", fmt.Sprintf("%s{%d,%d}", pattern.Chars, pattern.Min, pattern.Max), field)
+		t.Errorf("should be invalid regexp: '%s' for '%s'", fmt.Sprintf("%s{%d,%d}", pattern.Chars, pattern.Min, pattern.Max), string(field))
 	}
 }
 
@@ -532,9 +122,9 @@ func TestValidateValidPhone(t *testing.T) {
 			Max:    18,
 		},
 	}
-	if !validateStringWithPatterns(field, patterns) {
+	if _, ok := validateStringWithPatterns(unicodeString(field), patterns); !ok {
 		pattern := patterns[0]
-		t.Errorf("should be invalid regexp: '%s' for '%s'", fmt.Sprintf("%s{%d,%d}", pattern.Chars, pattern.Min, pattern.Max), field)
+		t.Errorf("should be valid regexp: '%s' for '%s'", fmt.Sprintf("%s{%d,%d}", pattern.Chars, pattern.Min, pattern.Max), field)
 	}
 }
 
@@ -576,7 +166,7 @@ func TestValidateInValidPhoneInValidCharacters(t *testing.T) {
 			Max:    18,
 		},
 	}
-	if validateStringWithPatterns(field, patterns) {
+	if _, ok := validateStringWithPatterns(unicodeString(field), patterns); ok {
 		pattern := patterns[0]
 		t.Errorf("should be invalid regexp: '%s' for '%s'", fmt.Sprintf("%s{%d,%d}", pattern.Chars, pattern.Min, pattern.Max), field)
 	}
@@ -592,7 +182,7 @@ func TestValidateInValidPhoneTooSmall(t *testing.T) {
 			Max:    18,
 		},
 	}
-	if validateStringWithPatterns(field, patterns) {
+	if _, ok := validateStringWithPatterns(unicodeString(field), patterns); ok {
 		pattern := patterns[0]
 		t.Errorf("should be invalid regexp: '%s' for '%s'", fmt.Sprintf("%s{%d,%d}", pattern.Chars, pattern.Min, pattern.Max), field)
 	}
@@ -608,7 +198,7 @@ func TestValidateInValidPhoneTooLarge(t *testing.T) {
 			Max:    18,
 		},
 	}
-	if validateStringWithPatterns(field, patterns) {
+	if leftBody, _ := validateStringWithPatterns(unicodeString(field), patterns); len(leftBody) == 0 {
 		pattern := patterns[0]
 		t.Errorf("should be invalid regexp: '%s' for '%s'", fmt.Sprintf("%s{%d,%d}", pattern.Chars, pattern.Min, pattern.Max), field)
 	}

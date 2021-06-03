@@ -169,7 +169,7 @@ func validateMinDate(fieldDate time.Time, rawValue json.RawMessage) bool {
 		return false
 	}
 
-	return fieldDate.After(expectedDate)
+	return !fieldDate.Before(expectedDate)
 }
 
 func validateMinNow(fieldDate time.Time, rawValue json.RawMessage) bool {
@@ -211,7 +211,7 @@ func validateMaxDate(fieldDate time.Time, rawValue json.RawMessage) bool {
 		return false
 	}
 
-	return fieldDate.Before(expectedDate)
+	return !fieldDate.After(expectedDate)
 }
 
 func validateMaxNow(fieldDate time.Time, rawValue json.RawMessage) bool {
