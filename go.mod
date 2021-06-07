@@ -10,6 +10,5 @@ require (
 	github.com/nsf/jsondiff v0.0.0-20210303162244-6ea32392771e // indirect
 	github.com/oleiade/reflections v1.0.1
 	github.com/sirupsen/logrus v1.8.1
-	// github.com/stretchr/testify v1.6.1
-	go.uber.org/zap v1.16.0
+	go.uber.org/zap v1.16.0 // indirect
 )
