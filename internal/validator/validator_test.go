@@ -3,11 +3,13 @@ package validator
 import (
 	"testing"
 	"validation_service/pkg/config"
+	"validation_service/pkg/log"
 	"validation_service/pkg/storage/file"
 )
 
 func TestCarValidVinField(t *testing.T) {
 	config.Init()
+	log.Init()
 	file.Init()
 	Init(file.Storage)
 
@@ -23,7 +25,7 @@ func TestCarValidVinField(t *testing.T) {
 	fieldsWithErrors := []string{}
 	for k, v := range data {
 		fieldValidator, ok := validatorClass.FieldValidatorsMap[k]
-		if !ok || !validatorClass.Validate(v, fieldValidator) {
+		if !ok || !validatorClass.Validate(v, fieldValidator, "car") {
 			fieldsWithErrors = append(fieldsWithErrors, k)
 		}
 	}
@@ -35,6 +37,7 @@ func TestCarValidVinField(t *testing.T) {
 
 func TestCarValidFields(t *testing.T) {
 	config.Init()
+	log.Init()
 	file.Init()
 	Init(file.Storage)
 
@@ -50,7 +53,7 @@ func TestCarValidFields(t *testing.T) {
 	fieldsWithErrors := []string{}
 	for k, v := range data {
 		fieldValidator, ok := validatorClass.FieldValidatorsMap[k]
-		if !ok || !validatorClass.Validate(v, fieldValidator) {
+		if !ok || !validatorClass.Validate(v, fieldValidator, "car") {
 			fieldsWithErrors = append(fieldsWithErrors, k)
 		}
 	}

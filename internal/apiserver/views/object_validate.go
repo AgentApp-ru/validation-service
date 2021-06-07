@@ -19,7 +19,7 @@ func Validate(object string, data map[string]interface{}) ([]string, error) {
 
 	for k, v := range data {
 		fieldValidator, ok := validatorClass.FieldValidatorsMap[k]
-		if !ok || !validatorClass.Validate(v, fieldValidator) {
+		if !ok || !validatorClass.Validate(v, fieldValidator, object) {
 			fieldsWithErrors = append(fieldsWithErrors, k)
 		}
 	}

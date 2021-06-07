@@ -71,16 +71,24 @@ func (v *validator) GetValidatorClass(data []byte) *validatorClass {
 	return vc
 }
 
-func (vc *validatorClass) Validate(field interface{}, fieldValidator *fields.FieldValidator) bool {
+func (vc *validatorClass) Validate(field interface{}, fieldValidator *fields.FieldValidator, object string) bool {
+	var ok bool
+
 	switch fieldValidator.FieldType {
 	case "string":
-		return str_validation.Validate(field, fieldValidator)
+		ok = str_validation.Validate(field, fieldValidator)
 	case "number":
-		return num_validation.Validate(field, fieldValidator)
+		ok = num_validation.Validate(field, fieldValidator)
 	case "date":
-		return date_validation.Validate(field, fieldValidator)
+		ok = date_validation.Validate(field, fieldValidator)
 	default:
 		log.Logger.Errorf("unknown type: %s for field: %s", fieldValidator.FieldType, fieldValidator.FieldName)
-		return false
+		ok = false
 	}
+
+	if !ok {
+		log.Logger.Warnf("Не прошла валидация %s/%s: %v", object, fieldValidator.FieldName, field)
+	}
+
+	return ok
 }

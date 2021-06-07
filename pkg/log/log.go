@@ -1,34 +1,28 @@
 package log
 
 import (
+	"net"
 	"validation_service/pkg/config"
 
-	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
+	logrustash "github.com/bshuster-repo/logrus-logstash-hook"
+	"github.com/sirupsen/logrus"
 )
 
-var Logger *zap.SugaredLogger
+var Logger *logrus.Logger
 
 func Init() {
-	var (
-		instance  *zap.Logger
-		logConfig zap.Config
-	)
+	Logger = logrus.New()
 	if config.Settings.Env == "production" {
-		logConfig = zap.NewProductionConfig()
-	} else {
-		logConfig = zap.NewDevelopmentConfig()
+		addLogstashHook()
 	}
-	logConfig.EncoderConfig.TimeKey = "timestamp"
-	logConfig.EncoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
-	logConfig.EncoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
+}
 
-	instance, err := logConfig.Build()
+func addLogstashHook() {
+	conn, err := net.Dial("tcp", config.Settings.LogstageUrl)
 	if err != nil {
-		panic(err)
+		Logger.Fatal(err)
 	}
+	hook := logrustash.New(conn, logrustash.DefaultFormatter(logrus.Fields{"type": "validation"}))
 
-	defer instance.Sync()
-
-	Logger = instance.Sugar()
+	Logger.Hooks.Add(hook)
 }
