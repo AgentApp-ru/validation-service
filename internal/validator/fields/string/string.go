@@ -33,7 +33,9 @@ func Validate(field interface{}, fieldValidator *fields.FieldValidator) bool {
 		log.Logger.Error("type conversion failed")
 		return false
 	}
-
+	if fieldValidator.FieldName == "phone" {
+		strField = deleteSpareCharFromPhone(strField)
+	}
 	if err := json.Unmarshal([]byte(fieldValidator.Patterns), &stringPatterns); err != nil {
 		return false
 	}
@@ -49,7 +51,6 @@ func Validate(field interface{}, fieldValidator *fields.FieldValidator) bool {
 
 func validateStringWithPatterns(field string, patterns []*Pattern) bool {
 	leftBody := []rune(field)
-
 	for _, pattern := range patterns {
 		if pattern.MinPtr == nil {
 			pattern.Min = pattern.Max
@@ -60,12 +61,11 @@ func validateStringWithPatterns(field string, patterns []*Pattern) bool {
 		if len(leftBody) < pattern.Min {
 			return false
 		}
-
 		lenToCheck := int(math.Min(float64(len(leftBody)), float64(pattern.Max)))
 		stringToCheck := []byte(string(leftBody[:lenToCheck]))
 		minDimensionToCheck := int(
 			math.Min(
-				math.Max(float64(len(leftBody)), float64(pattern.Min)),
+				math.Min(float64(len(leftBody)), float64(pattern.Min)),
 				float64(pattern.Max),
 			),
 		)
@@ -75,9 +75,24 @@ func validateStringWithPatterns(field string, patterns []*Pattern) bool {
 		if !matched || err != nil {
 			return false
 		}
-
-		leftBody = leftBody[lenToCheck:]
+		// After checking if string matches, find condinition in string and
+		// cut it length from string to continue
+		searching, err := regexp.Compile(
+			fmt.Sprintf("%s{%d,%d}", pattern.Chars, minDimensionToCheck, pattern.Max),
+		)
+		cutting := searching.FindString(string(stringToCheck))
+		cuttingLen := len([]rune(cutting))
+		leftBody = leftBody[cuttingLen:]
 	}
 
 	return len(leftBody) == 0
+}
+
+func deleteSpareCharFromPhone(phone string) string {
+	searching, _ := regexp.Compile(
+		"[-()\\s+]",
+	)
+	cuttingField := string([]rune(phone))
+	cuttingField = searching.ReplaceAllString(cuttingField, "")
+	return cuttingField
 }
