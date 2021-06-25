@@ -168,7 +168,7 @@
           "name": "issue_point",
           "patterns": [
             {
-              "chars": "[а-яА-ЯёЁ\\s-'`]",
+              "chars": "[а-яА-ЯёЁ\\s-'`.0-9]",
               "max": 255,
               "min": 1
             }
