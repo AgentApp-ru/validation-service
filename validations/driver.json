@@ -1,203 +1,357 @@
 {
-    "$schema": "./_schema.json",
+    "$schema": "../schema.json",
     "validators": [
-      {
-        "field": "first_name",
-        "type": "string",
-        "allow_white_spaces": true,
-        "patterns": [
-          {
-            "name": "name",
+        {
+            "field": "first_name",
+            "type": "string",
+            "allow_white_spaces": true,
+            "enabled_transformers": [
+                "camel_case",
+                "remove_first_whitespace"
+            ],
             "patterns": [
-              {
-                "chars": "[а-яА-ЯёЁ -'`]",
-                "max": 60,
-                "min": 1
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "field": "last_name",
-        "allow_white_spaces": true,
-        "patterns": [
-          {
-            "name": "name",
-            "patterns": [
-              {
-                "chars": "[а-яА-ЯёЁ -'`]",
-                "max": 60,
-                "min": 0
-              }
-            ]
-          }
-        ],
-        "type": "string"
-      },
-      {
-        "field": "patronymic",
-        "allow_white_spaces": true,
-        "patterns": [
-          {
-            "name": "name",
-            "patterns": [
-              {
-                "chars": "[а-яА-ЯёЁ -'`]",
-                "max": 60,
-                "min": 0
-              }
-            ]
-          }
-        ],
-        "type": "string"
-      },
-      {
-        "field": "birth_date",
-        "patterns": [
-            {
-              "max": [
                 {
-                  "type": "depending_formula",
-                  "value": {
-                    "depending": {
-                      "type": "now",
-                      "value": null
-                    },
-                    "operation": "subtract",
-                    "value": 16,
-                    "unit": "year"
-                  }
+                    "name": "name",
+                    "patterns": [
+                        {
+                            "chars": "[а-яА-ЯёЁ -'`]",
+                            "max": 60,
+                            "min": 1
+                        }
+                    ]
                 }
-              ],
-              "min": [
-                {
-                  "type": "date",
-                  "value": "1923-01-01"
-                }
-              ]
-            }
-          ],
-        "type": "date"
-      },
-      {
-        "field": "driver_license",
-        "allow_white_spaces": false,
-        "patterns": [
-          {
-            "name": "series",
-            "patterns": [
-              {
-                "chars": "[0-9]",
-                "size": 4
-              }
             ]
-          },
-          {
-            "name": "series",
-            "patterns": [
-              {
-                "chars": "[0-9]",
-                "size": 2
-              },
-              {
-                "chars": "[А-Я]",
-                "size": 2
-              }
-            ]
-          },
-          {
-            "name": "series",
-            "patterns": [
-              {
-                "chars": "[0-9]",
-                "size": 2
-              },
-              {
-                "chars": "[ABEKMHOPCTYX]",
-                "size": 2
-              }
-            ]
-          },
-          {
-            "name": "number",
-            "patterns": [
-              {
-                "chars": "[0-9]",
-                "size": 6
-              }
-            ]
-          }
-        ],
-        "type": "string"
-      },
-      {
-        "field": "foreign_driver_license",
-        "allow_white_spaces": false,
-        "patterns": [
-          {
-            "name": "series",
-            "patterns": [
-              {
-                "chars": "[А-Я]",
-                "max": 10,
-                "min": 0
-              }
-            ]
-          },
-          {
-            "name": "series",
-            "patterns": [
-              {
-                "chars": "[ABEKMHOPCTYX]",
-                "max": 10,
-                "min": 0
-              }
-            ]
-          },
-          {
-            "name": "number",
-            "patterns": [
-              {
-                "chars": "[*]",
-                "max": 40,
-                "min": 1
-              }
-            ]
-          }
-        ],
-        "type": "string"
-      },
-      {
-        "field": "driving_experience_started",
-        "maxCondition": {
-          "conditions": {
-            "A": 18,
-            "A1": 16,
-            "B": 18,
-            "B1": 18,
-            "BE": 19,
-            "C": 18,
-            "C1": 18,
-            "C1E": 19,
-            "CE": 19,
-            "D": 21,
-            "D1": 21,
-            "D1E": 22,
-            "DE": 22,
-            "M": 16,
-            "T": 16,
-            "TE": 17,
-            "Tb": 21,
-            "Tm": 21
-          },
-          "field": "car.car_type",
-          "formula": "now - condition"
         },
-        "min": [
-          "1923-01-01"
-        ],
-        "type": "date"
-      }
+        {
+            "field": "last_name",
+            "allow_white_spaces": true,
+            "enabled_transformers": [
+                "camel_case",
+                "remove_first_whitespace"
+            ],
+            "patterns": [
+                {
+                    "name": "name",
+                    "patterns": [
+                        {
+                            "chars": "[а-яА-ЯёЁ -'`]",
+                            "max": 60,
+                            "min": 0
+                        }
+                    ]
+                }
+            ],
+            "type": "string"
+        },
+        {
+            "field": "previous_last_name",
+            "allow_white_spaces": true,
+            "enabled_transformers": [
+                "camel_case",
+                "remove_first_whitespace"
+            ],
+            "patterns": [
+                {
+                    "name": "name",
+                    "patterns": [
+                        {
+                            "chars": "[а-яА-ЯёЁ -'`]",
+                            "max": 60,
+                            "min": 0
+                        }
+                    ]
+                }
+            ],
+            "type": "string"
+        },
+        {
+            "field": "patronymic",
+            "allow_white_spaces": true,
+            "enabled_transformers": [
+                "camel_case",
+                "remove_first_whitespace"
+            ],
+            "patterns": [
+                {
+                    "name": "name",
+                    "patterns": [
+                        {
+                            "chars": "[а-яА-ЯёЁ -'`]",
+                            "max": 60,
+                            "min": 0
+                        }
+                    ]
+                }
+            ],
+            "type": "string"
+        },
+        {
+            "field": "birth_date",
+            "patterns": [
+                {
+                    "max": [
+                        {
+                            "type": "depending_condition_formula",
+                            "value": {
+                                "depending": {
+                                    "type": "now",
+                                    "value": null
+                                },
+                                "operation": "subtract",
+                                "value": {
+                                    "field": {
+                                        "scope": "car",
+                                        "key": "car_type"
+                                    },
+                                    "condition": {
+                                        "type": "equals",
+                                        "items": {
+                                            "A": 18,
+                                            "A1": 16,
+                                            "B": 18,
+                                            "B1": 18,
+                                            "BE": 19,
+                                            "C": 18,
+                                            "C1": 18,
+                                            "C1E": 19,
+                                            "CE": 19,
+                                            "D": 21,
+                                            "D1": 21,
+                                            "D1E": 22,
+                                            "DE": 22,
+                                            "M": 16,
+                                            "T": 16,
+                                            "TE": 17,
+                                            "Tb": 21,
+                                            "Tm": 21
+                                        },
+                                        "default": 18
+                                    }
+                                },
+                                "unit": "year"
+                            }
+                        }
+                    ],
+                    "min": [
+                        {
+                            "type": "date",
+                            "value": "1923-01-01"
+                        }
+                    ]
+                }
+            ],
+            "type": "date"
+        },
+        {
+            "field": "driver_license",
+            "allow_white_spaces": true,
+            "patterns": [
+                {
+                    "name": "series",
+                    "patterns": [
+                        {
+                            "chars": "[0-9]",
+                            "max": 2
+                        },
+                        {
+                            "chars": "[0-9]",
+                            "max": 2
+                        }
+                    ]
+                },
+                {
+                    "name": "series",
+                    "patterns": [
+                        {
+                            "chars": "[0-9]",
+                            "max": 2
+                        },
+                        {
+                            "chars": "[А-Я]",
+                            "max": 2
+                        }
+                    ]
+                },
+                {
+                    "name": "series",
+                    "patterns": [
+                        {
+                            "chars": "[0-9]",
+                            "max": 2
+                        },
+                        {
+                            "chars": "[ABEKMHOPCTYX]",
+                            "max": 2
+                        }
+                    ]
+                },
+                {
+                    "name": "number",
+                    "patterns": [
+                        {
+                            "chars": "[0-9]",
+                            "max": 6
+                        }
+                    ]
+                }
+            ],
+            "type": "string"
+        },
+        {
+            "field": "previous_driver_license",
+            "allow_white_spaces": true,
+            "patterns": [
+                {
+                    "name": "series",
+                    "patterns": [
+                        {
+                            "chars": "[0-9]",
+                            "max": 2
+                        },
+                        {
+                            "chars": "[0-9]",
+                            "max": 2
+                        }
+                    ]
+                },
+                {
+                    "name": "series",
+                    "patterns": [
+                        {
+                            "chars": "[0-9]",
+                            "max": 2
+                        },
+                        {
+                            "chars": "[А-Я]",
+                            "max": 2
+                        }
+                    ]
+                },
+                {
+                    "name": "series",
+                    "patterns": [
+                        {
+                            "chars": "[0-9]",
+                            "max": 2
+                        },
+                        {
+                            "chars": "[ABEKMHOPCTYX]",
+                            "max": 2
+                        }
+                    ]
+                },
+                {
+                    "name": "number",
+                    "patterns": [
+                        {
+                            "chars": "[0-9]",
+                            "max": 6
+                        }
+                    ]
+                }
+            ],
+            "type": "string"
+        },
+        {
+            "field": "foreign_driver_license",
+            "allow_white_spaces": true,
+            "patterns": [
+                {
+                    "name": "series",
+                    "patterns": [
+                        {
+                            "chars": "[А-Я]",
+                            "max": 10,
+                            "min": 0
+                        }
+                    ]
+                },
+                {
+                    "name": "series",
+                    "patterns": [
+                        {
+                            "chars": "[ABEKMHOPCTYX]",
+                            "max": 10,
+                            "min": 0
+                        }
+                    ]
+                },
+                {
+                    "name": "number",
+                    "patterns": [
+                        {
+                            "chars": "[*]",
+                            "max": 40,
+                            "min": 1
+                        }
+                    ]
+                }
+            ],
+            "type": "string"
+        },
+        {
+            "field": "driving_experience_started",
+            "type": "date",
+            "patterns": [
+                {
+                    "max": [
+                        {
+                            "type": "now",
+                            "value": null
+                        }
+                    ],
+                    "min": [
+                        {
+                            "type": "depending_condition_formula",
+                            "value": {
+                                "depending": {
+                                    "type": "depending",
+                                    "value": {
+                                        "scope": "driver",
+                                        "key": "birth_date"
+                                    }
+                                },
+                                "operation": "add",
+                                "value": {
+                                    "field": {
+                                        "scope": "car",
+                                        "key": "car_type"
+                                    },
+                                    "condition": {
+                                        "type": "equals",
+                                        "items": {
+                                            "A": 18,
+                                            "A1": 16,
+                                            "B": 18,
+                                            "B1": 18,
+                                            "BE": 19,
+                                            "C": 18,
+                                            "C1": 18,
+                                            "C1E": 19,
+                                            "CE": 19,
+                                            "D": 21,
+                                            "D1": 21,
+                                            "D1E": 22,
+                                            "DE": 22,
+                                            "M": 16,
+                                            "T": 16,
+                                            "TE": 17,
+                                            "Tb": 21,
+                                            "Tm": 21
+                                        },
+                                        "default": 18
+                                    }
+                                },
+                                "unit": "year"
+                            }
+                        },
+                        {
+                            "type": "date",
+                            "value": "1923-01-01"
+                        }
+                    ]
+                }
+            ]
+        }
     ]
-  }
+}

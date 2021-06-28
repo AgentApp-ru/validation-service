@@ -14,6 +14,7 @@ type Pattern struct {
 	MinPtr *int   `json:"min"`
 	Min    int    `json:"-"`
 	Max    int    `json:"max"`
+	Extract *string `json:"extract"`
 }
 
 type StringPattern struct {
@@ -33,12 +34,12 @@ func Validate(field interface{}, fieldValidator *fields.FieldValidator) bool {
 		log.Logger.Error("type conversion failed")
 		return false
 	}
-	if fieldValidator.FieldName == "phone" {
-		strField = deleteSpareCharFromPhone(strField)
-	}
+
 	if err := json.Unmarshal([]byte(fieldValidator.Patterns), &stringPatterns); err != nil {
 		return false
 	}
+
+	// println(fieldValidator.Clean)
 
 	for _, stringPattern := range stringPatterns {
 		if validateStringWithPatterns(strField, stringPattern.Patterns) {
@@ -57,7 +58,14 @@ func validateStringWithPatterns(field string, patterns []*Pattern) bool {
 		} else {
 			pattern.Min = *pattern.MinPtr
 		}
-
+		if pattern.Extract != nil {
+			cleanString, err := deleteSpareCharacters(leftBody, *pattern.Extract)
+			if err {
+				log.Logger.Error("cleaning string failed")
+				return false
+			}
+			leftBody = cleanString
+		}
 		if len(leftBody) < pattern.Min {
 			return false
 		}
@@ -75,11 +83,13 @@ func validateStringWithPatterns(field string, patterns []*Pattern) bool {
 		if !matched || err != nil {
 			return false
 		}
-		// After checking if string matches, find condinition in string and
-		// cut it length from string to continue
+		// После проверки строк на совпадение, отрезаем длину совпавшей части
 		searching, err := regexp.Compile(
 			fmt.Sprintf("%s{%d,%d}", pattern.Chars, minDimensionToCheck, pattern.Max),
 		)
+		if err != nil {
+			return false
+		}
 		cutting := searching.FindString(string(stringToCheck))
 		cuttingLen := len([]rune(cutting))
 		leftBody = leftBody[cuttingLen:]
@@ -88,11 +98,14 @@ func validateStringWithPatterns(field string, patterns []*Pattern) bool {
 	return len(leftBody) == 0
 }
 
-func deleteSpareCharFromPhone(phone string) string {
-	searching, _ := regexp.Compile(
-		"[-()\\s+]",
+func deleteSpareCharacters(field []rune, pattern string) ([]rune, bool) {
+	searching, err := regexp.Compile(
+		pattern,
 	)
-	cuttingField := string([]rune(phone))
+	if err != nil {
+		return nil, true
+	}
+	cuttingField := string(field)
 	cuttingField = searching.ReplaceAllString(cuttingField, "")
-	return cuttingField
+	return []rune(cuttingField), false
 }
