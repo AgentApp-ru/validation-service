@@ -10,10 +10,10 @@ import (
 )
 
 type Pattern struct {
-	Chars  string `json:"chars"`
-	MinPtr *int   `json:"min"`
-	Min    int    `json:"-"`
-	Max    int    `json:"max"`
+	Chars   string  `json:"chars"`
+	MinPtr  *int    `json:"min"`
+	Min     int     `json:"-"`
+	Max     int     `json:"max"`
 	Extract *string `json:"extract"`
 }
 
@@ -23,7 +23,7 @@ type StringPattern struct {
 	Patterns           []*Pattern `json:"patterns"`
 }
 
-func Validate(field interface{}, fieldValidator *fields.FieldValidator) bool {
+func Validate(field interface{}, fieldValidator *fields.FieldValidator) (interface{}, bool) {
 	var (
 		stringPatterns []*StringPattern
 		ok             bool
@@ -32,22 +32,21 @@ func Validate(field interface{}, fieldValidator *fields.FieldValidator) bool {
 
 	if strField, ok = field.(string); !ok {
 		log.Logger.Error("type conversion failed")
-		return false
+		return nil, false
 	}
 
 	if err := json.Unmarshal([]byte(fieldValidator.Patterns), &stringPatterns); err != nil {
-		return false
+		return nil, false
 	}
 
 	// println(fieldValidator.Clean)
 
 	for _, stringPattern := range stringPatterns {
 		if validateStringWithPatterns(strField, stringPattern.Patterns) {
-			return true
+			return strField, true
 		}
 	}
-
-	return false
+	return nil, false
 }
 
 func validateStringWithPatterns(field string, patterns []*Pattern) bool {

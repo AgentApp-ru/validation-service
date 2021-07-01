@@ -10,6 +10,11 @@ import (
 	"validation_service/pkg/storage"
 )
 
+type ValidatedObject struct {
+	Title     string
+	Validated bool
+}
+
 type validator struct {
 	storage storage.Storage
 }
@@ -71,16 +76,18 @@ func (v *validator) GetValidatorClass(data []byte) *validatorClass {
 	return vc
 }
 
-func (vc *validatorClass) Validate(field interface{}, fieldValidator *fields.FieldValidator, object string) bool {
+func (vc *validatorClass) Validate(field interface{}, fieldTitle string, fieldValidator *fields.FieldValidator, object string, fieldsMap map[string]interface{}, validationChannel chan ValidatedObject) {
+	var validatedObject ValidatedObject
 	var ok bool
+	var value interface{}
 
 	switch fieldValidator.FieldType {
 	case "string":
-		ok = str_validation.Validate(field, fieldValidator)
+		value, ok = str_validation.Validate(field, fieldValidator)
 	case "number":
-		ok = num_validation.Validate(field, fieldValidator)
+		value, ok = num_validation.Validate(field, fieldValidator)
 	case "date":
-		ok = date_validation.Validate(field, fieldValidator)
+		value, ok = date_validation.Validate(field, fieldValidator, fieldsMap)
 	default:
 		log.Logger.Errorf("unknown type: %s for field: %s", fieldValidator.FieldType, fieldValidator.FieldName)
 		ok = false
@@ -89,6 +96,12 @@ func (vc *validatorClass) Validate(field interface{}, fieldValidator *fields.Fie
 	if !ok {
 		log.Logger.Warnf("Не прошла валидация %s/%s: %v", object, fieldValidator.FieldName, field)
 	}
-
-	return ok
+	if ok {
+		fieldsMap[fieldTitle] = value
+	} else {
+		fieldsMap[fieldTitle] = nil
+	}
+	validatedObject.Title = fieldTitle
+	validatedObject.Validated = ok
+	validationChannel <- validatedObject
 }

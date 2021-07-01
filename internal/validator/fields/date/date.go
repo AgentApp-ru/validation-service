@@ -3,13 +3,9 @@ package date
 import (
 	"encoding/json"
 	"fmt"
-	"strings"
 	"time"
-	"validation_service/internal/models"
 	"validation_service/internal/validator/fields"
 	"validation_service/pkg/log"
-
-	"github.com/oleiade/reflections"
 )
 
 type DateDateValue string
@@ -75,13 +71,11 @@ type DatePattern struct {
 	Max []*DateMinMaxPattern `json:"max"`
 }
 
-var car models.Car
-
 func init() {
-	car = models.Car{} // TODO: убрать это. Одно ТС на один запрос, а не навсегда
+
 }
 
-func Validate(field interface{}, fieldValidator *fields.FieldValidator) bool {
+func Validate(field interface{}, fieldValidator *fields.FieldValidator, fieldsMap map[string]interface{}) (interface{}, bool) {
 	var (
 		fieldDate    time.Time
 		datePatterns []*DatePattern
@@ -92,15 +86,15 @@ func Validate(field interface{}, fieldValidator *fields.FieldValidator) bool {
 
 	if strField, ok = field.(string); !ok {
 		log.Logger.Error("type conversion failed")
-		return false
+		return nil, false
 	}
 
 	if err = json.Unmarshal([]byte(fieldValidator.Patterns), &datePatterns); err != nil {
-		return false
+		return nil, false
 	}
 
 	if fieldDate, err = time.Parse("2006-01-02", strField); err != nil {
-		return false
+		return nil, false
 	}
 
 	pattern := datePatterns[0]
@@ -109,42 +103,42 @@ func Validate(field interface{}, fieldValidator *fields.FieldValidator) bool {
 		switch maxPattern.PatternType {
 		case "date":
 			if !validateMaxDate(fieldDate, maxPattern.Value) {
-				return false
+				return nil, false
 			}
 		case "now":
 			if !validateMaxNow(fieldDate, maxPattern.Value) {
-				return false
+				return nil, false
 			}
 		case "depending_formula":
 			if !validateMaxDependingFormula(fieldDate, maxPattern.Value) {
-				return false
+				return nil, false
 			}
 		default:
 			log.Logger.Errorf("unknown date type: %s", maxPattern.PatternType)
-			return false
+			return nil, false
 		}
 	}
 	for _, minPattern := range pattern.Min {
 		switch minPattern.PatternType {
 		case "date":
 			if !validateMinDate(fieldDate, minPattern.Value) {
-				return false
+				return nil, false
 			}
 		case "now":
 			if !validateMinNow(fieldDate, minPattern.Value) {
-				return false
+				return nil, false
 			}
 		case "depending":
-			if !validateMinDepending(fieldDate, minPattern.Value) {
-				return false
+			if !validateMinDepending(fieldDate, minPattern.Value, fieldsMap) {
+				return nil, false
 			}
 		default:
 			log.Logger.Errorf("unknown date type: %s", minPattern.PatternType)
-			return false
+			return nil, false
 		}
 	}
 
-	return true
+	return fieldDate, true
 }
 
 func validateMinDate(fieldDate time.Time, rawValue json.RawMessage) bool {
@@ -166,20 +160,45 @@ func validateMinNow(fieldDate time.Time, rawValue json.RawMessage) bool {
 	return fieldDate.After(time.Now())
 }
 
-func validateMinDepending(fieldDate time.Time, rawValue json.RawMessage) bool {
+func validateMinDepending(fieldDate time.Time, rawValue json.RawMessage, fieldsMap map[string]interface{}) bool {
 	var value DateDependingValue
 	json.Unmarshal(rawValue, &value)
 
-	if value.Scope == "car" {
-		expectedDate, err := reflections.GetField(&car, strings.Title(value.Key))
-		if err != nil {
-			return false
-		}
-		return fieldDate.After(expectedDate.(time.Time))
-	} else {
-		log.Logger.Errorf("unknown scope of depending: %s", value.Scope)
+	dependingValue, ok := waitForValue(value.Key, fieldsMap)
+	if !ok {
+		log.Logger.Errorf("depending field not found: %s", value.Key)
 		return false
 	}
+	// var timeString string
+	var expectedDate time.Time
+	if dependingValue != nil {
+		expectedDate = dependingValue.(time.Time)
+	} else {
+		log.Logger.Errorf("depending field not validated: %s", value.Key)
+		return false
+	}
+	// expectedDate, err := time.Parse("2006-01-02", timeString)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// 	return false
+	// }
+
+	return fieldDate.After(expectedDate)
+}
+
+func waitForValue(key string, fieldsMap map[string]interface{}) (interface{}, bool) {
+	tries := 0
+	for true {
+		if value, ok := fieldsMap[key]; ok {
+			return value, ok
+		}
+		tries += 1
+		if tries == 5 {
+			break
+		}
+		time.Sleep(time.Millisecond * 10)
+	}
+	return nil, false
 }
 
 func validateMaxDate(fieldDate time.Time, rawValue json.RawMessage) bool {

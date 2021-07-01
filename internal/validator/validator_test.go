@@ -23,10 +23,29 @@ func TestCarValidVinField(t *testing.T) {
 	}
 
 	fieldsWithErrors := []string{}
+
+	fieldsMap := make(map[string]interface{})
+	validationChannel := make(chan ValidatedObject)
 	for k, v := range data {
 		fieldValidator, ok := validatorClass.FieldValidatorsMap[k]
-		if !ok || !validatorClass.Validate(v, fieldValidator, "car") {
+		if !ok {
 			fieldsWithErrors = append(fieldsWithErrors, k)
+			continue
+		}
+		go validatorClass.Validate(v, k, fieldValidator, "car", fieldsMap, validationChannel)
+
+	}
+	counter := 0
+	length := len(data)
+	for validated := range validationChannel {
+		var validatedObject ValidatedObject
+		validatedObject = validated
+		if !validatedObject.Validated {
+			fieldsWithErrors = append(fieldsWithErrors, validatedObject.Title)
+		}
+		counter = counter + 1
+		if counter == length {
+			close(validationChannel)
 		}
 	}
 
@@ -51,10 +70,29 @@ func TestCarValidFields(t *testing.T) {
 	}
 
 	fieldsWithErrors := []string{}
+
+	fieldsMap := make(map[string]interface{})
+	validationChannel := make(chan ValidatedObject)
 	for k, v := range data {
 		fieldValidator, ok := validatorClass.FieldValidatorsMap[k]
-		if !ok || !validatorClass.Validate(v, fieldValidator, "car") {
+		if !ok {
 			fieldsWithErrors = append(fieldsWithErrors, k)
+			continue
+		}
+		go validatorClass.Validate(v, k, fieldValidator, "car", fieldsMap, validationChannel)
+
+	}
+	counter := 0
+	length := len(data)
+	for validated := range validationChannel {
+		var validatedObject ValidatedObject
+		validatedObject = validated
+		if !validatedObject.Validated {
+			fieldsWithErrors = append(fieldsWithErrors, validatedObject.Title)
+		}
+		counter = counter + 1
+		if counter == length {
+			close(validationChannel)
 		}
 	}
 
