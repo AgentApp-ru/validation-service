@@ -23,7 +23,7 @@ type StringPattern struct {
 	Patterns           []*Pattern `json:"patterns"`
 }
 
-func Validate(field interface{}, fieldValidator *fields.FieldValidator) (interface{}, bool) {
+func Validate(field interface{}, fieldValidator *fields.FieldValidator) interface{} {
 	var (
 		stringPatterns []*StringPattern
 		ok             bool
@@ -32,21 +32,19 @@ func Validate(field interface{}, fieldValidator *fields.FieldValidator) (interfa
 
 	if strField, ok = field.(string); !ok {
 		log.Logger.Error("type conversion failed")
-		return nil, false
+		return nil
 	}
 
 	if err := json.Unmarshal([]byte(fieldValidator.Patterns), &stringPatterns); err != nil {
-		return nil, false
+		return nil
 	}
-
-	// println(fieldValidator.Clean)
 
 	for _, stringPattern := range stringPatterns {
 		if validateStringWithPatterns(strField, stringPattern.Patterns) {
-			return strField, true
+			return strField
 		}
 	}
-	return nil, false
+	return nil
 }
 
 func validateStringWithPatterns(field string, patterns []*Pattern) bool {

@@ -78,21 +78,20 @@ func (v *validator) GetValidatorClass(data []byte) *validatorClass {
 
 func (vc *validatorClass) Validate(field interface{}, fieldTitle string, fieldValidator *fields.FieldValidator, object string, fieldsMap map[string]interface{}, validationChannel chan ValidatedObject) {
 	var validatedObject ValidatedObject
-	var ok bool
 	var value interface{}
 
 	switch fieldValidator.FieldType {
 	case "string":
-		value, ok = str_validation.Validate(field, fieldValidator)
+		value = str_validation.Validate(field, fieldValidator)
 	case "number":
-		value, ok = num_validation.Validate(field, fieldValidator)
+		value = num_validation.Validate(field, fieldValidator)
 	case "date":
-		value, ok = date_validation.Validate(field, fieldValidator, fieldsMap)
+		value = date_validation.Validate(field, fieldValidator, fieldsMap)
 	default:
 		log.Logger.Errorf("unknown type: %s for field: %s", fieldValidator.FieldType, fieldValidator.FieldName)
-		ok = false
+		value = nil
 	}
-
+	ok := value != nil
 	if !ok {
 		log.Logger.Warnf("Не прошла валидация %s/%s: %v", object, fieldValidator.FieldName, field)
 	}

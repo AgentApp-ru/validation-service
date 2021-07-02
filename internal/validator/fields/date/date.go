@@ -1,6 +1,7 @@
 package date
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"time"
@@ -26,8 +27,8 @@ func (d *dependency) getInitialDate(fieldsMap map[string]interface{}) (time.Time
 		return time.Now(), nil
 	case "depending":
 		dependingScope := d.Value.(map[string]interface{})
-		value, err := waitForValue(dependingScope["key"].(string), fieldsMap)
-		if !err {
+		value := waitingForValue(dependingScope["key"].(string), fieldsMap)
+		if value == nil {
 			return time.Time{}, fmt.Errorf("depending field not found: %v", dependingScope["key"])
 		}
 		return value.(time.Time), nil
@@ -85,7 +86,7 @@ func init() {
 
 }
 
-func Validate(field interface{}, fieldValidator *fields.FieldValidator, fieldsMap map[string]interface{}) (interface{}, bool) {
+func Validate(field interface{}, fieldValidator *fields.FieldValidator, fieldsMap map[string]interface{}) interface{} {
 	var (
 		fieldDate    time.Time
 		datePatterns []*DatePattern
@@ -96,15 +97,15 @@ func Validate(field interface{}, fieldValidator *fields.FieldValidator, fieldsMa
 
 	if strField, ok = field.(string); !ok {
 		log.Logger.Error("type conversion failed")
-		return nil, false
+		return false
 	}
 
 	if err = json.Unmarshal([]byte(fieldValidator.Patterns), &datePatterns); err != nil {
-		return nil, false
+		return nil
 	}
 
 	if fieldDate, err = time.Parse("2006-01-02", strField); err != nil {
-		return nil, false
+		return nil
 	}
 
 	pattern := datePatterns[0]
@@ -113,47 +114,47 @@ func Validate(field interface{}, fieldValidator *fields.FieldValidator, fieldsMa
 		switch maxPattern.PatternType {
 		case "date":
 			if !validateMaxDate(fieldDate, maxPattern.Value) {
-				return nil, false
+				return nil
 			}
 		case "now":
 			if !validateMaxNow(fieldDate, maxPattern.Value) {
-				return nil, false
+				return nil
 			}
 		case "depending_formula":
 			if !validateMaxDependingFormula(fieldDate, maxPattern.Value, fieldsMap) {
-				return nil, false
+				return nil
 			}
 		default:
 			log.Logger.Errorf("unknown date type: %s", maxPattern.PatternType)
-			return nil, false
+			return nil
 		}
 	}
 	for _, minPattern := range pattern.Min {
 		switch minPattern.PatternType {
 		case "date":
 			if !validateMinDate(fieldDate, minPattern.Value) {
-				return nil, false
+				return nil
 			}
 		case "now":
 			if !validateMinNow(fieldDate, minPattern.Value) {
-				return nil, false
+				return nil
 			}
 		case "depending":
 			if !validateMinDepending(fieldDate, minPattern.Value, fieldsMap) {
-				return nil, false
+				return nil
 			}
 		case "depending_formula":
 			// кейс для валидации минимального паттерна с формулой и зависимостью
 			if !validateMinDependingFormula(fieldDate, minPattern.Value, fieldsMap) {
-				return nil, false
+				return nil
 			}
 		default:
 			log.Logger.Errorf("unknown date type: %s", minPattern.PatternType)
-			return nil, false
+			return nil
 		}
 	}
 
-	return fieldDate, true
+	return fieldDate
 }
 
 func validateMinDate(fieldDate time.Time, rawValue json.RawMessage) bool {
@@ -178,19 +179,12 @@ func validateMinNow(fieldDate time.Time, rawValue json.RawMessage) bool {
 func validateMinDepending(fieldDate time.Time, rawValue json.RawMessage, fieldsMap map[string]interface{}) bool {
 	var value DateDependingValue
 	json.Unmarshal(rawValue, &value)
-
-	dependingValue, ok := waitForValue(value.Key, fieldsMap)
-	if !ok {
+	dependingValue := waitingForValue(value.Key, fieldsMap)
+	if dependingValue == nil {
 		log.Logger.Errorf("depending field not found: %s", value.Key)
 		return false
 	}
-	var expectedDate time.Time
-	if dependingValue != nil {
-		expectedDate = dependingValue.(time.Time)
-	} else {
-		log.Logger.Errorf("depending field not validated: %s", value.Key)
-		return false
-	}
+	expectedDate := dependingValue.(time.Time)
 
 	return fieldDate.After(expectedDate)
 }
@@ -237,19 +231,43 @@ func validateMaxDependingFormula(fieldDate time.Time, rawValue json.RawMessage, 
 	return fieldDate.Before(expectedDate)
 }
 
-func waitForValue(key string, fieldsMap map[string]interface{}) (interface{}, bool) {
-	// ожидание получения значения из мапы
-	var beggining time.Time
-	beggining = time.Now()
-	for true {
-		if value, ok := fieldsMap[key]; ok {
-			return value, ok
-		}
-		current := time.Now().Sub(beggining)
-		if current.Seconds() > 5 {
-			break
-		}
-		time.Sleep(time.Millisecond * 10)
+func waitingForValue(key string, fieldsMap map[string]interface{}) interface{} {
+	timeout := 5 * time.Second
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	dependingValue := waitForValueWithTimeout(ctx, key, fieldsMap)
+	cancel()
+	return dependingValue
+}
+
+func waitForValueWithTimeout(ctx context.Context, key string, fieldsMap map[string]interface{}) interface{} {
+	waitingChannel := make(chan interface{})
+	go waitForValue(key, fieldsMap, waitingChannel)
+	select {
+	case <-ctx.Done():
+		return nil
+	case value := <-waitingChannel:
+		return value
 	}
-	return nil, false
+}
+
+func waitForValue(key string, fieldsMap map[string]interface{}, waitingChannel chan interface{}) {
+	// ожидание получения значения из мапы
+	ticker := time.NewTimer(10 * time.Millisecond)
+	checkingChannel := make(chan interface{})
+	go checkField(key, fieldsMap, checkingChannel)
+	for {
+		select {
+		case value := <-checkingChannel:
+			waitingChannel <- value
+			return
+		case <-ticker.C:
+			continue
+		}
+	}
+}
+
+func checkField(key string, fieldsMap map[string]interface{}, checkingChannel chan interface{}) {
+	if value, ok := fieldsMap[key]; ok {
+		checkingChannel <- value
+	}
 }
