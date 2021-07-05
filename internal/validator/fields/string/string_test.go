@@ -112,44 +112,47 @@ func TestValidateInValidStringWithInvalidLetters(t *testing.T) {
 	}
 }
 
-func TestValidExtraction(t *testing.T) {
-	field := "exTractUPPerCAse"
-	extract := "[A-Z]"
-	min := 0
+
+func TestValidateValidEmail(t *testing.T) {
+	field := "doqwi@opdw.ru"
+	min_first := 2
+	min_second := 1
 	patterns := []*Pattern{
 		{
-			Chars:   "[a-z]",
-			Extract: &extract,
-			MinPtr:  &min,
-			Max:     20,
+			Chars:  "[a-zA-Z0-9_.+-]",
+			MinPtr: &min_first,
+			Max:    18,
+		},
+		{
+			Chars:  "[@]",
+			MinPtr: &min_second,
+			Max:    1,
+		},
+		{
+			Chars:  "[a-zA-Z0-9-]",
+			MinPtr: &min_first,
+			Max:    18,
+		},
+		{
+			Chars:  "[.]",
+			MinPtr: &min_second,
+			Max:    1,
+		},
+		{
+			Chars:  "[a-zA-Z0-9-.]",
+			MinPtr: &min_first,
+			Max:    18,
 		},
 	}
+
 	if !validateStringWithPatterns(field, patterns) {
 		pattern := patterns[0]
 		t.Errorf("should be invalid regexp: '%s' for '%s'", fmt.Sprintf("%s{%d,%d}", pattern.Chars, pattern.Min, pattern.Max), field)
 	}
 }
 
-func TestInValidExtraction(t *testing.T) {
-	field := "ExractUpperCaseAndNumbers123"
-	extract := "[A-Z]"
-	min := 0
-	patterns := []*Pattern{
-		{
-			Chars:   "[a-z]",
-			Extract: &extract,
-			MinPtr:  &min,
-			Max:     30,
-		},
-	}
-	if validateStringWithPatterns(field, patterns) {
-		pattern := patterns[0]
-		t.Errorf("should be invalid regexp: '%s' for '%s'", fmt.Sprintf("%s{%d,%d}", pattern.Chars, pattern.Min, pattern.Max), field)
-	}
-}
-
-func TestValidateValidEmail(t *testing.T) {
-	field := "doqwi@opdw.ru"
+func TestAnotherValidateValidEmail(t *testing.T) {
+	field := "testmail@mail.ru"
 	min_first := 2
 	min_second := 1
 	patterns := []*Pattern{
