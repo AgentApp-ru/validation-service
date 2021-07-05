@@ -2,6 +2,7 @@ package validator
 
 import (
 	"encoding/json"
+	"sync"
 	"validation_service/internal/validator/fields"
 	date_validation "validation_service/internal/validator/fields/date"
 	num_validation "validation_service/internal/validator/fields/number"
@@ -54,12 +55,6 @@ func (v *validator) Get(object string) (interface{}, error) {
 	return result, err
 }
 
-type validatorClass struct {
-	Schema             string                   `json:"$schema"`
-	FieldValidators    []*fields.FieldValidator `json:"validators"`
-	FieldValidatorsMap map[string]*fields.FieldValidator
-}
-
 func (v *validator) GetValidatorClass(data []byte) *validatorClass {
 	vc := &validatorClass{}
 
@@ -76,7 +71,13 @@ func (v *validator) GetValidatorClass(data []byte) *validatorClass {
 	return vc
 }
 
-func (vc *validatorClass) Validate(field interface{}, fieldTitle string, fieldValidator *fields.FieldValidator, object string, fieldsMap map[string]interface{}, validationChannel chan ValidatedObject) {
+type validatorClass struct {
+	Schema             string                   `json:"$schema"`
+	FieldValidators    []*fields.FieldValidator `json:"validators"`
+	FieldValidatorsMap map[string]*fields.FieldValidator
+}
+
+func (vc *validatorClass) Validate(field interface{}, fieldTitle string, fieldValidator *fields.FieldValidator, object string, fieldsMap map[string]interface{}, validationChannel chan ValidatedObject, lock *sync.Mutex) {
 	var validatedObject ValidatedObject
 	var value interface{}
 
@@ -95,11 +96,13 @@ func (vc *validatorClass) Validate(field interface{}, fieldTitle string, fieldVa
 	if !ok {
 		log.Logger.Warnf("Не прошла валидация %s/%s: %v", object, fieldValidator.FieldName, field)
 	}
+	lock.Lock()
 	if ok {
 		fieldsMap[fieldTitle] = value
 	} else {
 		fieldsMap[fieldTitle] = nil
 	}
+	lock.Unlock()
 	validatedObject.Title = fieldTitle
 	validatedObject.Validated = ok
 	validationChannel <- validatedObject

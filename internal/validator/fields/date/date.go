@@ -25,13 +25,13 @@ func (d *dependency) getInitialDate(fieldsMap map[string]interface{}) (time.Time
 	switch d.Type {
 	case "now":
 		return time.Now(), nil
-	case "depending":
-		dependingScope := d.Value.(map[string]interface{})
-		value := waitingForValue(dependingScope["key"].(string), fieldsMap)
-		if value == nil {
-			return time.Time{}, fmt.Errorf("depending field not found: %v", dependingScope["key"])
-		}
-		return value.(time.Time), nil
+	// case "depending":
+	// 	dependingScope := d.Value.(map[string]interface{})
+	// 	value := waitingForValue(dependingScope["key"].(string), fieldsMap)
+	// 	if value == nil {
+	// 		return time.Time{}, fmt.Errorf("depending field not found: %v", dependingScope["key"])
+	// 	}
+	// 	return value.(time.Time), nil
 	default:
 		return time.Time{}, fmt.Errorf("no logic for dependency: %v", d.Type)
 	}
@@ -139,10 +139,10 @@ func Validate(field interface{}, fieldValidator *fields.FieldValidator, fieldsMa
 			if !validateMinNow(fieldDate, minPattern.Value) {
 				return nil
 			}
-		case "depending":
-			if !validateMinDepending(fieldDate, minPattern.Value, fieldsMap) {
-				return nil
-			}
+		// case "depending":
+		// 	if !validateMinDepending(fieldDate, minPattern.Value, fieldsMap) {
+		// 		return nil
+		// 	}
 		case "depending_formula":
 			// кейс для валидации минимального паттерна с формулой и зависимостью
 			if !validateMinDependingFormula(fieldDate, minPattern.Value, fieldsMap) {
@@ -267,6 +267,7 @@ func waitForValue(key string, fieldsMap map[string]interface{}, waitingChannel c
 }
 
 func checkField(key string, fieldsMap map[string]interface{}, checkingChannel chan interface{}) {
+
 	if value, ok := fieldsMap[key]; ok {
 		checkingChannel <- value
 	}

@@ -1,6 +1,7 @@
 package views
 
 import (
+	"sync"
 	validator_module "validation_service/internal/validator"
 )
 
@@ -16,6 +17,9 @@ func Validate(object string, data map[string]interface{}) ([]string, error) {
 	if validatorClass == nil {
 		return []string{}, err
 	}
+
+	lock := sync.Mutex{}
+
 	fieldsMap := make(map[string]interface{})
 	// ValidatedObject хранит в себе имя поля и валидность поля
 	validationChannel := make(chan validator_module.ValidatedObject)
@@ -27,7 +31,7 @@ func Validate(object string, data map[string]interface{}) ([]string, error) {
 			fieldsWithErrors = append(fieldsWithErrors, k)
 			continue
 		}
-		go validatorClass.Validate(v, k, fieldValidator, object, fieldsMap, validationChannel)
+		go validatorClass.Validate(v, k, fieldValidator, object, fieldsMap, validationChannel, &lock)
 		// записываем количество валидных полей
 		validationLength = validationLength + 1
 	}

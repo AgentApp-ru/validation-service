@@ -1,6 +1,7 @@
 package validator
 
 import (
+	"sync"
 	"testing"
 	"validation_service/pkg/config"
 	"validation_service/pkg/log"
@@ -24,6 +25,7 @@ func TestCarValidVinField(t *testing.T) {
 
 	fieldsWithErrors := []string{}
 
+	lock := sync.Mutex{}
 	fieldsMap := make(map[string]interface{})
 	validationChannel := make(chan ValidatedObject)
 	for k, v := range data {
@@ -32,7 +34,7 @@ func TestCarValidVinField(t *testing.T) {
 			fieldsWithErrors = append(fieldsWithErrors, k)
 			continue
 		}
-		go validatorClass.Validate(v, k, fieldValidator, "car", fieldsMap, validationChannel)
+		go validatorClass.Validate(v, k, fieldValidator, "car", fieldsMap, validationChannel, &lock)
 
 	}
 	counter := 0
@@ -71,6 +73,7 @@ func TestCarValidFields(t *testing.T) {
 
 	fieldsWithErrors := []string{}
 
+	lock := sync.Mutex{}
 	fieldsMap := make(map[string]interface{})
 	validationChannel := make(chan ValidatedObject)
 	for k, v := range data {
@@ -79,8 +82,7 @@ func TestCarValidFields(t *testing.T) {
 			fieldsWithErrors = append(fieldsWithErrors, k)
 			continue
 		}
-		go validatorClass.Validate(v, k, fieldValidator, "car", fieldsMap, validationChannel)
-
+		go validatorClass.Validate(v, k, fieldValidator, "car", fieldsMap, validationChannel, &lock)
 	}
 	counter := 0
 	length := len(data)

@@ -9,19 +9,29 @@ import (
 	"validation_service/pkg/log"
 )
 
-type Pattern struct {
-	Chars   string  `json:"chars"`
-	MinPtr  *int    `json:"min"`
-	Min     int     `json:"-"`
-	Max     int     `json:"max"`
-	Extract *string `json:"extract"`
-}
+type (
+	Pattern struct {
+		Chars   string  `json:"chars"`
+		MinPtr  *int    `json:"min"`
+		Min     int     `json:"-"`
+		Max     int     `json:"max"`
+		Extract *string `json:"extract"`
+	}
 
-type StringPattern struct {
-	Name               string     `json:"name"`
-	Allow_white_spaces bool       `json:"allow_white_spaces"`
-	Patterns           []*Pattern `json:"patterns"`
-}
+	StringPattern struct {
+		Name               string     `json:"name"`
+		Allow_white_spaces bool       `json:"allow_white_spaces"`
+		Patterns           []*Pattern `json:"patterns"`
+	}
+
+	CharsToRemove struct {
+		Chars string `json:"chars"`
+	}
+
+	Transformers struct {
+		CharsToRemove *CharsToRemove `json:"remove_chars"`
+	}
+)
 
 func Validate(field interface{}, fieldValidator *fields.FieldValidator) interface{} {
 	var (
@@ -35,16 +45,39 @@ func Validate(field interface{}, fieldValidator *fields.FieldValidator) interfac
 		return nil
 	}
 
+	var preparedField string
+	if fieldValidator.Transformers != nil {
+		preparedField = prepare(strField, *fieldValidator.Transformers)
+	} else {
+		preparedField = strField
+	}
+
 	if err := json.Unmarshal([]byte(fieldValidator.Patterns), &stringPatterns); err != nil {
 		return nil
 	}
 
 	for _, stringPattern := range stringPatterns {
-		if validateStringWithPatterns(strField, stringPattern.Patterns) {
-			return strField
+		if validateStringWithPatterns(preparedField, stringPattern.Patterns) {
+			return preparedField
 		}
 	}
 	return nil
+}
+
+func prepare(field string, rawTransformers json.RawMessage) string {
+	var (
+		transformers   *Transformers
+		err            error
+	)
+
+	if err = json.Unmarshal([]byte(rawTransformers), &transformers); err != nil {
+		return field
+	}
+
+	if transformers != nil && transformers.CharsToRemove != nil && transformers.CharsToRemove.Chars != "" {
+		return deleteSpareCharacters(field, transformers.CharsToRemove.Chars)
+	}
+	return field
 }
 
 func validateStringWithPatterns(field string, patterns []*Pattern) bool {
@@ -54,14 +87,6 @@ func validateStringWithPatterns(field string, patterns []*Pattern) bool {
 			pattern.Min = pattern.Max
 		} else {
 			pattern.Min = *pattern.MinPtr
-		}
-		if pattern.Extract != nil {
-			cleanString, err := deleteSpareCharacters(leftBody, *pattern.Extract)
-			if err {
-				log.Logger.Error("cleaning string failed")
-				return false
-			}
-			leftBody = cleanString
 		}
 		if len(leftBody) < pattern.Min {
 			return false
@@ -95,14 +120,11 @@ func validateStringWithPatterns(field string, patterns []*Pattern) bool {
 	return len(leftBody) == 0
 }
 
-func deleteSpareCharacters(field []rune, pattern string) ([]rune, bool) {
-	searching, err := regexp.Compile(
-		pattern,
-	)
+func deleteSpareCharacters(field, pattern string) string {
+	reg, err := regexp.Compile(pattern)
 	if err != nil {
-		return nil, true
+		return field
 	}
-	cuttingField := string(field)
-	cuttingField = searching.ReplaceAllString(cuttingField, "")
-	return []rune(cuttingField), false
+
+	return reg.ReplaceAllString(field, "")
 }

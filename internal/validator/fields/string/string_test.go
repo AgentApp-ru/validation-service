@@ -1,6 +1,7 @@
 package string
 
 import (
+	"encoding/json"
 	"fmt"
 	"testing"
 )
@@ -111,16 +112,16 @@ func TestValidateInValidStringWithInvalidLetters(t *testing.T) {
 	}
 }
 
-func TestValidExtraction(t *testing.T){
+func TestValidExtraction(t *testing.T) {
 	field := "exTractUPPerCAse"
 	extract := "[A-Z]"
 	min := 0
 	patterns := []*Pattern{
 		{
-			Chars: "[a-z]",
+			Chars:   "[a-z]",
 			Extract: &extract,
-			MinPtr: &min,
-			Max: 20,
+			MinPtr:  &min,
+			Max:     20,
 		},
 	}
 	if !validateStringWithPatterns(field, patterns) {
@@ -129,16 +130,16 @@ func TestValidExtraction(t *testing.T){
 	}
 }
 
-func TestInValidExtraction(t *testing.T){
+func TestInValidExtraction(t *testing.T) {
 	field := "ExractUpperCaseAndNumbers123"
 	extract := "[A-Z]"
 	min := 0
 	patterns := []*Pattern{
 		{
-			Chars: "[a-z]",
+			Chars:   "[a-z]",
 			Extract: &extract,
-			MinPtr: &min,
-			Max: 30,
+			MinPtr:  &min,
+			Max:     30,
 		},
 	}
 	if validateStringWithPatterns(field, patterns) {
@@ -153,29 +154,29 @@ func TestValidateValidEmail(t *testing.T) {
 	min_second := 1
 	patterns := []*Pattern{
 		{
-			Chars: "[a-zA-Z0-9_.+-]",
+			Chars:  "[a-zA-Z0-9_.+-]",
 			MinPtr: &min_first,
-			Max: 18,
+			Max:    18,
 		},
 		{
-			Chars: "[@]",
+			Chars:  "[@]",
 			MinPtr: &min_second,
-			Max: 1,
+			Max:    1,
 		},
 		{
-			Chars: "[a-zA-Z0-9-]",
+			Chars:  "[a-zA-Z0-9-]",
 			MinPtr: &min_first,
-			Max: 18,
+			Max:    18,
 		},
 		{
-			Chars: "[.]",
+			Chars:  "[.]",
 			MinPtr: &min_second,
-			Max: 1,
+			Max:    1,
 		},
 		{
-			Chars: "[a-zA-Z0-9-.]",
+			Chars:  "[a-zA-Z0-9-.]",
 			MinPtr: &min_first,
-			Max: 18,
+			Max:    18,
 		},
 	}
 
@@ -191,29 +192,29 @@ func TestValidateInValidEmailWithInValidCharacters(t *testing.T) {
 	min_second := 1
 	patterns := []*Pattern{
 		{
-			Chars: "[a-zA-Z0-9_.+-]",
+			Chars:  "[a-zA-Z0-9_.+-]",
 			MinPtr: &min_first,
-			Max: 18,
+			Max:    18,
 		},
 		{
-			Chars: "[@]",
+			Chars:  "[@]",
 			MinPtr: &min_second,
-			Max: 1,
+			Max:    1,
 		},
 		{
-			Chars: "[a-zA-Z0-9-]",
+			Chars:  "[a-zA-Z0-9-]",
 			MinPtr: &min_first,
-			Max: 18,
+			Max:    18,
 		},
 		{
-			Chars: "[.]",
+			Chars:  "[.]",
 			MinPtr: &min_second,
-			Max: 1,
+			Max:    1,
 		},
 		{
-			Chars: "[a-zA-Z0-9-.]",
+			Chars:  "[a-zA-Z0-9-.]",
 			MinPtr: &min_first,
-			Max: 18,
+			Max:    18,
 		},
 	}
 	if validateStringWithPatterns(field, patterns) {
@@ -228,29 +229,29 @@ func TestValidateInValidEmailTooLongBeforePaw(t *testing.T) {
 	min_second := 1
 	patterns := []*Pattern{
 		{
-			Chars: "[a-zA-Z0-9_.+-]",
+			Chars:  "[a-zA-Z0-9_.+-]",
 			MinPtr: &min_first,
-			Max: 18,
+			Max:    18,
 		},
 		{
-			Chars: "[@]",
+			Chars:  "[@]",
 			MinPtr: &min_second,
-			Max: 1,
+			Max:    1,
 		},
 		{
-			Chars: "[a-zA-Z0-9-]",
+			Chars:  "[a-zA-Z0-9-]",
 			MinPtr: &min_first,
-			Max: 18,
+			Max:    18,
 		},
 		{
-			Chars: "[.]",
+			Chars:  "[.]",
 			MinPtr: &min_second,
-			Max: 1,
+			Max:    1,
 		},
 		{
-			Chars: "[a-zA-Z0-9-.]",
+			Chars:  "[a-zA-Z0-9-.]",
 			MinPtr: &min_first,
-			Max: 18,
+			Max:    18,
 		},
 	}
 	if validateStringWithPatterns(field, patterns) {
@@ -265,29 +266,29 @@ func TestValidateInValidEmailTooShortBeforePaw(t *testing.T) {
 	min_second := 1
 	patterns := []*Pattern{
 		{
-			Chars: "[a-zA-Z0-9_.+-]",
+			Chars:  "[a-zA-Z0-9_.+-]",
 			MinPtr: &min_first,
-			Max: 18,
+			Max:    18,
 		},
 		{
-			Chars: "[@]",
+			Chars:  "[@]",
 			MinPtr: &min_second,
-			Max: 1,
+			Max:    1,
 		},
 		{
-			Chars: "[a-zA-Z0-9-]",
+			Chars:  "[a-zA-Z0-9-]",
 			MinPtr: &min_first,
-			Max: 18,
+			Max:    18,
 		},
 		{
-			Chars: "[.]",
+			Chars:  "[.]",
 			MinPtr: &min_second,
-			Max: 1,
+			Max:    1,
 		},
 		{
-			Chars: "[a-zA-Z0-9-.]",
+			Chars:  "[a-zA-Z0-9-.]",
 			MinPtr: &min_first,
-			Max: 18,
+			Max:    18,
 		},
 	}
 	if validateStringWithPatterns(field, patterns) {
@@ -302,29 +303,29 @@ func TestValidateInValidEmailTooLongAfterPaw(t *testing.T) {
 	min_second := 1
 	patterns := []*Pattern{
 		{
-			Chars: "[a-zA-Z0-9_.+-]",
+			Chars:  "[a-zA-Z0-9_.+-]",
 			MinPtr: &min_first,
-			Max: 18,
+			Max:    18,
 		},
 		{
-			Chars: "[@]",
+			Chars:  "[@]",
 			MinPtr: &min_second,
-			Max: 1,
+			Max:    1,
 		},
 		{
-			Chars: "[a-zA-Z0-9-]",
+			Chars:  "[a-zA-Z0-9-]",
 			MinPtr: &min_first,
-			Max: 18,
+			Max:    18,
 		},
 		{
-			Chars: "[.]",
+			Chars:  "[.]",
 			MinPtr: &min_second,
-			Max: 1,
+			Max:    1,
 		},
 		{
-			Chars: "[a-zA-Z0-9-.]",
+			Chars:  "[a-zA-Z0-9-.]",
 			MinPtr: &min_first,
-			Max: 18,
+			Max:    18,
 		},
 	}
 	if validateStringWithPatterns(field, patterns) {
@@ -339,29 +340,29 @@ func TestValidateInValidEmailTooShortAfterPaw(t *testing.T) {
 	min_second := 1
 	patterns := []*Pattern{
 		{
-			Chars: "[a-zA-Z0-9_.+-]",
+			Chars:  "[a-zA-Z0-9_.+-]",
 			MinPtr: &min_first,
-			Max: 18,
+			Max:    18,
 		},
 		{
-			Chars: "[@]",
+			Chars:  "[@]",
 			MinPtr: &min_second,
-			Max: 1,
+			Max:    1,
 		},
 		{
-			Chars: "[a-zA-Z0-9-]",
+			Chars:  "[a-zA-Z0-9-]",
 			MinPtr: &min_first,
-			Max: 18,
+			Max:    18,
 		},
 		{
-			Chars: "[.]",
+			Chars:  "[.]",
 			MinPtr: &min_second,
-			Max: 1,
+			Max:    1,
 		},
 		{
-			Chars: "[a-zA-Z0-9-.]",
+			Chars:  "[a-zA-Z0-9-.]",
 			MinPtr: &min_first,
-			Max: 18,
+			Max:    18,
 		},
 	}
 	if validateStringWithPatterns(field, patterns) {
@@ -376,29 +377,29 @@ func TestValidateInValidEmailWithoutDot(t *testing.T) {
 	min_second := 1
 	patterns := []*Pattern{
 		{
-			Chars: "[a-zA-Z0-9_.+-]",
+			Chars:  "[a-zA-Z0-9_.+-]",
 			MinPtr: &min_first,
-			Max: 18,
+			Max:    18,
 		},
 		{
-			Chars: "[@]",
+			Chars:  "[@]",
 			MinPtr: &min_second,
-			Max: 1,
+			Max:    1,
 		},
 		{
-			Chars: "[a-zA-Z0-9-]",
+			Chars:  "[a-zA-Z0-9-]",
 			MinPtr: &min_first,
-			Max: 18,
+			Max:    18,
 		},
 		{
-			Chars: "[.]",
+			Chars:  "[.]",
 			MinPtr: &min_second,
-			Max: 1,
+			Max:    1,
 		},
 		{
-			Chars: "[a-zA-Z0-9-.]",
+			Chars:  "[a-zA-Z0-9-.]",
 			MinPtr: &min_first,
-			Max: 18,
+			Max:    18,
 		},
 	}
 	if validateStringWithPatterns(field, patterns) {
@@ -413,29 +414,29 @@ func TestValidateInValidEmailWithoutPaw(t *testing.T) {
 	min_second := 1
 	patterns := []*Pattern{
 		{
-			Chars: "[a-zA-Z0-9_.+-]",
+			Chars:  "[a-zA-Z0-9_.+-]",
 			MinPtr: &min_first,
-			Max: 18,
+			Max:    18,
 		},
 		{
-			Chars: "[@]",
+			Chars:  "[@]",
 			MinPtr: &min_second,
-			Max: 1,
+			Max:    1,
 		},
 		{
-			Chars: "[a-zA-Z0-9-]",
+			Chars:  "[a-zA-Z0-9-]",
 			MinPtr: &min_first,
-			Max: 18,
+			Max:    18,
 		},
 		{
-			Chars: "[.]",
+			Chars:  "[.]",
 			MinPtr: &min_second,
-			Max: 1,
+			Max:    1,
 		},
 		{
-			Chars: "[a-zA-Z0-9-.]",
+			Chars:  "[a-zA-Z0-9-.]",
 			MinPtr: &min_first,
-			Max: 18,
+			Max:    18,
 		},
 	}
 	if validateStringWithPatterns(field, patterns) {
@@ -450,29 +451,29 @@ func TestValidateValidEmailOnlyNumbers(t *testing.T) {
 	min_second := 1
 	patterns := []*Pattern{
 		{
-			Chars: "[a-zA-Z0-9_.+-]",
+			Chars:  "[a-zA-Z0-9_.+-]",
 			MinPtr: &min_first,
-			Max: 18,
+			Max:    18,
 		},
 		{
-			Chars: "[@]",
+			Chars:  "[@]",
 			MinPtr: &min_second,
-			Max: 1,
+			Max:    1,
 		},
 		{
-			Chars: "[a-zA-Z0-9-]",
+			Chars:  "[a-zA-Z0-9-]",
 			MinPtr: &min_first,
-			Max: 18,
+			Max:    18,
 		},
 		{
-			Chars: "[.]",
+			Chars:  "[.]",
 			MinPtr: &min_second,
-			Max: 1,
+			Max:    1,
 		},
 		{
-			Chars: "[a-zA-Z0-9-.]",
+			Chars:  "[a-zA-Z0-9-.]",
 			MinPtr: &min_first,
-			Max: 18,
+			Max:    18,
 		},
 	}
 	if !validateStringWithPatterns(field, patterns) {
@@ -487,29 +488,29 @@ func TestValidateValidEmailOnlySpecialCharacters(t *testing.T) {
 	min_second := 1
 	patterns := []*Pattern{
 		{
-			Chars: "[a-zA-Z0-9_.+-]",
+			Chars:  "[a-zA-Z0-9_.+-]",
 			MinPtr: &min_first,
-			Max: 18,
+			Max:    18,
 		},
 		{
-			Chars: "[@]",
+			Chars:  "[@]",
 			MinPtr: &min_second,
-			Max: 1,
+			Max:    1,
 		},
 		{
-			Chars: "[a-zA-Z0-9-]",
+			Chars:  "[a-zA-Z0-9-]",
 			MinPtr: &min_first,
-			Max: 18,
+			Max:    18,
 		},
 		{
-			Chars: "[.]",
+			Chars:  "[.]",
 			MinPtr: &min_second,
-			Max: 1,
+			Max:    1,
 		},
 		{
-			Chars: "[a-zA-Z0-9-.]",
+			Chars:  "[a-zA-Z0-9-.]",
 			MinPtr: &min_first,
-			Max: 18,
+			Max:    18,
 		},
 	}
 	if !validateStringWithPatterns(field, patterns) {
@@ -523,9 +524,9 @@ func TestValidateValidPhone(t *testing.T) {
 	min := 11
 	patterns := []*Pattern{
 		{
-			Chars: "[0-9]",
+			Chars:  "[0-9]",
 			MinPtr: &min,
-			Max: 18,
+			Max:    18,
 		},
 	}
 	if !validateStringWithPatterns(field, patterns) {
@@ -534,14 +535,42 @@ func TestValidateValidPhone(t *testing.T) {
 	}
 }
 
+func TestPrepareDirtyPhone(t *testing.T) {
+	field := "+7 (999) 123-45-67"
+	transformers := `
+	{
+		"remove_chars": {
+		  "chars": "[-+()\\s]"
+		}
+	  }
+	`
+
+	cleanField := prepare(field, json.RawMessage(transformers))
+
+	if cleanField != "79991234567" {
+		t.Errorf("should be clean field: '%s' for '%s'", cleanField, field)
+	}
+}
+
+func TestPrepareDirtyPhoneWithoutTransformers(t *testing.T) {
+	field := "+7 (999) 123-45-67"
+	transformers := ``
+
+	cleanField := prepare(field, json.RawMessage(transformers))
+
+	if cleanField != "+7 (999) 123-45-67" {
+		t.Errorf("should be clean field: '%s' for '%s'", cleanField, field)
+	}
+}
+
 func TestValidateInValidPhoneInValidCharacters(t *testing.T) {
 	field := "799999asd999-9+9"
 	min := 11
 	patterns := []*Pattern{
 		{
-			Chars: "[0-9]",
+			Chars:  "[0-9]",
 			MinPtr: &min,
-			Max: 18,
+			Max:    18,
 		},
 	}
 	if validateStringWithPatterns(field, patterns) {
@@ -555,9 +584,9 @@ func TestValidateInValidPhoneTooSmall(t *testing.T) {
 	min := 11
 	patterns := []*Pattern{
 		{
-			Chars: "[0-9]",
+			Chars:  "[0-9]",
 			MinPtr: &min,
-			Max: 18,
+			Max:    18,
 		},
 	}
 	if validateStringWithPatterns(field, patterns) {
@@ -571,9 +600,9 @@ func TestValidateInValidPhoneTooLarge(t *testing.T) {
 	min := 11
 	patterns := []*Pattern{
 		{
-			Chars: "[0-9]",
+			Chars:  "[0-9]",
 			MinPtr: &min,
-			Max: 18,
+			Max:    18,
 		},
 	}
 	if validateStringWithPatterns(field, patterns) {
