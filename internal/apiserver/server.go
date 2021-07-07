@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"time"
 	"validation_service/internal/apiserver/views"
+	"validation_service/internal/models"
 	"validation_service/pkg/config"
 	"validation_service/pkg/http_response"
 	"validation_service/pkg/log"
@@ -54,9 +55,10 @@ func configureRouter(router *mux.Router) {
 	v1Router.HandleFunc("/validations/driver", handleDriverValidation()).Methods("GET")
 	v1Router.HandleFunc("/validations/general-conditions", handleGeneralConditionsValidation()).Methods("GET")
 
-	v1Router.HandleFunc("/validations/car", handleValidate("car")).Methods("POST")
-	v1Router.HandleFunc("/validations/person", handleValidate("person")).Methods("POST")
-	v1Router.HandleFunc("/validations/driver", handleValidate("driver")).Methods("POST")
+	v1Router.HandleFunc("/validations", handleValidateAll()).Methods("POST")
+	// v1Router.HandleFunc("/validations/car", handleValidate("car")).Methods("POST")
+	// v1Router.HandleFunc("/validations/person", handleValidate("person")).Methods("POST")
+	// v1Router.HandleFunc("/validations/driver", handleValidate("driver")).Methods("POST")
 }
 
 func handlePing() http.HandlerFunc {
@@ -77,7 +79,7 @@ func handleCarValidation() http.HandlerFunc {
 	}
 }
 
-func handleValidate(object string) http.HandlerFunc {
+func handleValidateAll() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var (
 			body []byte
@@ -91,28 +93,82 @@ func handleValidate(object string) http.HandlerFunc {
 			return
 		}
 
-		var b map[string]interface{}
+		var b map[string]map[string]interface{}
 		if err = json.Unmarshal(body, &b); err != nil {
-			http_response.HttpError(w, fmt.Errorf("error convert to json body: %s", err))
+			http_response.HttpError(w, err)
 			return
 		}
 
-		fieldsWithErrors, err := views.Validate(object, b)
-		if err != nil {
-			http_response.HttpError(w, fmt.Errorf("errors while validating: %s", err))
-			return
-		}
-		if len(fieldsWithErrors) != 0 {
-			errors := map[string][]string{
-				"error fields": fieldsWithErrors,
+		var ps, agreementID string
+		utils, ok := b["utils"]
+		if ok {
+			psRaw, ok := utils["ps"]
+			if ok {
+				ps = psRaw.(string)
 			}
-			http_response.HttpRespond(w, http.StatusOK, errors)
-			return
+			agreementIdRaw, ok := utils["agreement_id"]
+			if ok {
+				agreementID = agreementIdRaw.(string)
+			}
 		}
 
-		http_response.HttpRespond(w, http.StatusOK, nil)
+		agreement := models.NewAgreement(ps, agreementID)
+		agreement.Validate(b)
+
+		// fieldsWithErrors, err := views.Validate(object, b)
+		// if err != nil {
+		// 	http_response.HttpError(w, fmt.Errorf("errors while validating: %s", err))
+		// 	return
+		// }
+		// if len(agreement.Errors) != 0 {
+		errors := map[string][]string{
+			"error fields": agreement.Errors,
+		}
+		http_response.HttpRespond(w, http.StatusOK, errors)
+		// return
+		// }
+
+		// http_response.HttpRespond(w, http.StatusOK, nil)
+		// return
 	}
 }
+
+// func handleValidate(object string) http.HandlerFunc {
+// 	return func(w http.ResponseWriter, r *http.Request) {
+// 		var (
+// 			body []byte
+// 			err  error
+// 		)
+// 		defer r.Body.Close()
+
+// 		body, err = ioutil.ReadAll(r.Body)
+// 		if err != nil {
+// 			http_response.HttpError(w, fmt.Errorf("error read body: %s", err))
+// 			return
+// 		}
+
+// 		var b map[string]interface{}
+// 		if err = json.Unmarshal(body, &b); err != nil {
+// 			http_response.HttpError(w, fmt.Errorf("error convert to json body: %s", err))
+// 			return
+// 		}
+
+// 		fieldsWithErrors, err := views.Validate(object, b)
+// 		if err != nil {
+// 			http_response.HttpError(w, fmt.Errorf("errors while validating: %s", err))
+// 			return
+// 		}
+// 		if len(fieldsWithErrors) != 0 {
+// 			errors := map[string][]string{
+// 				"error fields": fieldsWithErrors,
+// 			}
+// 			http_response.HttpRespond(w, http.StatusOK, errors)
+// 			return
+// 		}
+
+// 		http_response.HttpRespond(w, http.StatusOK, nil)
+// 	}
+// }
 
 func handlePersonValidation() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {

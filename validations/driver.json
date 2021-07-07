@@ -307,7 +307,7 @@
                   "depending": {
                     "type": "depending",
                     "value": {
-                      "scope": "driver",
+                      "scope": "self",
                       "key": "birth_date"
                     }
                   },

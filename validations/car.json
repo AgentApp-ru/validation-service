@@ -744,7 +744,7 @@
                         {
                             "type": "depending",
                             "value": {
-                                "scope": "car",
+                                "scope": "self",
                                 "key": "manufacturing_year"
                             }
                         }
@@ -757,7 +757,12 @@
             "type": "date",
             "patterns": [
                 {
-                    "max": [],
+                    "max": [
+                        {
+                            "type": "now",
+                            "value": null
+                        }
+                    ],
                     "min": [
                         {
                             "type": "date",

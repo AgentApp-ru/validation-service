@@ -2,12 +2,9 @@ package validator
 
 import (
 	"encoding/json"
+	"fmt"
 	"sync"
 	"validation_service/internal/validator/fields"
-	date_validation "validation_service/internal/validator/fields/date"
-	num_validation "validation_service/internal/validator/fields/number"
-	str_validation "validation_service/internal/validator/fields/string"
-	"validation_service/pkg/log"
 	"validation_service/pkg/storage"
 )
 
@@ -55,20 +52,20 @@ func (v *validator) Get(object string) (interface{}, error) {
 	return result, err
 }
 
-func (v *validator) GetValidatorClass(data []byte) *validatorClass {
+func (v *validator) GetValidatorClass(data []byte) (*validatorClass, error) {
 	vc := &validatorClass{}
 
 	err := json.Unmarshal(data, vc)
 	if err != nil {
-		log.Logger.Error(err)
+		return nil, err
 	}
 
-	vc.FieldValidatorsMap = map[string]*fields.FieldValidator{}
+	vc.FieldValidatorsMap = make(map[string]*fields.FieldValidator)
 	for _, field := range vc.FieldValidators {
 		vc.FieldValidatorsMap[field.FieldName] = field
 	}
 
-	return vc
+	return vc, nil
 }
 
 type validatorClass struct {
@@ -77,33 +74,19 @@ type validatorClass struct {
 	FieldValidatorsMap map[string]*fields.FieldValidator
 }
 
-func (vc *validatorClass) Validate(field interface{}, fieldTitle string, fieldValidator *fields.FieldValidator, object string, fieldsMap map[string]interface{}, validationChannel chan ValidatedObject, lock *sync.Mutex) {
-	var validatedObject ValidatedObject
-	var value interface{}
+// func (vc *validatorClass) Validate(field interface{}, fieldTitle string, fieldValidator *fields.FieldValidator, object string, fieldsMap map[string]interface{}, validationChannel chan ValidatedObject, lock *sync.Mutex) {
+func (vc *validatorClass) Validate(object string, fields *sync.Map, data map[string]interface{}, errors chan string) {
+	waiter := new(sync.WaitGroup)
 
-	switch fieldValidator.FieldType {
-	case "string":
-		value = str_validation.Validate(field, fieldValidator)
-	case "number":
-		value = num_validation.Validate(field, fieldValidator)
-	case "date":
-		value = date_validation.Validate(field, fieldValidator, fieldsMap)
-	default:
-		log.Logger.Errorf("unknown type: %s for field: %s", fieldValidator.FieldType, fieldValidator.FieldName)
-		value = nil
+	for k, v := range data {
+		fieldValidator, ok := vc.FieldValidatorsMap[k]
+		if !ok {
+			errors <- fmt.Sprintf("%s/%s: %v", object, k, v)
+			continue
+		}
+		waiter.Add(1)
+		go fieldValidator.ValidateField(v, object, fields, errors, waiter)
 	}
-	ok := value != nil
-	if !ok {
-		log.Logger.Warnf("Не прошла валидация %s/%s: %v", object, fieldValidator.FieldName, field)
-	}
-	lock.Lock()
-	if ok {
-		fieldsMap[fieldTitle] = value
-	} else {
-		fieldsMap[fieldTitle] = nil
-	}
-	lock.Unlock()
-	validatedObject.Title = fieldTitle
-	validatedObject.Validated = ok
-	validationChannel <- validatedObject
+
+	waiter.Wait()
 }

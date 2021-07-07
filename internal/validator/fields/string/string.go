@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"math"
 	"regexp"
-	"validation_service/internal/validator/fields"
+	"sync"
 	"validation_service/pkg/log"
 )
 
@@ -31,9 +31,28 @@ type (
 	Transformers struct {
 		CharsToRemove *CharsToRemove `json:"remove_chars"`
 	}
+
+	Validator struct {
+		objectMap    *sync.Map
+		allFieldsMap *sync.Map
+		errors       chan string
+	}
 )
 
-func Validate(field interface{}, fieldValidator *fields.FieldValidator) interface{} {
+func New(objectMap, allFieldsMap *sync.Map, errors chan string) *Validator {
+	return &Validator{
+		objectMap:    objectMap,
+		allFieldsMap: allFieldsMap,
+		errors:       errors,
+	}
+}
+
+func (v *Validator) Validate(
+	field interface{},
+	transformers *json.RawMessage,
+	patterns json.RawMessage,
+	allowWhiteSpaces bool,
+) bool {
 	var (
 		stringPatterns []*StringPattern
 		ok             bool
@@ -42,25 +61,25 @@ func Validate(field interface{}, fieldValidator *fields.FieldValidator) interfac
 
 	if strField, ok = field.(string); !ok {
 		log.Logger.Error("type conversion failed")
-		return nil
+		return false
 	}
 
 	var preparedField string
-	if fieldValidator.Transformers != nil {
-		preparedField = prepare(strField, *fieldValidator.Transformers)
+	if transformers != nil {
+		preparedField = prepare(strField, *transformers)
 	} else {
 		preparedField = strField
 	}
 
-	if err := json.Unmarshal([]byte(fieldValidator.Patterns), &stringPatterns); err != nil {
-		return nil
+	if err := json.Unmarshal([]byte(patterns), &stringPatterns); err != nil {
+		return false
 	}
 
-	if isValidatedWithGroups(preparedField, stringPatterns, fieldValidator.Allow_white_spaces) {
+	if isValidatedWithGroups(preparedField, stringPatterns, allowWhiteSpaces) {
 		return true
 	}
 
-	return nil
+	return false
 }
 
 func prepare(field string, rawTransformers json.RawMessage) string {
@@ -134,8 +153,6 @@ func validateStringWithPatterns(leftBody unicodeString, patterns []*Pattern) (un
 		} else {
 			pattern.Min = *pattern.MinPtr
 		}
-		// println("!!", pattern.MinPtr == nil, pattern.Min)
-
 		if len(leftBody) < pattern.Min {
 			return nil, false
 		}
@@ -147,7 +164,6 @@ func validateStringWithPatterns(leftBody unicodeString, patterns []*Pattern) (un
 				float64(pattern.Max),
 			),
 		)
-		// println(fmt.Sprintf("%s{%d,%d}", pattern.Chars, minDimensionToCheck, pattern.Max), string(stringToCheck))
 		matched, err := regexp.Match(
 			fmt.Sprintf("%s{%d,%d}", pattern.Chars, minDimensionToCheck, pattern.Max), stringToCheck,
 		)

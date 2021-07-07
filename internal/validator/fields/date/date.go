@@ -1,50 +1,113 @@
 package date
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
+	"sync"
 	"time"
-	"validation_service/internal/validator/fields"
 	"validation_service/pkg/log"
 )
 
-type DateDateValue string
+type (
+	DateDateValue  string
+	DependingValue struct {
+		Scope string `json:"scope"`
+		Key   string `json:"key"`
+	}
 
-type DateDependingValue struct {
-	Scope string `json:"scope"`
-	Key   string `json:"key"`
+	dependency struct {
+		Type  string          `json:"type"`
+		Value json.RawMessage `json:"value"`
+	}
+
+	DateDependingFormulaValue struct {
+		Dependency dependency `json:"depending"`
+		Operation  string     `json:"operation"`
+		Value      int        `json:"value"`
+		Unit       string     `json:"unit"`
+	}
+
+	condition struct {
+		Type    string         `json:"type"`
+		Items   map[string]int `json:"items"`
+		Default int            `json:"default"`
+	}
+
+	conditionValue struct {
+		Field     DependingValue `json:"field"`
+		Condition condition      `json:"condition"`
+	}
+
+	DateDependingConditionFormulaValue struct {
+		Dependency     dependency     `json:"depending"`
+		Operation      string         `json:"operation"`
+		ConditionValue conditionValue `json:"value"`
+		Unit           string         `json:"unit"`
+	}
+
+	Validator struct {
+		objectMap    *sync.Map
+		allFieldsMap *sync.Map
+		errors       chan string
+	}
+)
+
+func (c *condition) getItem(searchedValue string) (int, error) {
+	switch c.Type {
+	case "equals":
+		item, ok := c.Items[searchedValue]
+		if !ok {
+			return c.Default, nil
+		}
+		return item, nil
+	default:
+		log.Logger.Errorf("unknown condition type: %s", c.Type)
+		return c.Default, nil
+	}
 }
 
-type dependency struct {
-	Type  string      `json:"type"`
-	Value interface{} `json:"value"`
+func (c *conditionValue) getItem(fieldsMap *sync.Map) (int, error) {
+	value := waitingForValue(c.Field.Scope, c.Field.Key, fieldsMap)
+	if value == nil {
+		value = "default"
+	}
+	searchedValue := fmt.Sprintf("%v", value)
+
+	return c.Condition.getItem(searchedValue)
 }
 
-func (d *dependency) getInitialDate(fieldsMap map[string]interface{}) (time.Time, error) {
+func New(objectMap, allFieldsMap *sync.Map, errors chan string) *Validator {
+	return &Validator{
+		objectMap:    objectMap,
+		allFieldsMap: allFieldsMap,
+		errors:       errors,
+	}
+}
+
+func (d *dependency) getInitialDate(fieldsMap *sync.Map) (time.Time, error) {
 	switch d.Type {
 	case "now":
 		return time.Now(), nil
-	// case "depending":
-	// 	dependingScope := d.Value.(map[string]interface{})
-	// 	value := waitingForValue(dependingScope["key"].(string), fieldsMap)
-	// 	if value == nil {
-	// 		return time.Time{}, fmt.Errorf("depending field not found: %v", dependingScope["key"])
-	// 	}
-	// 	return value.(time.Time), nil
+	case "depending":
+		var dependingScope DependingValue
+		err := json.Unmarshal(d.Value, &dependingScope)
+		if err != nil {
+			return time.Time{}, err
+		}
+
+		value := waitingForValue(dependingScope.Scope, dependingScope.Key, fieldsMap)
+		if value == nil {
+			return time.Time{}, fmt.Errorf("depending field not found: %s/%s", dependingScope.Scope, dependingScope.Key)
+		}
+		expectedDateRaw := value.(string)
+		expectedDate, err := time.Parse("2006-01-02", expectedDateRaw)
+		return expectedDate, err
 	default:
 		return time.Time{}, fmt.Errorf("no logic for dependency: %v", d.Type)
 	}
 }
 
-type DateDependingFormulaValue struct {
-	Dependency dependency `json:"depending"`
-	Operation  string     `json:"operation"`
-	Value      int        `json:"value"`
-	Unit       string     `json:"unit"`
-}
-
-func (f *DateDependingFormulaValue) getExpectedDate(fieldsMap map[string]interface{}) (time.Time, error) {
+func (f *DateDependingFormulaValue) getExpectedDate(fieldsMap *sync.Map) (time.Time, error) {
 	var (
 		years, months, days int
 	)
@@ -57,6 +120,10 @@ func (f *DateDependingFormulaValue) getExpectedDate(fieldsMap map[string]interfa
 	switch f.Unit {
 	case "year":
 		years = f.Value
+	case "month":
+		months = f.Value
+	case "day":
+		days = f.Value
 	}
 
 	switch f.Operation {
@@ -69,6 +136,53 @@ func (f *DateDependingFormulaValue) getExpectedDate(fieldsMap map[string]interfa
 		months = 0 + months
 		days = 0 + days
 	}
+
+	if days == 0 {
+		days = -1
+	}
+
+	return initialDate.AddDate(years, months, days), nil
+}
+
+func (f *DateDependingConditionFormulaValue) getExpectedDate(fieldsMap *sync.Map) (time.Time, error) {
+	var (
+		years, months, days int
+	)
+
+	initialDate, err := f.Dependency.getInitialDate(fieldsMap)
+	if err != nil {
+		return time.Time{}, err
+	}
+
+	item, err := f.ConditionValue.getItem(fieldsMap)
+	if err != nil {
+		return time.Time{}, err
+	}
+
+	switch f.Unit {
+	case "year":
+		years = item
+	case "month":
+		months = item
+	case "day":
+		days = item
+	}
+
+	switch f.Operation {
+	case "subtract":
+		years = 0 - years
+		months = 0 - months
+		days = 0 - days
+	case "add":
+		years = 0 + years
+		months = 0 + months
+		days = 0 + days
+	}
+
+	if days == 0 {
+		days = -1
+	}
+
 	return initialDate.AddDate(years, months, days), nil
 }
 
@@ -82,11 +196,12 @@ type DatePattern struct {
 	Max []*DateMinMaxPattern `json:"max"`
 }
 
-func init() {
-
-}
-
-func Validate(field interface{}, fieldValidator *fields.FieldValidator, fieldsMap map[string]interface{}) interface{} {
+func (v *Validator) Validate(
+	field interface{},
+	transformers *json.RawMessage,
+	patterns json.RawMessage,
+	allowWhiteSpaces bool,
+) bool {
 	var (
 		fieldDate    time.Time
 		datePatterns []*DatePattern
@@ -100,61 +215,67 @@ func Validate(field interface{}, fieldValidator *fields.FieldValidator, fieldsMa
 		return false
 	}
 
-	if err = json.Unmarshal([]byte(fieldValidator.Patterns), &datePatterns); err != nil {
-		return nil
+	if err = json.Unmarshal([]byte(patterns), &datePatterns); err != nil {
+		return false
 	}
 
 	if fieldDate, err = time.Parse("2006-01-02", strField); err != nil {
-		return nil
+		return false
 	}
 
 	pattern := datePatterns[0]
 
-	for _, maxPattern := range pattern.Max {
-		switch maxPattern.PatternType {
-		case "date":
-			if !validateMaxDate(fieldDate, maxPattern.Value) {
-				return nil
-			}
-		case "now":
-			if !validateMaxNow(fieldDate, maxPattern.Value) {
-				return nil
-			}
-		case "depending_formula":
-			if !validateMaxDependingFormula(fieldDate, maxPattern.Value, fieldsMap) {
-				return nil
-			}
-		default:
-			log.Logger.Errorf("unknown date type: %s", maxPattern.PatternType)
-			return nil
-		}
-	}
 	for _, minPattern := range pattern.Min {
 		switch minPattern.PatternType {
 		case "date":
 			if !validateMinDate(fieldDate, minPattern.Value) {
-				return nil
+				return false
 			}
 		case "now":
 			if !validateMinNow(fieldDate, minPattern.Value) {
-				return nil
+				return false
 			}
-		// case "depending":
-		// 	if !validateMinDepending(fieldDate, minPattern.Value, fieldsMap) {
-		// 		return nil
-		// 	}
+		case "depending":
+			if !validateMinDepending(fieldDate, minPattern.Value, v.allFieldsMap) {
+				return false
+			}
 		case "depending_formula":
-			// кейс для валидации минимального паттерна с формулой и зависимостью
-			if !validateMinDependingFormula(fieldDate, minPattern.Value, fieldsMap) {
-				return nil
+			if !validateMinDependingFormula(fieldDate, minPattern.Value, v.allFieldsMap) {
+				return false
+			}
+		case "depending_condition_formula":
+			if !validateMinDependingConditionFormula(fieldDate, minPattern.Value, v.allFieldsMap) {
+				return false
 			}
 		default:
 			log.Logger.Errorf("unknown date type: %s", minPattern.PatternType)
-			return nil
+			return false
 		}
 	}
-
-	return fieldDate
+	for _, maxPattern := range pattern.Max {
+		switch maxPattern.PatternType {
+		case "date":
+			if !validateMaxDate(fieldDate, maxPattern.Value) {
+				return false
+			}
+		case "now":
+			if !validateMaxNow(fieldDate, maxPattern.Value) {
+				return false
+			}
+		case "depending_formula":
+			if !validateMaxDependingFormula(fieldDate, maxPattern.Value, v.allFieldsMap) {
+				return false
+			}
+		case "depending_condition_formula":
+			if !validateMaxDependingConditionFormula(fieldDate, maxPattern.Value, v.allFieldsMap) {
+				return false
+			}
+		default:
+			log.Logger.Errorf("unknown date type: %s", maxPattern.PatternType)
+			return false
+		}
+	}
+	return true
 }
 
 func validateMinDate(fieldDate time.Time, rawValue json.RawMessage) bool {
@@ -176,30 +297,61 @@ func validateMinNow(fieldDate time.Time, rawValue json.RawMessage) bool {
 	return fieldDate.After(time.Now())
 }
 
-func validateMinDepending(fieldDate time.Time, rawValue json.RawMessage, fieldsMap map[string]interface{}) bool {
-	var value DateDependingValue
+func validateMinDepending(fieldDate time.Time, rawValue json.RawMessage, fieldsMap *sync.Map) bool {
+	var value DependingValue
 	json.Unmarshal(rawValue, &value)
-	dependingValue := waitingForValue(value.Key, fieldsMap)
+
+	dependingValue := waitingForValue(value.Scope, value.Key, fieldsMap)
 	if dependingValue == nil {
-		log.Logger.Errorf("depending field not found: %s", value.Key)
+		log.Logger.Errorf("depending field not found: %s/%s", value.Scope, value.Key)
 		return false
 	}
-	expectedDate := dependingValue.(time.Time)
+	expectedDateRaw := dependingValue.(string)
+	expectedDate, err := time.Parse("2006-01-02", expectedDateRaw)
+	if err != nil {
+		return false
+	}
 
-	return fieldDate.After(expectedDate)
+	return !fieldDate.Before(expectedDate)
 }
 
-func validateMinDependingFormula(fieldDate time.Time, rawValue json.RawMessage, fieldsMap map[string]interface{}) bool {
+func validateMinDependingFormula(fieldDate time.Time, rawValue json.RawMessage, fieldsMap *sync.Map) bool {
 	var formula DateDependingFormulaValue
 	json.Unmarshal(rawValue, &formula)
 
 	expectedDate, err := formula.getExpectedDate(fieldsMap)
 	if err != nil {
-		log.Logger.Errorf("error on with calculating formula: %s", err.Error())
+		log.Logger.Errorf("Ошибка при расчёте формулы: %s", err.Error())
 		return false
 	}
 
-	return fieldDate.After(expectedDate)
+	return !fieldDate.Before(expectedDate)
+}
+
+func validateMinDependingConditionFormula(fieldDate time.Time, rawValue json.RawMessage, fieldsMap *sync.Map) bool {
+	var formula DateDependingConditionFormulaValue
+	json.Unmarshal(rawValue, &formula)
+
+	expectedDate, err := formula.getExpectedDate(fieldsMap)
+	if err != nil {
+		log.Logger.Errorf("Ошибка при расчёте формулы: %s", err.Error())
+		return false
+	}
+
+	return !fieldDate.Before(expectedDate)
+}
+
+func validateMaxDependingConditionFormula(fieldDate time.Time, rawValue json.RawMessage, fieldsMap *sync.Map) bool {
+	var formula DateDependingConditionFormulaValue
+	json.Unmarshal(rawValue, &formula)
+
+	expectedDate, err := formula.getExpectedDate(fieldsMap)
+	if err != nil {
+		log.Logger.Errorf("Ошибка при расчёте формулы: %s", err.Error())
+		return false
+	}
+
+	return !fieldDate.After(expectedDate)
 }
 
 func validateMaxDate(fieldDate time.Time, rawValue json.RawMessage) bool {
@@ -215,60 +367,36 @@ func validateMaxDate(fieldDate time.Time, rawValue json.RawMessage) bool {
 }
 
 func validateMaxNow(fieldDate time.Time, rawValue json.RawMessage) bool {
-	return fieldDate.Before(time.Now())
+	return !fieldDate.After(time.Now())
 }
 
-func validateMaxDependingFormula(fieldDate time.Time, rawValue json.RawMessage, fieldsMap map[string]interface{}) bool {
+func validateMaxDependingFormula(fieldDate time.Time, rawValue json.RawMessage, fieldsMap *sync.Map) bool {
 	var formula DateDependingFormulaValue
 	json.Unmarshal(rawValue, &formula)
 
 	expectedDate, err := formula.getExpectedDate(fieldsMap)
 	if err != nil {
-		log.Logger.Errorf("error on with calculating formula: %s", err.Error())
+		log.Logger.Errorf("Ошибка при расчёте формулы: %s", err.Error())
 		return false
 	}
 
-	return fieldDate.Before(expectedDate)
+	return !fieldDate.After(expectedDate)
 }
 
-func waitingForValue(key string, fieldsMap map[string]interface{}) interface{} {
-	timeout := 5 * time.Second
-	ctx, cancel := context.WithTimeout(context.Background(), timeout)
-	dependingValue := waitForValueWithTimeout(ctx, key, fieldsMap)
-	cancel()
-	return dependingValue
-}
-
-func waitForValueWithTimeout(ctx context.Context, key string, fieldsMap map[string]interface{}) interface{} {
-	waitingChannel := make(chan interface{})
-	go waitForValue(key, fieldsMap, waitingChannel)
-	select {
-	case <-ctx.Done():
+func waitingForValue(scope, key string, fieldsMap *sync.Map) interface{} {
+	scopeObjectMapLoaded, ok := fieldsMap.Load(scope)
+	if !ok {
 		return nil
-	case value := <-waitingChannel:
-		return value
 	}
-}
+	scopeObjectMap := scopeObjectMapLoaded.(*sync.Map)
 
-func waitForValue(key string, fieldsMap map[string]interface{}, waitingChannel chan interface{}) {
-	// ожидание получения значения из мапы
-	ticker := time.NewTimer(10 * time.Millisecond)
-	checkingChannel := make(chan interface{})
-	go checkField(key, fieldsMap, checkingChannel)
-	for {
-		select {
-		case value := <-checkingChannel:
-			waitingChannel <- value
-			return
-		case <-ticker.C:
-			continue
+	end := time.Now().Add(2 * time.Second)
+	for time.Now().Before(end) {
+		if value, ok := scopeObjectMap.Load(key); ok {
+			return value
 		}
+		time.Sleep(300 * time.Millisecond)
 	}
-}
 
-func checkField(key string, fieldsMap map[string]interface{}, checkingChannel chan interface{}) {
-
-	if value, ok := fieldsMap[key]; ok {
-		checkingChannel <- value
-	}
+	return nil
 }

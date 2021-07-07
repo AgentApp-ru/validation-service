@@ -7,210 +7,221 @@ import (
 
 const emailPatterns = `
 [
-	{
-	"name": "local-part",
-	"patterns": [
-		{
-		"chars": "[a-zA-Z0-9_+-]",
-		"max": 68,
-		"min": 1
-		}
-	]
-	},
-	{
-	"name": "local-part",
-	"patterns": [
-		{
-		"chars": "[a-zA-Z0-9_+-]",
-		"max": 68,
-		"min": 1
-		},
-		{
-		"chars": "[\\.]",
-		"max": 1,
-		"min": 1
-		},
-		{
-		"chars": "[a-zA-Z0-9_+-]",
-		"max": 68,
-		"min": 1
-		}
-	]
-	},
-	{
-	"name": "local-part",
-	"patterns": [
-		{
-		"chars": "[a-zA-Z0-9_+-]",
-		"max": 68,
-		"min": 1
-		},
-		{
-		"chars": "[\\.]",
-		"max": 1,
-		"min": 1
-		},
-		{
-		"chars": "[a-zA-Z0-9_+-]",
-		"max": 68,
-		"min": 1
-		},
-		{
-		"chars": "[\\.]",
-		"max": 1,
-		"min": 1
-		},
-		{
-		"chars": "[a-zA-Z0-9_+-]",
-		"max": 68,
-		"min": 1
-		}
-	]
-	},
-	{
-	"name": "local-part",
-	"patterns": [
-		{
-		"chars": "[a-zA-Z0-9_+-]",
-		"max": 68,
-		"min": 1
-		},
-		{
-		"chars": "[\\.]",
-		"max": 1,
-		"min": 1
-		},
-		{
-		"chars": "[a-zA-Z0-9_+-]",
-		"max": 68,
-		"min": 1
-		},
-		{
-		"chars": "[\\.]",
-		"max": 1,
-		"min": 1
-		},
-		{
-		"chars": "[a-zA-Z0-9_+-]",
-		"max": 68,
-		"min": 1
-		},
-		{
-		"chars": "[\\.]",
-		"max": 1,
-		"min": 1
-		},
-		{
-		"chars": "[a-zA-Z0-9_+-]",
-		"max": 68,
-		"min": 1
-		}
-	]
-	},
-	{
-	"name": "divider",
-	"patterns": [
-		{
-		"chars": "[@]",
-		"max": 1,
-		"min": 1
-		}
-	]
-	},
-	{
-	"name": "domain",
-	"patterns": [
-		{
-		"chars": "[a-zA-Z0-9-]",
-		"max": 18,
-		"min": 2
-		},
-		{
-		"chars": "[\\.]",
-		"max": 1,
-		"min": 1
-		},
-		{
-		"chars": "[a-zA-Z0-9-]",
-		"max": 18,
-		"min": 2
-		}
-	]
-	},
-	{
-	"name": "domain",
-	"patterns": [
-		{
-		"chars": "[a-zA-Z0-9-]",
-		"max": 18,
-		"min": 2
-		},
-		{
-		"chars": "[\\.]",
-		"max": 1,
-		"min": 1
-		},
-		{
-		"chars": "[a-zA-Z0-9-]",
-		"max": 18,
-		"min": 2
-		},
-		{
-		"chars": "[\\.]",
-		"max": 1,
-		"min": 1
-		},
-		{
-		"chars": "[a-zA-Z0-9-]",
-		"max": 18,
-		"min": 2
-		}
-	]
-	},
-	{
-	"name": "domain",
-	"patterns": [
-		{
-		"chars": "[a-zA-Z0-9-]",
-		"max": 18,
-		"min": 2
-		},
-		{
-		"chars": "[\\.]",
-		"max": 1,
-		"min": 1
-		},
-		{
-		"chars": "[a-zA-Z0-9-]",
-		"max": 18,
-		"min": 2
-		},
-		{
-		"chars": "[\\.]",
-		"max": 1,
-		"min": 1
-		},
-		{
-		"chars": "[a-zA-Z0-9-]",
-		"max": 18,
-		"min": 2
-		},
-		{
-		"chars": "[\\.]",
-		"max": 1,
-		"min": 1
-		},
-		{
-		"chars": "[a-zA-Z0-9-]",
-		"max": 18,
-		"min": 2
-		}
-	]
-	}
-]`
+  {
+    "name": "local-part",
+    "patterns": [
+      {
+        "chars": "[a-zA-Z0-9_+-]",
+        "max": 68,
+        "min": 1
+      }
+    ]
+  },
+  {
+    "name": "local-part",
+    "patterns": [
+      {
+        "chars": "[a-zA-Z0-9_+-]",
+        "max": 68,
+        "min": 1
+      },
+      {
+        "chars": "[\\.]",
+        "max": 1,
+        "min": 1
+      },
+      {
+        "chars": "[a-zA-Z0-9_+-]",
+        "max": 68,
+        "min": 1
+      }
+    ]
+  },
+  {
+    "name": "local-part",
+    "patterns": [
+      {
+        "chars": "[a-zA-Z0-9_+-]",
+        "max": 68,
+        "min": 1
+      },
+      {
+        "chars": "[\\.]",
+        "max": 1,
+        "min": 1
+      },
+      {
+        "chars": "[a-zA-Z0-9_+-]",
+        "max": 68,
+        "min": 1
+      },
+      {
+        "chars": "[\\.]",
+        "max": 1,
+        "min": 1
+      },
+      {
+        "chars": "[a-zA-Z0-9_+-]",
+        "max": 68,
+        "min": 1
+      }
+    ]
+  },
+  {
+    "name": "local-part",
+    "patterns": [
+      {
+        "chars": "[a-zA-Z0-9_+-]",
+        "max": 68,
+        "min": 1
+      },
+      {
+        "chars": "[\\.]",
+        "max": 1,
+        "min": 1
+      },
+      {
+        "chars": "[a-zA-Z0-9_+-]",
+        "max": 68,
+        "min": 1
+      },
+      {
+        "chars": "[\\.]",
+        "max": 1,
+        "min": 1
+      },
+      {
+        "chars": "[a-zA-Z0-9_+-]",
+        "max": 68,
+        "min": 1
+      },
+      {
+        "chars": "[\\.]",
+        "max": 1,
+        "min": 1
+      },
+      {
+        "chars": "[a-zA-Z0-9_+-]",
+        "max": 68,
+        "min": 1
+      }
+    ]
+  },
+  {
+    "name": "divider",
+    "patterns": [
+      {
+        "chars": "[@]",
+        "max": 1,
+        "min": 1
+      }
+    ]
+  },
+  {
+    "name": "domain",
+    "patterns": [
+      {
+        "chars": "[a-zA-Z0-9-]",
+        "max": 18,
+        "min": 2
+      },
+      {
+        "chars": "[\\.]",
+        "max": 1,
+        "min": 1
+      },
+      {
+        "chars": "[a-zA-Z0-9-]",
+        "max": 18,
+        "min": 2
+      }
+    ]
+  },
+  {
+    "name": "domain",
+    "patterns": [
+      {
+        "chars": "[a-zA-Z0-9-]",
+        "max": 18,
+        "min": 2
+      },
+      {
+        "chars": "[\\.]",
+        "max": 1,
+        "min": 1
+      },
+      {
+        "chars": "[a-zA-Z0-9-]",
+        "max": 18,
+        "min": 2
+      },
+      {
+        "chars": "[\\.]",
+        "max": 1,
+        "min": 1
+      },
+      {
+        "chars": "[a-zA-Z0-9-]",
+        "max": 18,
+        "min": 2
+      }
+    ]
+  },
+  {
+    "name": "domain",
+    "patterns": [
+      {
+        "chars": "[a-zA-Z0-9-]",
+        "max": 18,
+        "min": 2
+      },
+      {
+        "chars": "[\\.]",
+        "max": 1,
+        "min": 1
+      },
+      {
+        "chars": "[a-zA-Z0-9-]",
+        "max": 18,
+        "min": 2
+      },
+      {
+        "chars": "[\\.]",
+        "max": 1,
+        "min": 1
+      },
+      {
+        "chars": "[a-zA-Z0-9-]",
+        "max": 18,
+        "min": 2
+      },
+      {
+        "chars": "[\\.]",
+        "max": 1,
+        "min": 1
+      },
+      {
+        "chars": "[a-zA-Z0-9-]",
+        "max": 18,
+        "min": 2
+      }
+    ]
+  }
+]
+`
 
 func TestValidateValidEmail(t *testing.T) {
-	field := "doqwi@opdw.ru"
+	field := "seogwipo_helipor_244490@instomat.ru"
+	var patterns []*StringPattern
+	json.Unmarshal([]byte(json.RawMessage(emailPatterns)), &patterns)
+
+	if !isValidatedWithGroups(field, patterns, false) {
+		t.Errorf("should be valid email: '%s'", field)
+	}
+}
+
+func TestValidateValidEmailWithDots(t *testing.T) {
+	field := "d.oqwi@op-dw.ru"
 	var patterns []*StringPattern
 	json.Unmarshal([]byte(json.RawMessage(emailPatterns)), &patterns)
 

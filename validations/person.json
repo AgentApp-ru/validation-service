@@ -222,7 +222,7 @@
                   "depending": {
                     "type": "depending",
                     "value": {
-                      "scope": "person",
+                      "scope": "self",
                       "key": "birth_date"
                     }
                   },
