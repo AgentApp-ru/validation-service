@@ -66,8 +66,8 @@ func (c *condition) getItem(searchedValue string) (int, error) {
 	}
 }
 
-func (c *conditionValue) getItem(fieldsMap *sync.Map) (int, error) {
-	value := waitingForValue(c.Field.Scope, c.Field.Key, fieldsMap)
+func (c *conditionValue) getItem(selfMap, fieldsMap *sync.Map) (int, error) {
+	value := waitingForValue(c.Field.Scope, c.Field.Key, selfMap, fieldsMap)
 	if value == nil {
 		value = "default"
 	}
@@ -84,7 +84,7 @@ func New(objectMap, allFieldsMap *sync.Map, errors chan string) *Validator {
 	}
 }
 
-func (d *dependency) getInitialDate(fieldsMap *sync.Map) (time.Time, error) {
+func (d *dependency) getInitialDate(selfMap, fieldsMap *sync.Map) (time.Time, error) {
 	switch d.Type {
 	case "now":
 		return time.Now(), nil
@@ -95,7 +95,7 @@ func (d *dependency) getInitialDate(fieldsMap *sync.Map) (time.Time, error) {
 			return time.Time{}, err
 		}
 
-		value := waitingForValue(dependingScope.Scope, dependingScope.Key, fieldsMap)
+		value := waitingForValue(dependingScope.Scope, dependingScope.Key, selfMap, fieldsMap)
 		if value == nil {
 			return time.Time{}, fmt.Errorf("depending field not found: %s/%s", dependingScope.Scope, dependingScope.Key)
 		}
@@ -107,12 +107,12 @@ func (d *dependency) getInitialDate(fieldsMap *sync.Map) (time.Time, error) {
 	}
 }
 
-func (f *DateDependingFormulaValue) getExpectedDate(fieldsMap *sync.Map) (time.Time, error) {
+func (f *DateDependingFormulaValue) getExpectedDate(selfMap, fieldsMap *sync.Map) (time.Time, error) {
 	var (
 		years, months, days int
 	)
 
-	initialDate, err := f.Dependency.getInitialDate(fieldsMap)
+	initialDate, err := f.Dependency.getInitialDate(selfMap, fieldsMap)
 	if err != nil {
 		return time.Time{}, err
 	}
@@ -144,17 +144,17 @@ func (f *DateDependingFormulaValue) getExpectedDate(fieldsMap *sync.Map) (time.T
 	return initialDate.AddDate(years, months, days), nil
 }
 
-func (f *DateDependingConditionFormulaValue) getExpectedDate(fieldsMap *sync.Map) (time.Time, error) {
+func (f *DateDependingConditionFormulaValue) getExpectedDate(selfMap, fieldsMap *sync.Map) (time.Time, error) {
 	var (
 		years, months, days int
 	)
 
-	initialDate, err := f.Dependency.getInitialDate(fieldsMap)
+	initialDate, err := f.Dependency.getInitialDate(selfMap, fieldsMap)
 	if err != nil {
 		return time.Time{}, err
 	}
 
-	item, err := f.ConditionValue.getItem(fieldsMap)
+	item, err := f.ConditionValue.getItem(selfMap, fieldsMap)
 	if err != nil {
 		return time.Time{}, err
 	}
@@ -236,15 +236,15 @@ func (v *Validator) Validate(
 				return false
 			}
 		case "depending":
-			if !validateMinDepending(fieldDate, minPattern.Value, v.allFieldsMap) {
+			if !validateMinDepending(fieldDate, minPattern.Value, v.objectMap, v.allFieldsMap) {
 				return false
 			}
 		case "depending_formula":
-			if !validateMinDependingFormula(fieldDate, minPattern.Value, v.allFieldsMap) {
+			if !validateMinDependingFormula(fieldDate, minPattern.Value, v.objectMap, v.allFieldsMap) {
 				return false
 			}
 		case "depending_condition_formula":
-			if !validateMinDependingConditionFormula(fieldDate, minPattern.Value, v.allFieldsMap) {
+			if !validateMinDependingConditionFormula(fieldDate, minPattern.Value, v.objectMap, v.allFieldsMap) {
 				return false
 			}
 		default:
@@ -263,11 +263,11 @@ func (v *Validator) Validate(
 				return false
 			}
 		case "depending_formula":
-			if !validateMaxDependingFormula(fieldDate, maxPattern.Value, v.allFieldsMap) {
+			if !validateMaxDependingFormula(fieldDate, maxPattern.Value, v.objectMap, v.allFieldsMap) {
 				return false
 			}
 		case "depending_condition_formula":
-			if !validateMaxDependingConditionFormula(fieldDate, maxPattern.Value, v.allFieldsMap) {
+			if !validateMaxDependingConditionFormula(fieldDate, maxPattern.Value, v.objectMap, v.allFieldsMap) {
 				return false
 			}
 		default:
@@ -297,11 +297,11 @@ func validateMinNow(fieldDate time.Time, rawValue json.RawMessage) bool {
 	return fieldDate.After(time.Now())
 }
 
-func validateMinDepending(fieldDate time.Time, rawValue json.RawMessage, fieldsMap *sync.Map) bool {
+func validateMinDepending(fieldDate time.Time, rawValue json.RawMessage, selfMap, fieldsMap *sync.Map) bool {
 	var value DependingValue
 	json.Unmarshal(rawValue, &value)
 
-	dependingValue := waitingForValue(value.Scope, value.Key, fieldsMap)
+	dependingValue := waitingForValue(value.Scope, value.Key, selfMap, fieldsMap)
 	if dependingValue == nil {
 		log.Logger.Errorf("depending field not found: %s/%s", value.Scope, value.Key)
 		return false
@@ -315,11 +315,11 @@ func validateMinDepending(fieldDate time.Time, rawValue json.RawMessage, fieldsM
 	return !fieldDate.Before(expectedDate)
 }
 
-func validateMinDependingFormula(fieldDate time.Time, rawValue json.RawMessage, fieldsMap *sync.Map) bool {
+func validateMinDependingFormula(fieldDate time.Time, rawValue json.RawMessage, selfMap, fieldsMap *sync.Map) bool {
 	var formula DateDependingFormulaValue
 	json.Unmarshal(rawValue, &formula)
 
-	expectedDate, err := formula.getExpectedDate(fieldsMap)
+	expectedDate, err := formula.getExpectedDate(selfMap, fieldsMap)
 	if err != nil {
 		log.Logger.Errorf("Ошибка при расчёте формулы: %s", err.Error())
 		return false
@@ -328,11 +328,11 @@ func validateMinDependingFormula(fieldDate time.Time, rawValue json.RawMessage, 
 	return !fieldDate.Before(expectedDate)
 }
 
-func validateMinDependingConditionFormula(fieldDate time.Time, rawValue json.RawMessage, fieldsMap *sync.Map) bool {
+func validateMinDependingConditionFormula(fieldDate time.Time, rawValue json.RawMessage, selfMap, fieldsMap *sync.Map) bool {
 	var formula DateDependingConditionFormulaValue
 	json.Unmarshal(rawValue, &formula)
 
-	expectedDate, err := formula.getExpectedDate(fieldsMap)
+	expectedDate, err := formula.getExpectedDate(selfMap, fieldsMap)
 	if err != nil {
 		log.Logger.Errorf("Ошибка при расчёте формулы: %s", err.Error())
 		return false
@@ -341,11 +341,12 @@ func validateMinDependingConditionFormula(fieldDate time.Time, rawValue json.Raw
 	return !fieldDate.Before(expectedDate)
 }
 
-func validateMaxDependingConditionFormula(fieldDate time.Time, rawValue json.RawMessage, fieldsMap *sync.Map) bool {
+func validateMaxDependingConditionFormula(fieldDate time.Time, rawValue json.RawMessage, selfMap, fieldsMap *sync.Map) bool {
 	var formula DateDependingConditionFormulaValue
 	json.Unmarshal(rawValue, &formula)
 
-	expectedDate, err := formula.getExpectedDate(fieldsMap)
+	expectedDate, err := formula.getExpectedDate(selfMap, fieldsMap)
+	println("!!!", fmt.Sprintf("%v", expectedDate), err)
 	if err != nil {
 		log.Logger.Errorf("Ошибка при расчёте формулы: %s", err.Error())
 		return false
@@ -370,11 +371,11 @@ func validateMaxNow(fieldDate time.Time, rawValue json.RawMessage) bool {
 	return !fieldDate.After(time.Now())
 }
 
-func validateMaxDependingFormula(fieldDate time.Time, rawValue json.RawMessage, fieldsMap *sync.Map) bool {
+func validateMaxDependingFormula(fieldDate time.Time, rawValue json.RawMessage, selfMap, fieldsMap *sync.Map) bool {
 	var formula DateDependingFormulaValue
 	json.Unmarshal(rawValue, &formula)
 
-	expectedDate, err := formula.getExpectedDate(fieldsMap)
+	expectedDate, err := formula.getExpectedDate(selfMap, fieldsMap)
 	if err != nil {
 		log.Logger.Errorf("Ошибка при расчёте формулы: %s", err.Error())
 		return false
@@ -383,12 +384,18 @@ func validateMaxDependingFormula(fieldDate time.Time, rawValue json.RawMessage, 
 	return !fieldDate.After(expectedDate)
 }
 
-func waitingForValue(scope, key string, fieldsMap *sync.Map) interface{} {
-	scopeObjectMapLoaded, ok := fieldsMap.Load(scope)
-	if !ok {
-		return nil
+func waitingForValue(scope, key string, selfMap, fieldsMap *sync.Map) interface{} {
+	var scopeObjectMap *sync.Map
+
+	if scope == "self" {
+		scopeObjectMap = selfMap
+	} else {
+		scopeObjectMapLoaded, ok := fieldsMap.Load(scope)
+		if !ok {
+			return nil
+		}
+		scopeObjectMap = scopeObjectMapLoaded.(*sync.Map)
 	}
-	scopeObjectMap := scopeObjectMapLoaded.(*sync.Map)
 
 	end := time.Now().Add(2 * time.Second)
 	for time.Now().Before(end) {

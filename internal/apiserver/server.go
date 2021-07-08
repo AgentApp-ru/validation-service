@@ -53,7 +53,7 @@ func configureRouter(router *mux.Router) {
 	v1Router.HandleFunc("/validations/car", handleCarValidation()).Methods("GET")
 	v1Router.HandleFunc("/validations/person", handlePersonValidation()).Methods("GET")
 	v1Router.HandleFunc("/validations/driver", handleDriverValidation()).Methods("GET")
-	v1Router.HandleFunc("/validations/general-conditions", handleGeneralConditionsValidation()).Methods("GET")
+	v1Router.HandleFunc("/validations/agreement", handleAgreementValidation()).Methods("GET")
 
 	v1Router.HandleFunc("/validations", handleValidateAll()).Methods("POST")
 	// v1Router.HandleFunc("/validations/car", handleValidate("car")).Methods("POST")
@@ -93,20 +93,21 @@ func handleValidateAll() http.HandlerFunc {
 			return
 		}
 
-		var b map[string]map[string]interface{}
+		var b map[string]interface{}
 		if err = json.Unmarshal(body, &b); err != nil {
 			http_response.HttpError(w, err)
 			return
 		}
 
 		var ps, agreementID string
-		utils, ok := b["utils"]
+		generalLoaded, ok := b["general"]
 		if ok {
-			psRaw, ok := utils["ps"]
+			general := generalLoaded.(map[string]interface{})
+			psRaw, ok := general["ps"]
 			if ok {
 				ps = psRaw.(string)
 			}
-			agreementIdRaw, ok := utils["agreement_id"]
+			agreementIdRaw, ok := general["agreement_id"]
 			if ok {
 				agreementID = agreementIdRaw.(string)
 			}
@@ -192,9 +193,9 @@ func handleDriverValidation() http.HandlerFunc {
 	}
 }
 
-func handleGeneralConditionsValidation() http.HandlerFunc {
+func handleAgreementValidation() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		content, err := views.GetGeneralConditions()
+		content, err := views.GetAgreement()
 		if err != nil {
 			http_response.HttpError(w, err)
 			return

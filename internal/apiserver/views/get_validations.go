@@ -16,6 +16,6 @@ func GetDriver() (interface{}, error) {
 	return validator.Validator.Get("driver")
 }
 
-func GetGeneralConditions() (interface{}, error) {
-	return validator.Validator.Get("general")
+func GetAgreement() (interface{}, error) {
+	return validator.Validator.Get("agreement")
 }
