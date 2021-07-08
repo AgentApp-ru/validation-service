@@ -346,7 +346,6 @@ func validateMaxDependingConditionFormula(fieldDate time.Time, rawValue json.Raw
 	json.Unmarshal(rawValue, &formula)
 
 	expectedDate, err := formula.getExpectedDate(selfMap, fieldsMap)
-	println("!!!", fmt.Sprintf("%v", expectedDate), err)
 	if err != nil {
 		log.Logger.Errorf("Ошибка при расчёте формулы: %s", err.Error())
 		return false

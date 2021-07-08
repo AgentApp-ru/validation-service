@@ -79,7 +79,6 @@ func (vc *validatorClass) Validate(object string, fields *sync.Map, data map[str
 	waiter := new(sync.WaitGroup)
 
 	for k, v := range data {
-		println("validate", k)
 		fieldValidator, ok := vc.FieldValidatorsMap[k]
 		if !ok {
 			errors <- fmt.Sprintf("%s/%s: %v", object, k, v)
