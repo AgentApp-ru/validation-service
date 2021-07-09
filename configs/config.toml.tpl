@@ -5,7 +5,7 @@ send_to_chat = false
 logstash_url = "elk.b2bpolis.ru:5000"
 
 [storage]
-backend = consul
+backend = "consul"
 
 [consul]
 address = ""

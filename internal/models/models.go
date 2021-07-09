@@ -104,17 +104,19 @@ func (a *Agreement) validateAgreementFields(ownerFields map[string]interface{}, 
 }
 
 func (a *Agreement) validate(object, validationClassPattern string, data map[string]interface{}) {
-	rawValidator, err := validator_module.Validator.GetRaw(validationClassPattern)
+	validationPattern, err := validator_module.Registry.GetValidationPattern(validationClassPattern)
 	if err != nil {
-		log.Logger.Errorf("Нет валидаторов для: %s", validationClassPattern)
+		log.Logger.Errorf("Нет шаблона под валидацию для: %s", validationClassPattern)
 		return
 	}
 
-	validatorClass, err := validator_module.Validator.GetValidatorClass(rawValidator)
+	validator, err := validator_module.Registry.GetValidator(validationPattern)
 	if err != nil {
-		log.Logger.Errorf("Ошибка при создании класса валидатора: %s", err.Error())
+		log.Logger.Errorf("Ошибка при создании валидатора: %s", err.Error())
 		return
 	}
 
-	validatorClass.Validate(object, a.fields, data, a.errors)
+	validator.Init(object, a.fields, a.errors)
+
+	validator.Validate(data)
 }

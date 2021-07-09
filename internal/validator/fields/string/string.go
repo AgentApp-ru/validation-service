@@ -32,27 +32,37 @@ type (
 		CharsToRemove *CharsToRemove `json:"remove_chars"`
 	}
 
-	Validator struct {
-		objectMap    *sync.Map
-		allFieldsMap *sync.Map
-		errors       chan string
+	StringValidator struct {
+		objectMap        *sync.Map
+		allFieldsMap     *sync.Map
+		errors           chan string
+		transformers     *json.RawMessage
+		patterns         json.RawMessage
+		allowWhiteSpaces bool
 	}
 )
 
-func New(objectMap, allFieldsMap *sync.Map, errors chan string) *Validator {
-	return &Validator{
-		objectMap:    objectMap,
-		allFieldsMap: allFieldsMap,
-		errors:       errors,
-	}
+func New() *StringValidator {
+	return new(StringValidator)
 }
 
-func (v *Validator) Validate(
-	field interface{},
+func (sv *StringValidator) Init(
+	objectMap,
+	allFieldsMap *sync.Map,
+	errors chan string,
 	transformers *json.RawMessage,
 	patterns json.RawMessage,
 	allowWhiteSpaces bool,
-) bool {
+) {
+	sv.objectMap = objectMap
+	sv.allFieldsMap = allFieldsMap
+	sv.errors = errors
+	sv.transformers = transformers
+	sv.patterns = patterns
+	sv.allowWhiteSpaces = allowWhiteSpaces
+}
+
+func (sv *StringValidator) Validate(field interface{}) bool {
 	var (
 		stringPatterns []*StringPattern
 		ok             bool
@@ -65,17 +75,17 @@ func (v *Validator) Validate(
 	}
 
 	var preparedField string
-	if transformers != nil {
-		preparedField = prepare(strField, *transformers)
+	if sv.transformers != nil {
+		preparedField = prepare(strField, *sv.transformers)
 	} else {
 		preparedField = strField
 	}
 
-	if err := json.Unmarshal([]byte(patterns), &stringPatterns); err != nil {
+	if err := json.Unmarshal([]byte(sv.patterns), &stringPatterns); err != nil {
 		return false
 	}
 
-	if isValidatedWithGroups(preparedField, stringPatterns, allowWhiteSpaces) {
+	if isValidatedWithGroups(preparedField, stringPatterns, sv.allowWhiteSpaces) {
 		return true
 	}
 

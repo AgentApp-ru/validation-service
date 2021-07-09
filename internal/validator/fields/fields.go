@@ -12,50 +12,66 @@ import (
 
 type (
 	FieldValidator struct {
-		FieldName        string           `json:"field"`
-		FieldType        string           `json:"type"`
-		Transformers     *json.RawMessage `json:"enabled_transformers"`
-		AllowWhiteSpaces bool             `json:"allow_white_spaces"`
-		Patterns         json.RawMessage  `json:"patterns"`
+		FieldName          string           `json:"field"`
+		FieldType          string           `json:"type"`
+		Transformers       *json.RawMessage `json:"enabled_transformers"`
+		AllowWhiteSpaces   bool             `json:"allow_white_spaces"`
+		Patterns           json.RawMessage  `json:"patterns"`
+		object             string
+		objectMap          *sync.Map
+		agreementFieldsMap *sync.Map
+		errors             chan string
 	}
 
-	Validator interface {
-		Validate(
-			interface{},
-			*json.RawMessage,
-			json.RawMessage,
-			bool,
-		) bool
+	fieldvalidatorImpl interface {
+		Init(*sync.Map, *sync.Map, chan string, *json.RawMessage, json.RawMessage, bool)
+		Validate(interface{}) bool
 	}
 )
 
-func (fv *FieldValidator) ValidateField(field interface{}, object string, allFieldsMap *sync.Map, errors chan string, waiter *sync.WaitGroup) {
+func (fv *FieldValidator) Init(object string, agreementFields *sync.Map, errors chan string) {
+	fv.object = object
+	fv.agreementFieldsMap = agreementFields
+	fv.errors = errors
+
+	objectMapLoaded, _ := fv.agreementFieldsMap.Load(fv.object)
+	fv.objectMap = objectMapLoaded.(*sync.Map)
+}
+
+func (fv *FieldValidator) ValidateField(field interface{}, waiter *sync.WaitGroup) {
 	defer waiter.Done()
 
-	objectMapLoaded, _ := allFieldsMap.Load(object)
-	objectMap := objectMapLoaded.(*sync.Map)
-
 	var (
-		ok        bool
-		validator Validator
+		ok                 bool
+		fieldvalidatorImpl fieldvalidatorImpl
 	)
 
 	switch fv.FieldType {
 	case "string":
-		validator = str_validation.New(objectMap, allFieldsMap, errors)
+		fieldvalidatorImpl = str_validation.New()
 	case "number":
-		validator = num_validation.New(objectMap, allFieldsMap, errors)
+		fieldvalidatorImpl = num_validation.New()
 	case "date":
-		validator = date_validation.New(objectMap, allFieldsMap, errors)
+		fieldvalidatorImpl = date_validation.New()
 	default:
 		log.Logger.Errorf("unknown type: %s for field: %s", fv.FieldType, fv.FieldName)
-		ok = false
+		fv.errors <- fmt.Sprintf("%s/%s: %v", fv.object, fv.FieldName, field)
+		return
 	}
-	ok = validator.Validate(field, fv.Transformers, fv.Patterns, fv.AllowWhiteSpaces)
+
+	fieldvalidatorImpl.Init(
+		fv.objectMap,
+		fv.agreementFieldsMap,
+		fv.errors,
+		fv.Transformers,
+		fv.Patterns,
+		fv.AllowWhiteSpaces,
+	)
+	ok = fieldvalidatorImpl.Validate(field)
 
 	if !ok {
-		errors <- fmt.Sprintf("%s/%s: %v", object, fv.FieldName, field)
+		fv.errors <- fmt.Sprintf("%s/%s: %v", fv.object, fv.FieldName, field)
 	} else {
-		objectMap.Store(fv.FieldName, field)
+		fv.objectMap.Store(fv.FieldName, field)
 	}
 }

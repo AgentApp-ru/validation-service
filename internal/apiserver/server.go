@@ -50,10 +50,10 @@ func configureRouter(router *mux.Router) {
 	apiRouter.HandleFunc("/ping", handlePing()).Methods("GET")
 
 	v1Router := apiRouter.PathPrefix("/v1").Subrouter()
-	v1Router.HandleFunc("/validations/car", handleCarValidation()).Methods("GET")
-	v1Router.HandleFunc("/validations/person", handlePersonValidation()).Methods("GET")
-	v1Router.HandleFunc("/validations/driver", handleDriverValidation()).Methods("GET")
-	v1Router.HandleFunc("/validations/agreement", handleAgreementValidation()).Methods("GET")
+	v1Router.HandleFunc("/validations/car", handleGetValidationPattern("car")).Methods("GET")
+	v1Router.HandleFunc("/validations/person", handleGetValidationPattern("person")).Methods("GET")
+	v1Router.HandleFunc("/validations/driver", handleGetValidationPattern("driver")).Methods("GET")
+	v1Router.HandleFunc("/validations/agreement", handleGetValidationPattern("agreement")).Methods("GET")
 
 	v1Router.HandleFunc("/validations", handleValidateAll()).Methods("POST")
 	// v1Router.HandleFunc("/validations/car", handleValidate("car")).Methods("POST")
@@ -68,9 +68,9 @@ func handlePing() http.HandlerFunc {
 	}
 }
 
-func handleCarValidation() http.HandlerFunc {
+func handleGetValidationPattern(object string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		content, err := views.GetCar()
+		content, err := views.GetValidationPattern(object)
 		if err != nil {
 			http_response.HttpError(w, err)
 			return
@@ -82,56 +82,50 @@ func handleCarValidation() http.HandlerFunc {
 func handleValidateAll() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var (
-			body []byte
-			err  error
+			bodyRaw []byte
+			err     error
 		)
 		defer r.Body.Close()
 
-		body, err = ioutil.ReadAll(r.Body)
+		bodyRaw, err = ioutil.ReadAll(r.Body)
 		if err != nil {
 			http_response.HttpError(w, fmt.Errorf("error read body: %s", err))
 			return
 		}
 
-		var b map[string]interface{}
-		if err = json.Unmarshal(body, &b); err != nil {
+		var body map[string]interface{}
+		if err = json.Unmarshal(bodyRaw, &body); err != nil {
 			http_response.HttpError(w, err)
 			return
 		}
 
-		var ps, agreementID string
-		generalLoaded, ok := b["general"]
-		if ok {
-			general := generalLoaded.(map[string]interface{})
-			psRaw, ok := general["ps"]
-			if ok {
-				ps = psRaw.(string)
-			}
-			agreementIdRaw, ok := general["agreement_id"]
-			if ok {
-				agreementID = agreementIdRaw.(string)
-			}
-		}
-
+		ps, agreementID := getPsAndAgreementID(body)
 		agreement := models.NewAgreement(ps, agreementID)
-		agreement.Validate(b)
+		agreement.Validate(body)
 
-		// fieldsWithErrors, err := views.Validate(object, b)
-		// if err != nil {
-		// 	http_response.HttpError(w, fmt.Errorf("errors while validating: %s", err))
-		// 	return
-		// }
-		// if len(agreement.Errors) != 0 {
 		errors := map[string][]string{
 			"error fields": agreement.Errors,
 		}
 		http_response.HttpRespond(w, http.StatusOK, errors)
-		// return
-		// }
-
-		// http_response.HttpRespond(w, http.StatusOK, nil)
-		// return
 	}
+}
+
+func getPsAndAgreementID(b map[string]interface{}) (string, string) {
+	var ps, agreementID string
+	generalLoaded, ok := b["general"]
+	if ok {
+		general := generalLoaded.(map[string]interface{})
+		psRaw, ok := general["ps"]
+		if ok {
+			ps = psRaw.(string)
+		}
+		agreementIdRaw, ok := general["agreement_id"]
+		if ok {
+			agreementID = agreementIdRaw.(string)
+		}
+	}
+
+	return ps, agreementID
 }
 
 // func handleValidate(object string) http.HandlerFunc {
@@ -170,36 +164,3 @@ func handleValidateAll() http.HandlerFunc {
 // 		http_response.HttpRespond(w, http.StatusOK, nil)
 // 	}
 // }
-
-func handlePersonValidation() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		content, err := views.GetInsurerOwner()
-		if err != nil {
-			http_response.HttpError(w, err)
-			return
-		}
-		http_response.HttpRespond(w, http.StatusOK, content)
-	}
-}
-
-func handleDriverValidation() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		content, err := views.GetDriver()
-		if err != nil {
-			http_response.HttpError(w, err)
-			return
-		}
-		http_response.HttpRespond(w, http.StatusOK, content)
-	}
-}
-
-func handleAgreementValidation() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		content, err := views.GetAgreement()
-		if err != nil {
-			http_response.HttpError(w, err)
-			return
-		}
-		http_response.HttpRespond(w, http.StatusOK, content)
-	}
-}

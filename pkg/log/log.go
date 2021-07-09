@@ -18,6 +18,8 @@ func Init() {
 }
 
 func addLogstashHook() {
+	// TODO: В логгер тэгаи вкидывать PS + AgreementID, вместо того, чтоб писать внутрь message
+
 	conn, err := net.Dial("tcp", config.Settings.LogstageUrl)
 	if err != nil {
 		Logger.Fatal(err)
