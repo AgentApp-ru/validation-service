@@ -10,9 +10,21 @@ func Ping() string {
 	return "pong"
 }
 
-
 func GetValidationPattern(object string) (interface{}, error) {
-	return validator.Registry.Get(object)
+	var (
+		result  interface{}
+		rawData []byte
+		err     error
+	)
+
+	rawData, err = validator.Registry.GetValidationPattern(object)
+	if err != nil {
+		return nil, err
+	}
+
+	err = json.Unmarshal(rawData, &result)
+
+	return result, err
 }
 
 func ValidateAgreement(bodyRaw []byte) ([]string, error) {
