@@ -1,13 +1,11 @@
 package apiserver
 
 import (
-	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"time"
 	"validation_service/internal/apiserver/views"
-	"validation_service/internal/models"
 	"validation_service/pkg/config"
 	"validation_service/pkg/http_response"
 	"validation_service/pkg/log"
@@ -93,39 +91,17 @@ func handleValidateAll() http.HandlerFunc {
 			return
 		}
 
-		var body map[string]interface{}
-		if err = json.Unmarshal(bodyRaw, &body); err != nil {
+		errorFields, err := views.ValidateAgreement(bodyRaw)
+		if err != nil {
 			http_response.HttpError(w, err)
 			return
 		}
 
-		ps, agreementID := getPsAndAgreementID(body)
-		agreement := models.NewAgreement(ps, agreementID)
-		agreement.Validate(body)
-
-		errors := map[string][]string{
-			"error fields": agreement.Errors,
+		response := map[string][]string{
+			"error fields": errorFields,
 		}
-		http_response.HttpRespond(w, http.StatusOK, errors)
+		http_response.HttpRespond(w, http.StatusOK, response)
 	}
-}
-
-func getPsAndAgreementID(b map[string]interface{}) (string, string) {
-	var ps, agreementID string
-	generalLoaded, ok := b["general"]
-	if ok {
-		general := generalLoaded.(map[string]interface{})
-		psRaw, ok := general["ps"]
-		if ok {
-			ps = psRaw.(string)
-		}
-		agreementIdRaw, ok := general["agreement_id"]
-		if ok {
-			agreementID = agreementIdRaw.(string)
-		}
-	}
-
-	return ps, agreementID
 }
 
 // func handleValidate(object string) http.HandlerFunc {
