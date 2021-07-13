@@ -1,802 +1,824 @@
 {
-    "$schema": "./schema.json",
+    "$schema": "./_schema.json",
     "validators": [
-        {
-            "field": "car_type",
-            "type": "string",
+      {
+        "field": "car_type",
+        "patterns": [
+          {
+            "name": "number",
             "patterns": [
-                {
-                    "name": "number",
-                    "patterns": [
-                        {
-                            "chars": "[A-Za-z[0-9]",
-                            "min": 1,
-                            "max": 3
-                        }
-                    ]
-                }
+              {
+                "chars": "[A-Za-z0-9]",
+                "max": 3,
+                "min": 1
+              }
             ]
-        },
-        {
-            "field": "number_plate",
-            "type": "string",
+          }
+        ],
+        "type": "string"
+      },
+      {
+        "field": "number_plate",
+        "patterns": [
+          {
+            "name": "number",
             "patterns": [
-                {
-                    "name": "number",
-                    "patterns": [
-                        {
-                            "chars": "[АВЕКМНОРСТУХ]",
-                            "max": 1
-                        },
-                        {
-                            "chars": "[0-9]",
-                            "max": 3
-                        },
-                        {
-                            "chars": "[АВЕКМНОРСТУХ]",
-                            "max": 2
-                        },
-                        {
-                            "chars": "[0-9]",
-                            "max": 2
-                        }
-                    ]
-                },
-                {
-                    "name": "number",
-                    "patterns": [
-                        {
-                            "chars": "[АВЕКМНОРСТУХ]",
-                            "max": 1
-                        },
-                        {
-                            "chars": "[0-9]",
-                            "max": 3
-                        },
-                        {
-                            "chars": "[АВЕКМНОРСТУХ]",
-                            "max": 2
-                        },
-                        {
-                            "chars": "[0-9]",
-                            "max": 3
-                        }
-                    ]
-                },
-                {
-                    "name": "number",
-                    "patterns": [
-                        {
-                            "chars": "[АВЕКМНОРСТУХ]",
-                            "max": 2
-                        },
-                        {
-                            "chars": "[0-9]",
-                            "max": 3
-                        },
-                        {
-                            "chars": "[0-9]",
-                            "max": 5
-                        }
-                    ]
-                },
-                {
-                    "name": "number",
-                    "patterns": [
-                        {
-                            "chars": "[АВЕКМНОРСТУХ]",
-                            "max": 2
-                        },
-                        {
-                            "chars": "[0-9]",
-                            "max": 6
-                        }
-                    ]
-                },
-                {
-                    "name": "number",
-                    "patterns": [
-                        {
-                            "chars": "[0-9]",
-                            "max": 4
-                        },
-                        {
-                            "chars": "[АВЕКМНОРСТУХ]",
-                            "max": 2
-                        },
-                        {
-                            "chars": "[0-9]",
-                            "max": 2
-                        }
-                    ]
-                },
-                {
-                    "name": "number",
-                    "patterns": [
-                        {
-                            "chars": "[АВЕКМНОРСТУХ]",
-                            "max": 2
-                        },
-                        {
-                            "chars": "[0-9]",
-                            "max": 2
-                        },
-                        {
-                            "chars": "[АВЕКМНОРСТУХ]",
-                            "max": 2
-                        },
-                        {
-                            "chars": "[0-9]",
-                            "max": 2
-                        }
-                    ]
-                },
-                {
-                    "name": "number",
-                    "patterns": [
-                        {
-                            "chars": "[0-9]",
-                            "max": 3
-                        },
-                        {
-                            "chars": "[АВЕКМНОРСТУХ]",
-                            "max": 2
-                        },
-                        {
-                            "chars": "[0-9]",
-                            "max": 3
-                        }
-                    ]
-                },
-                {
-                    "name": "number",
-                    "patterns": [
-                        {
-                            "chars": "[АВЕКМНОРСТУХ]",
-                            "max": 2
-                        },
-                        {
-                            "chars": "[0-9]",
-                            "max": 6
-                        }
-                    ]
-                },
-                {
-                    "name": "number",
-                    "patterns": [
-                        {
-                            "chars": "[Т]",
-                            "max": 1
-                        },
-                        {
-                            "chars": "[АВЕКМНОРСТУХ]",
-                            "max": 2
-                        },
-                        {
-                            "chars": "[0-9]",
-                            "max": 5
-                        }
-                    ]
-                },
-                {
-                    "name": "number",
-                    "patterns": [
-                        {
-                            "chars": "[Т]",
-                            "max": 1
-                        },
-                        {
-                            "chars": "[АВЕКМНОРСТУХ]",
-                            "max": 2
-                        },
-                        {
-                            "chars": "[0-9]",
-                            "max": 5
-                        }
-                    ]
-                },
-                {
-                    "name": "number",
-                    "patterns": [
-                        {
-                            "chars": "[0-9]",
-                            "max": 3
-                        },
-                        {
-                            "chars": "[АВЕКМНОРСТУХ]",
-                            "max": 1
-                        },
-                        {
-                            "chars": "[0-9]",
-                            "max": 2
-                        }
-                    ]
-                },
-                {
-                    "name": "number",
-                    "patterns": [
-                        {
-                            "chars": "[0-9]",
-                            "max": 4
-                        },
-                        {
-                            "chars": "[АВЕКМНОРСТУХ]",
-                            "max": 1
-                        },
-                        {
-                            "chars": "[0-9]",
-                            "max": 2
-                        }
-                    ]
-                },
-                {
-                    "name": "number",
-                    "patterns": [
-                        {
-                            "chars": "[К]",
-                            "max": 1
-                        },
-                        {
-                            "chars": "[АВЕКМНОРСТУХ]",
-                            "max": 2
-                        },
-                        {
-                            "chars": "[0-9]",
-                            "max": 5
-                        }
-                    ]
-                },
-                {
-                    "name": "number",
-                    "patterns": [
-                        {
-                            "chars": "[К]",
-                            "max": 1
-                        },
-                        {
-                            "chars": "[0-9]",
-                            "max": 3
-                        },
-                        {
-                            "chars": "[АВЕКМНОРСТУХ]",
-                            "max": 2
-                        },
-                        {
-                            "chars": "[0-9]",
-                            "max": 2
-                        }
-                    ]
-                },
-                {
-                    "name": "number",
-                    "patterns": [
-                        {
-                            "chars": "[С]",
-                            "max": 1
-                        },
-                        {
-                            "chars": "[АВЕКМНОРСТУХ]",
-                            "max": 2
-                        },
-                        {
-                            "chars": "[0-9]",
-                            "max": 5
-                        }
-                    ]
-                },
-                {
-                    "name": "number",
-                    "patterns": [
-                        {
-                            "chars": "[АВЕКМНОРСТУХ]",
-                            "max": 2
-                        },
-                        {
-                            "chars": "[0-9]",
-                            "max": 4
-                        }
-                    ]
-                },
-                {
-                    "name": "number",
-                    "patterns": [
-                        {
-                            "chars": "[АВЕКМНОРСТУХ]",
-                            "max": 3
-                        }
-                    ]
-                },
-                {
-                    "name": "number",
-                    "patterns": [
-                        {
-                            "chars": "[0-9]",
-                            "max": 4
-                        },
-                        {
-                            "chars": "[АВЕКМНОРСТУХ]",
-                            "max": 3
-                        }
-                    ]
-                },
-                {
-                    "name": "number",
-                    "patterns": [
-                        {
-                            "chars": "[0-9]",
-                            "max": 4
-                        },
-                        {
-                            "chars": "[АВЕКМНОРСТУХ]",
-                            "max": 2
-                        }
-                    ]
-                },
-                {
-                    "name": "number",
-                    "patterns": [
-                        {
-                            "chars": "[АВЕКМНОРСТУХ]",
-                            "max": 1
-                        },
-                        {
-                            "chars": "[0-9]",
-                            "max": 4
-                        },
-                        {
-                            "chars": "[АВЕКМНОРСТУХ]",
-                            "max": 2
-                        }
-                    ]
-                },
-                {
-                    "name": "number",
-                    "patterns": [
-                        {
-                            "chars": "[АВЕКМНОРСТУХ]",
-                            "max": 3
-                        },
-                        {
-                            "chars": "[0-9]",
-                            "max": 4
-                        }
-                    ]
-                },
-                {
-                    "name": "number",
-                    "patterns": [
-                        {
-                            "chars": "[0-9]",
-                            "max": 4
-                        },
-                        {
-                            "chars": "[АВЕКМНОРСТУХ]",
-                            "max": 2
-                        }
-                    ]
-                }
+              {
+                "chars": "[АВЕКМНОРСТУХ]",
+                "max": 1
+              },
+              {
+                "chars": "[0-9]",
+                "max": 3
+              },
+              {
+                "chars": "[АВЕКМНОРСТУХ]",
+                "max": 2
+              },
+              {
+                "chars": "[0-9]",
+                "max": 2
+              }
             ]
-        },
-        {
-            "field": "vin",
-            "type": "string",
+          },
+          {
+            "name": "number",
             "patterns": [
-                {
-                    "name": "number",
-                    "patterns": [
-                        {
-                            "chars": "[\\dA-HJ-NPR-Z]",
-                            "max": 13
-                        },
-                        {
-                            "chars": "[\\d]",
-                            "max": 4
-                        }
-                    ]
-                }
+              {
+                "chars": "[АВЕКМНОРСТУХ]",
+                "max": 1
+              },
+              {
+                "chars": "[0-9]",
+                "max": 3
+              },
+              {
+                "chars": "[АВЕКМНОРСТУХ]",
+                "max": 2
+              },
+              {
+                "chars": "[0-9]",
+                "max": 3
+              }
             ]
-        },
-        {
-            "field": "body_number",
-            "type": "string",
+          },
+          {
+            "name": "number",
             "patterns": [
-                {
-                    "name": "number",
-                    "patterns": [
-                        {
-                            "chars": "[0-9A-Za-z]",
-                            "max": 50,
-                            "min": 1
-                        }
-                    ]
-                },
-                {
-                    "name": "number",
-                    "patterns": [
-                        {
-                            "chars": "[0-9АВЕКМНОРСТУХавекмнорстух]",
-                            "max": 50,
-                            "min": 1
-                        }
-                    ]
-                }
+              {
+                "chars": "[АВЕКМНОРСТУХ]",
+                "max": 2
+              },
+              {
+                "chars": "[0-9]",
+                "max": 3
+              },
+              {
+                "chars": "[0-9]",
+                "max": 5
+              }
             ]
-        },
-        {
-            "field": "chassis_number",
-            "type": "string",
+          },
+          {
+            "name": "number",
             "patterns": [
-                {
-                    "name": "number",
-                    "patterns": [
-                        {
-                            "chars": "[0-9A-Za-z]",
-                            "max": 50,
-                            "min": 1
-                        }
-                    ]
-                },
-                {
-                    "name": "number",
-                    "patterns": [
-                        {
-                            "chars": "[0-9АВЕКМНОРСТУХавекмнорстух]",
-                            "max": 50,
-                            "min": 1
-                        }
-                    ]
-                }
+              {
+                "chars": "[АВЕКМНОРСТУХ]",
+                "max": 2
+              },
+              {
+                "chars": "[0-9]",
+                "max": 6
+              }
             ]
-        },
-        {
-            "field": "diagnostic_chart",
-            "type": "string",
+          },
+          {
+            "name": "number",
             "patterns": [
-                {
-                    "name": "number",
-                    "patterns": [
-                        {
-                            "chars": "[0-9]",
-                            "max": 15
-                        }
-                    ]
-                },
-                {
-                    "name": "number",
-                    "patterns": [
-                        {
-                            "chars": "[0-9]",
-                            "max": 21
-                        }
-                    ]
-                }
+              {
+                "chars": "[0-9]",
+                "max": 4
+              },
+              {
+                "chars": "[АВЕКМНОРСТУХ]",
+                "max": 2
+              },
+              {
+                "chars": "[0-9]",
+                "max": 2
+              }
             ]
-        },
-        {
-            "field": "vehicle_registration",
-            "type": "string",
-            "allow_white_spaces": true,
+          },
+          {
+            "name": "number",
             "patterns": [
-                {
-                    "name": "series",
-                    "patterns": [
-                        {
-                            "chars": "[0-9]",
-                            "max": 2
-                        },
-                        {
-                            "chars": "[АВЕКМНОРСТУХ0-9]",
-                            "max": 2
-                        }
-                    ]
-                },
-                {
-                    "name": "series",
-                    "patterns": [
-                        {
-                            "chars": "[0-9]",
-                            "max": 2
-                        },
-                        {
-                            "chars": "[ABEKMHOPCTYX0-9]",
-                            "max": 2
-                        }
-                    ]
-                },
-                {
-                    "name": "number",
-                    "patterns": [
-                        {
-                            "chars": "[0-9]",
-                            "max": 6
-                        }
-                    ]
-                }
+              {
+                "chars": "[АВЕКМНОРСТУХ]",
+                "max": 2
+              },
+              {
+                "chars": "[0-9]",
+                "max": 2
+              },
+              {
+                "chars": "[АВЕКМНОРСТУХ]",
+                "max": 2
+              },
+              {
+                "chars": "[0-9]",
+                "max": 2
+              }
             ]
-        },
-        {
-            "field": "vehicle_passport",
-            "type": "string",
-            "allow_white_spaces": true,
+          },
+          {
+            "name": "number",
             "patterns": [
-                {
-                    "name": "series",
-                    "patterns": [
-                        {
-                            "chars": "[0-9]",
-                            "max": 2
-                        },
-                        {
-                            "chars": "[АВЕКМНОРСТУХ]",
-                            "max": 2
-                        }
-                    ]
-                },
-                {
-                    "name": "series",
-                    "patterns": [
-                        {
-                            "chars": "[0-9]",
-                            "max": 2
-                        },
-                        {
-                            "chars": "[ABEKMHOPCTYX]",
-                            "max": 2
-                        }
-                    ]
-                },
-                {
-                    "name": "number",
-                    "patterns": [
-                        {
-                            "chars": "[0-9]",
-                            "max": 6
-                        }
-                    ]
-                }
+              {
+                "chars": "[0-9]",
+                "max": 3
+              },
+              {
+                "chars": "[АВЕКМНОРСТУХ]",
+                "max": 2
+              },
+              {
+                "chars": "[0-9]",
+                "max": 3
+              }
             ]
-        },
-        {
-            "field": "self_propelled_car_passport",
-            "type": "string",
-            "allow_white_spaces": true,
+          },
+          {
+            "name": "number",
             "patterns": [
-                {
-                    "name": "series",
-                    "patterns": [
-                        {
-                            "chars": "[АВЕКМНОРСТУХ0-9]",
-                            "max": 2
-                        }
-                    ]
-                },
-                {
-                    "name": "series",
-                    "patterns": [
-                        {
-                            "chars": "[АВЕКМНОРСТУХ0-9]",
-                            "max": 4
-                        }
-                    ]
-                },
-                {
-                    "name": "series",
-                    "patterns": [
-                        {
-                            "chars": "[ABEKMHOPCTYX0-9]",
-                            "max": 2
-                        }
-                    ]
-                },
-                {
-                    "name": "series",
-                    "patterns": [
-                        {
-                            "chars": "[ABEKMHOPCTYX0-9]",
-                            "max": 4
-                        }
-                    ]
-                },
-                {
-                    "name": "number",
-                    "patterns": [
-                        {
-                            "chars": "[0-9]",
-                            "max": 6
-                        }
-                    ]
-                }
+              {
+                "chars": "[АВЕКМНОРСТУХ]",
+                "max": 2
+              },
+              {
+                "chars": "[0-9]",
+                "max": 6
+              }
             ]
-        },
-        {
-            "field": "vehicle_e_passport",
-            "type": "string",
+          },
+          {
+            "name": "number",
             "patterns": [
-                {
-                    "name": "number",
-                    "patterns": [
-                        {
-                            "chars": "[1-3]",
-                            "max": 1
-                        },
-                        {
-                            "chars": "[0-9]",
-                            "max": 3
-                        },
-                        {
-                            "chars": "[0]",
-                            "max": 1
-                        },
-                        {
-                            "chars": "[1-4]",
-                            "max": 1
-                        },
-                        {
-                            "chars": "[0-9]",
-                            "max": 9
-                        }
-                    ]
-                }
+              {
+                "chars": "[Т]",
+                "max": 1
+              },
+              {
+                "chars": "[АВЕКМНОРСТУХ]",
+                "max": 2
+              },
+              {
+                "chars": "[0-9]",
+                "max": 5
+              }
             ]
-        },
-        {
-            "field": "vehicle_passport_mark_title",
-            "type": "string",
+          },
+          {
+            "name": "number",
             "patterns": [
-                {
-                    "name": "title",
-                    "patterns": [
-                        {
-                            "chars": "[a-zA-Zа-яА-Я0-9\\-\\/\\s\\\\]",
-                            "max": 128,
-                            "min": 2
-                        }
-                    ]
-                }
+              {
+                "chars": "[Т]",
+                "max": 1
+              },
+              {
+                "chars": "[АВЕКМНОРСТУХ]",
+                "max": 2
+              },
+              {
+                "chars": "[0-9]",
+                "max": 5
+              }
             ]
-        },
-        {
-            "field": "vehicle_passport_model_title",
-            "type": "string",
+          },
+          {
+            "name": "number",
             "patterns": [
-                {
-                    "name": "title",
-                    "patterns": [
-                        {
-                            "chars": "[a-zA-Zа-яА-Я0-9\\-\\/\\s\\\\]",
-                            "max": 128,
-                            "min": 1
-                        }
-                    ]
-                }
+              {
+                "chars": "[0-9]",
+                "max": 3
+              },
+              {
+                "chars": "[АВЕКМНОРСТУХ]",
+                "max": 1
+              },
+              {
+                "chars": "[0-9]",
+                "max": 2
+              }
             ]
-        },
-        {
-            "field": "self_propelled_car_passport_mark_title",
-            "type": "string",
+          },
+          {
+            "name": "number",
             "patterns": [
-                {
-                    "name": "title",
-                    "patterns": [
-                        {
-                            "chars": "[a-zA-Zа-яА-Я0-9\\-\\/\\s\\\\]",
-                            "max": 128,
-                            "min": 2
-                        }
-                    ]
-                }
+              {
+                "chars": "[0-9]",
+                "max": 4
+              },
+              {
+                "chars": "[АВЕКМНОРСТУХ]",
+                "max": 1
+              },
+              {
+                "chars": "[0-9]",
+                "max": 2
+              }
             ]
-        },
-        {
-            "field": "self_propelled_car_passport_model_title",
-            "type": "string",
+          },
+          {
+            "name": "number",
             "patterns": [
-                {
-                    "name": "title",
-                    "patterns": [
-                        {
-                            "chars": "[a-zA-Zа-яА-Я0-9\\-\\/\\s\\\\]",
-                            "max": 128,
-                            "min": 2
-                        }
-                    ]
-                }
+              {
+                "chars": "[К]",
+                "max": 1
+              },
+              {
+                "chars": "[АВЕКМНОРСТУХ]",
+                "max": 2
+              },
+              {
+                "chars": "[0-9]",
+                "max": 5
+              }
             ]
-        },
-        {
-            "field": "max_weight",
-            "type": "number",
+          },
+          {
+            "name": "number",
             "patterns": [
-                {
-                    "max": 12000
-                }
+              {
+                "chars": "[К]",
+                "max": 1
+              },
+              {
+                "chars": "[0-9]",
+                "max": 3
+              },
+              {
+                "chars": "[АВЕКМНОРСТУХ]",
+                "max": 2
+              },
+              {
+                "chars": "[0-9]",
+                "max": 2
+              }
             ]
-        },
-        {
-            "field": "max_seats_count",
-            "type": "number",
+          },
+          {
+            "name": "number",
             "patterns": [
-                {
-                    "max": 16
-                }
+              {
+                "chars": "[С]",
+                "max": 1
+              },
+              {
+                "chars": "[АВЕКМНОРСТУХ]",
+                "max": 2
+              },
+              {
+                "chars": "[0-9]",
+                "max": 5
+              }
             ]
-        },
-        {
-            "field": "diagnostic_chart_valid_to",
-            "type": "date",
+          },
+          {
+            "name": "number",
             "patterns": [
-                {
-                    "max": [
-
-                    ],
-                    "min": [
-                        {
-                            "type": "now",
-                            "value": null
-                        },
-                        {
-                            "type": "depending",
-                            "value": {
-                                "scope": "agreement",
-                                "key": "start_date"
-                            }
-                        }
-                    ]
-                }
+              {
+                "chars": "[АВЕКМНОРСТУХ]",
+                "max": 2
+              },
+              {
+                "chars": "[0-9]",
+                "max": 4
+              }
             ]
-        },
-        {
-            "field": "credential_issue_date",
-            "type": "date",
+          },
+          {
+            "name": "number",
             "patterns": [
-                {
-                    "max": [
-                        {
-                            "type": "now",
-                            "value": null
-                        }
-                    ],
-                    "min": [
-                        {
-                            "type": "depending",
-                            "value": {
-                                "scope": "self",
-                                "key": "manufacturing_year"
-                            }
-                        }
-                    ]
-                }
+              {
+                "chars": "[АВЕКМНОРСТУХ]",
+                "max": 3
+              }
             ]
-        },
-        {
-            "field": "manufacturing_year",
-            "type": "date",
+          },
+          {
+            "name": "number",
             "patterns": [
-                {
-                    "max": [
-                        {
-                            "type": "now",
-                            "value": null
-                        }
-                    ],
-                    "min": [
-                        {
-                            "type": "date",
-                            "value": "1930-01-01"
-                        }
-                    ]
-                }
+              {
+                "chars": "[0-9]",
+                "max": 4
+              },
+              {
+                "chars": "[АВЕКМНОРСТУХ]",
+                "max": 3
+              }
             ]
-        },
-        {
-            "field": "engine_power",
+          },
+          {
+            "name": "number",
             "patterns": [
-                {
-                    "max": 999,
-                    "min": 10
+              {
+                "chars": "[0-9]",
+                "max": 4
+              },
+              {
+                "chars": "[АВЕКМНОРСТУХ]",
+                "max": 2
+              }
+            ]
+          },
+          {
+            "name": "number",
+            "patterns": [
+              {
+                "chars": "[АВЕКМНОРСТУХ]",
+                "max": 1
+              },
+              {
+                "chars": "[0-9]",
+                "max": 4
+              },
+              {
+                "chars": "[АВЕКМНОРСТУХ]",
+                "max": 2
+              }
+            ]
+          },
+          {
+            "name": "number",
+            "patterns": [
+              {
+                "chars": "[АВЕКМНОРСТУХ]",
+                "max": 3
+              },
+              {
+                "chars": "[0-9]",
+                "max": 4
+              }
+            ]
+          },
+          {
+            "name": "number",
+            "patterns": [
+              {
+                "chars": "[0-9]",
+                "max": 4
+              },
+              {
+                "chars": "[АВЕКМНОРСТУХ]",
+                "max": 2
+              }
+            ]
+          }
+        ],
+        "type": "string"
+      },
+      {
+        "field": "vin",
+        "patterns": [
+          {
+            "name": "number",
+            "patterns": [
+              {
+                "chars": "[\\dA-HJ-NPR-Z]",
+                "max": 13
+              },
+              {
+                "chars": "[\\d]",
+                "max": 4
+              }
+            ]
+          }
+        ],
+        "type": "string"
+      },
+      {
+        "field": "body_number",
+        "patterns": [
+          {
+            "name": "number",
+            "patterns": [
+              {
+                "chars": "[0-9A-Za-z]",
+                "max": 50,
+                "min": 1
+              }
+            ]
+          },
+          {
+            "name": "number",
+            "patterns": [
+              {
+                "chars": "[0-9АВЕКМНОРСТУХавекмнорстух]",
+                "max": 50,
+                "min": 1
+              }
+            ]
+          }
+        ],
+        "type": "string"
+      },
+      {
+        "field": "chassis_number",
+        "patterns": [
+          {
+            "name": "number",
+            "patterns": [
+              {
+                "chars": "[0-9A-Za-z]",
+                "max": 50,
+                "min": 1
+              }
+            ]
+          },
+          {
+            "name": "number",
+            "patterns": [
+              {
+                "chars": "[0-9АВЕКМНОРСТУХавекмнорстух]",
+                "max": 50,
+                "min": 1
+              }
+            ]
+          }
+        ],
+        "type": "string"
+      },
+      {
+        "field": "diagnostic_chart",
+        "patterns": [
+          {
+            "name": "number",
+            "patterns": [
+              {
+                "chars": "[0-9]",
+                "max": 15
+              }
+            ]
+          },
+          {
+            "name": "number",
+            "patterns": [
+              {
+                "chars": "[0-9]",
+                "max": 21
+              }
+            ]
+          }
+        ],
+        "type": "string"
+      },
+      {
+        "allow_white_spaces": true,
+        "field": "vehicle_registration",
+        "patterns": [
+          {
+            "name": "series",
+            "patterns": [
+              {
+                "chars": "[0-9]",
+                "max": 2
+              },
+              {
+                "chars": "[АВЕКМНОРСТУХ0-9]",
+                "max": 2
+              }
+            ]
+          },
+          {
+            "name": "series",
+            "patterns": [
+              {
+                "chars": "[0-9]",
+                "max": 2
+              },
+              {
+                "chars": "[ABEKMHOPCTYX0-9]",
+                "max": 2
+              }
+            ]
+          },
+          {
+            "name": "number",
+            "patterns": [
+              {
+                "chars": "[0-9]",
+                "max": 6
+              }
+            ]
+          }
+        ],
+        "type": "string"
+      },
+      {
+        "allow_white_spaces": true,
+        "field": "vehicle_passport",
+        "patterns": [
+          {
+            "name": "series",
+            "patterns": [
+              {
+                "chars": "[0-9]",
+                "max": 2
+              },
+              {
+                "chars": "[АВЕКМНОРСТУХ]",
+                "max": 2
+              }
+            ]
+          },
+          {
+            "name": "series",
+            "patterns": [
+              {
+                "chars": "[0-9]",
+                "max": 2
+              },
+              {
+                "chars": "[ABEKMHOPCTYX]",
+                "max": 2
+              }
+            ]
+          },
+          {
+            "name": "number",
+            "patterns": [
+              {
+                "chars": "[0-9]",
+                "max": 6
+              }
+            ]
+          }
+        ],
+        "type": "string"
+      },
+      {
+        "allow_white_spaces": true,
+        "field": "self_propelled_car_passport",
+        "patterns": [
+          {
+            "name": "series",
+            "patterns": [
+              {
+                "chars": "[АВЕКМНОРСТУХ0-9]",
+                "max": 2
+              }
+            ]
+          },
+          {
+            "name": "series",
+            "patterns": [
+              {
+                "chars": "[АВЕКМНОРСТУХ0-9]",
+                "max": 4
+              }
+            ]
+          },
+          {
+            "name": "series",
+            "patterns": [
+              {
+                "chars": "[ABEKMHOPCTYX0-9]",
+                "max": 2
+              }
+            ]
+          },
+          {
+            "name": "series",
+            "patterns": [
+              {
+                "chars": "[ABEKMHOPCTYX0-9]",
+                "max": 4
+              }
+            ]
+          },
+          {
+            "name": "number",
+            "patterns": [
+              {
+                "chars": "[0-9]",
+                "max": 6
+              }
+            ]
+          }
+        ],
+        "type": "string"
+      },
+      {
+        "field": "vehicle_e_passport",
+        "patterns": [
+          {
+            "name": "number",
+            "patterns": [
+              {
+                "chars": "[1-3]",
+                "max": 1
+              },
+              {
+                "chars": "[0-9]",
+                "max": 3
+              },
+              {
+                "chars": "[0]",
+                "max": 1
+              },
+              {
+                "chars": "[1-4]",
+                "max": 1
+              },
+              {
+                "chars": "[0-9]",
+                "max": 9
+              }
+            ]
+          }
+        ],
+        "type": "string"
+      },
+      {
+        "field": "vehicle_passport_mark_title",
+        "enabled_transformers": {
+          "remove_first_letters": {
+            "chars": "\\-\\/\\s\\\\"
+          }
+        },
+        "patterns": [
+          {
+            "name": "title",
+            "patterns": [
+              {
+                "chars": "[a-zA-Zа-яА-Я0-9\\-\\/\\s\\\\]",
+                "max": 128,
+                "min": 2
+              }
+            ]
+          }
+        ],
+        "type": "string"
+      },
+      {
+        "field": "vehicle_passport_model_title",
+        "enabled_transformers": {
+          "remove_first_letters": {
+            "chars": "\\-\\/\\s\\\\"
+          }
+        },
+        "patterns": [
+          {
+            "name": "title",
+            "patterns": [
+              {
+                "chars": "[a-zA-Zа-яА-Я0-9\\-\\/\\s\\\\]",
+                "max": 128,
+                "min": 1
+              }
+            ]
+          }
+        ],
+        "type": "string"
+      },
+      {
+        "field": "self_propelled_car_passport_mark_title",
+        "enabled_transformers": {
+          "remove_first_letters": {
+            "chars": "\\-\\/\\s\\\\"
+          }
+        },
+        "patterns": [
+          {
+            "name": "title",
+            "patterns": [
+              {
+                "chars": "[a-zA-Zа-яА-Я0-9\\-\\/\\s\\\\]",
+                "max": 128,
+                "min": 2
+              }
+            ]
+          }
+        ],
+        "type": "string"
+      },
+      {
+        "field": "self_propelled_car_passport_model_title",
+        "enabled_transformers": {
+          "remove_first_letters": {
+            "chars": "\\-\\/\\s\\\\"
+          }
+        },
+        "patterns": [
+          {
+            "name": "title",
+            "patterns": [
+              {
+                "chars": "[a-zA-Zа-яА-Я0-9\\-\\/\\s\\\\]",
+                "max": 128,
+                "min": 2
+              }
+            ]
+          }
+        ],
+        "type": "string"
+      },
+      {
+        "field": "max_weight",
+        "patterns": [
+          {
+            "max": 100000
+          }
+        ],
+        "type": "number"
+      },
+      {
+        "field": "max_seats_count",
+        "patterns": [
+          {
+            "max": 16
+          }
+        ],
+        "type": "number"
+      },
+      {
+        "field": "diagnostic_chart_valid_to",
+        "patterns": [
+          {
+            "max": [],
+            "min": [
+              {
+                "type": "now",
+                "value": null
+              },
+              {
+                "type": "depending",
+                "value": {
+                  "key": "start_date",
+                  "scope": "agreement"
                 }
+              }
+            ]
+          }
+        ],
+        "type": "date"
+      },
+      {
+        "field": "credential_issue_date",
+        "patterns": [
+          {
+            "max": [
+              {
+                "type": "now",
+                "value": null
+              }
             ],
-            "type": "number"
-        }
+            "min": [
+              {
+                "type": "now",
+                "value": null
+              },
+              {
+                "type": "depending",
+                "value": {
+                  "key": "manufacturing_year",
+                  "scope": "self"
+                }
+              }
+            ]
+          }
+        ],
+        "type": "date"
+      },
+      {
+        "field": "manufacturing_year",
+        "patterns": [
+          {
+            "max": [
+              {
+                "type": "now",
+                "value": null
+              }
+            ],
+            "min": [
+              {
+                "type": "date",
+                "value": "1930-01-01"
+              }
+            ]
+          }
+        ],
+        "type": "date"
+      },
+      {
+        "field": "engine_power",
+        "patterns": [
+          {
+            "max": 999,
+            "min": 10
+          }
+        ],
+        "type": "number"
+      }
     ]
-}
+  }

@@ -246,7 +246,7 @@
         "allow_white_spaces": {
           "type": "boolean"
         },
-        "enabled_transformersasdf": {
+        "enabled_transformers": {
           "type": "object",
           "additionalProperties": false,
           "properties": {
@@ -259,6 +259,22 @@
               "description": "[frontend] Преобразует строку вида ' тест' в строку 'тест'",
               "type": "object",
               "additionalProperties": false
+            },
+            "remove_first_letters": {
+              "description": "[frontend] Удаление первого символа, соответствующего паттерну",
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "chars": {
+                  "description": "Символы, которые нужно удалить",
+                  "type": "string",
+                  "minLength": 3,
+                  "pattern": "^\\[.*\\]$"
+                }
+              },
+              "required": [
+                "chars"
+              ]
             },
             "remove_chars": {
               "description": "[backend] Удаляет символы перед валидацией",
@@ -297,8 +313,8 @@
                     "chars": {
                       "description": "Список допустимых символов",
                       "type": "string",
-                      "minLength": 2,
-                      "pattern": "^\\[.*\\]$"
+                      "minLength": 1,
+                      "pattern": "(^\\[.*\\]$)|(^\\.$)"
                     },
                     "min": {
                       "description": "Минимальная длина строки (Если не задана, то равна max)",

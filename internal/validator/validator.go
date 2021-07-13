@@ -14,9 +14,9 @@ type (
 
 	validator struct {
 		fieldValidators *fieldValidators
-		fields map[string]*fields.FieldValidator
-		errors chan string
-		object string
+		fields          map[string]*fields.FieldValidator
+		errors          chan string
+		object          string
 	}
 )
 
@@ -36,14 +36,13 @@ func (v *validator) New(data []byte) error {
 func (v *validator) Init(object string, agreementFields *sync.Map, errors chan string) {
 	v.errors = errors
 	v.object = object
-		
+
 	v.fields = make(map[string]*fields.FieldValidator)
 	for _, field := range v.fieldValidators.Validators {
 		field.Init(object, agreementFields, errors)
 		v.fields[field.FieldName] = field
 	}
 }
-
 
 func (v *validator) Validate(data map[string]interface{}) {
 	waiter := new(sync.WaitGroup)

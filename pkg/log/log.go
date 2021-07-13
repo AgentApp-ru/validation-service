@@ -24,7 +24,9 @@ func addLogstashHook() {
 	if err != nil {
 		Logger.Fatal(err)
 	}
-	hook := logrustash.New(conn, logrustash.DefaultFormatter(logrus.Fields{"type": "validation"}))
+	hook := logrustash.New(conn, logrustash.DefaultFormatter(
+		logrus.Fields{"type": "validation"},
+		))
 
 	Logger.Hooks.Add(hook)
 }

@@ -25,8 +25,8 @@ func NewServer() *server {
 		HttpServer: http.Server{
 			Handler:      r,
 			Addr:         fmt.Sprintf("0.0.0.0%s", config.Settings.BindAddr),
-			WriteTimeout: 5 * time.Second,
-			ReadTimeout:  5 * time.Second,
+			WriteTimeout: 30 * time.Second,
+			ReadTimeout:  30 * time.Second,
 		},
 	}
 }
@@ -79,6 +79,7 @@ func handleGetValidationPattern(object string) http.HandlerFunc {
 
 func handleValidateAll() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		start := time.Now()
 		var (
 			bodyRaw []byte
 			err     error
@@ -94,6 +95,7 @@ func handleValidateAll() http.HandlerFunc {
 		errorFields, err := views.ValidateAgreement(bodyRaw)
 		if err != nil {
 			http_response.HttpError(w, err)
+			log.Logger.Infof("error duration %v", time.Since(start).Round(time.Second))
 			return
 		}
 
@@ -101,6 +103,7 @@ func handleValidateAll() http.HandlerFunc {
 			"error fields": errorFields,
 		}
 		http_response.HttpRespond(w, http.StatusOK, response)
+		log.Logger.Infof("duration %v", time.Since(start).Round(time.Second))
 	}
 }
 

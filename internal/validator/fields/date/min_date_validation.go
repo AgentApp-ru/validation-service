@@ -13,6 +13,10 @@ func (dv *DateValidator) validateMinDate(fieldDate time.Time, pattern *DatePatte
 		ok           bool
 	)
 
+	if len(pattern.Min) == 0 {
+		return true
+	}
+
 	for _, minPattern := range pattern.Min {
 		switch minPattern.PatternType {
 		case "date":

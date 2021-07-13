@@ -179,7 +179,7 @@ func waitingForValue(scope, key string, selfMap, fieldsMap *sync.Map) interface{
 		scopeObjectMap = scopeObjectMapLoaded.(*sync.Map)
 	}
 
-	end := time.Now().Add(2 * time.Second)
+	end := time.Now().Add(10 * time.Second)
 	for time.Now().Before(end) {
 		if value, ok := scopeObjectMap.Load(key); ok {
 			return value

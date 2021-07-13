@@ -13,6 +13,10 @@ func (dv *DateValidator) validateMaxDate(fieldDate time.Time, pattern *DatePatte
 		ok           bool
 	)
 
+	if len(pattern.Max) == 0 {
+		return true
+	}
+
 	for _, maxPattern := range pattern.Max {
 		switch maxPattern.PatternType {
 		case "date":
