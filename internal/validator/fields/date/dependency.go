@@ -130,6 +130,7 @@ func (f *DateDependingConditionFormulaValue) getExpectedDate(selfMap, fieldsMap 
 	)
 
 	initialDate, err := f.Dependency.getInitialDate(selfMap, fieldsMap)
+	// println(fmt.Sprintf("initial %v", initialDate))
 	if err != nil {
 		return time.Time{}, err
 	}

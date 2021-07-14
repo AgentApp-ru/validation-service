@@ -63,9 +63,15 @@ func (a *Agreement) Validate(data map[string]interface{}) {
 	errorWaiter.Add(1)
 	go func() {
 		for e := range a.errors {
-			log.Logger.Warnf("%s/%s. Не прошла валидация %s", a.ps, a.agreementID, e)
 			a.Errors = append(a.Errors, e)
 		}
+
+		if len(a.Errors) > 0 {
+			log.Logger.Warnf(
+				"%s/%s. Ошибки: %v. Первоначальный запрос: %v", a.ps, a.agreementID, a.Errors, data,
+			)
+		}
+
 		errorWaiter.Done()
 	}()
 
