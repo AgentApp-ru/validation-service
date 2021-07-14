@@ -68,7 +68,7 @@ func (a *Agreement) Validate(data map[string]interface{}) {
 
 		if len(a.Errors) > 0 {
 			log.Logger.Warnf(
-				"%s/%s. Ошибки: %v. Первоначальный запрос: %v", a.ps, a.agreementID, a.Errors, data,
+				"%s/%s\n\nОшибки: %v\n\nПервоначальный запрос: %v", a.ps, a.agreementID, a.Errors, data,
 			)
 		}
 
