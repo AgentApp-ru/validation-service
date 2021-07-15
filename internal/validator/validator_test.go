@@ -1,64 +1,50 @@
 package validator
 
 import (
+	"sync"
 	"testing"
-	"validation_service/pkg/config"
-	"validation_service/pkg/log"
-	"validation_service/pkg/storage/file"
+	"validation_service/internal/validator/fields"
 )
 
-func TestCarValidVinField(t *testing.T) {
-	config.Init()
-	log.Init()
-	file.Init()
-	Init(file.Storage)
-
-	rawValidator, _ := Validator.GetRaw("car")
-	validatorClass := Validator.GetValidatorClass(rawValidator)
-
-	data := map[string]string{
-		"number_plate":       "Е2",
-		"vin":                "TMBED45J2B3209311",
-		"manufacturing_year": "1929-01-01",
+func TestNewValidator(t *testing.T) {
+	data := []byte(`
+	{
+		"validators": [
+			{
+				"field": "field",
+				"type": "type",
+				"enabled_transformers": "enabled_transformers",
+				"allow_white_spaces": false,
+				"patterns": "patterns"
+			}
+		]
 	}
+	`)
 
-	fieldsWithErrors := []string{}
-	for k, v := range data {
-		fieldValidator, ok := validatorClass.FieldValidatorsMap[k]
-		if !ok || !validatorClass.Validate(v, fieldValidator, "car") {
-			fieldsWithErrors = append(fieldsWithErrors, k)
-		}
+	v := new(validator)
+
+	err := v.New(data)
+	if err != nil {
+		t.Error(err.Error())
 	}
-
-	if len(fieldsWithErrors) != 2 {
-		t.Errorf("fields with errors should be 2. And they are: %v", fieldsWithErrors)
+	if v.fieldValidators == nil {
+		t.Errorf("fieldValidators shouldn't be nil after New")
 	}
 }
 
-func TestCarValidFields(t *testing.T) {
-	config.Init()
-	log.Init()
-	file.Init()
-	Init(file.Storage)
-
-	rawValidator, _ := Validator.GetRaw("car")
-	validatorClass := Validator.GetValidatorClass(rawValidator)
-
-	data := map[string]string{
-		"number_plate":       "Е271ХМ178",
-		"vin":                "TMBED45J2B3209311",
-		"manufacturing_year": "1931-01-01",
+func TestInitValidator(t *testing.T) {
+	v := &validator{
+		fieldValidators: &fieldValidators{
+			Validators: []*fields.FieldValidator{},
+		},
 	}
 
-	fieldsWithErrors := []string{}
-	for k, v := range data {
-		fieldValidator, ok := validatorClass.FieldValidatorsMap[k]
-		if !ok || !validatorClass.Validate(v, fieldValidator, "car") {
-			fieldsWithErrors = append(fieldsWithErrors, k)
-		}
+	errors := make(chan string)
+	v.Init("object", &sync.Map{}, errors)
+	if v.object != "object" {
+		t.Errorf("expected: 'object' actual '%s'", v.object)
 	}
-
-	if len(fieldsWithErrors) > 0 {
-		t.Errorf("fields with errors should be 2. And they are: %v", fieldsWithErrors)
+	if v.errors != errors {
+		t.Errorf("errors chan should be equal to received")
 	}
 }

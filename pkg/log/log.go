@@ -18,11 +18,15 @@ func Init() {
 }
 
 func addLogstashHook() {
+	// TODO: В логгер тэгаи вкидывать PS + AgreementID, вместо того, чтоб писать внутрь message
+
 	conn, err := net.Dial("tcp", config.Settings.LogstageUrl)
 	if err != nil {
 		Logger.Fatal(err)
 	}
-	hook := logrustash.New(conn, logrustash.DefaultFormatter(logrus.Fields{"type": "validation"}))
+	hook := logrustash.New(conn, logrustash.DefaultFormatter(
+		logrus.Fields{"type": "validation"},
+		))
 
 	Logger.Hooks.Add(hook)
 }

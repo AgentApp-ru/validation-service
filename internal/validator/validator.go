@@ -2,93 +2,61 @@ package validator
 
 import (
 	"encoding/json"
+	"fmt"
+	"sync"
 	"validation_service/internal/validator/fields"
-	date_validation "validation_service/internal/validator/fields/date"
-	num_validation "validation_service/internal/validator/fields/number"
-	str_validation "validation_service/internal/validator/fields/string"
-	"validation_service/pkg/log"
-	"validation_service/pkg/storage"
 )
 
-type validator struct {
-	storage storage.Storage
-}
-
-var Validator *validator
-
-func Init(store storage.Storage) {
-	Validator = &validator{
-		storage: store,
+type (
+	fieldValidators struct {
+		Validators []*fields.FieldValidator `json:"validators"`
 	}
-}
 
-func (v *validator) GetRaw(object string) ([]byte, error) {
-	var (
-		rawData []byte
-		err     error
-	)
+	validator struct {
+		fieldValidators *fieldValidators
+		fields          map[string]*fields.FieldValidator
+		errors          chan string
+		object          string
+	}
+)
 
-	rawData, err = v.storage.Get(object)
-	return rawData, err
-}
+func (v *validator) New(data []byte) error {
+	var fieldValidators *fieldValidators
 
-func (v *validator) Get(object string) (interface{}, error) {
-	var (
-		result  interface{}
-		rawData []byte
-		err     error
-	)
-
-	rawData, err = v.storage.Get(object)
+	err := json.Unmarshal(data, &fieldValidators)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	err = json.Unmarshal(rawData, &result)
+	v.fieldValidators = fieldValidators
 
-	return result, err
+	return nil
 }
 
-type validatorClass struct {
-	Schema             string                   `json:"$schema"`
-	FieldValidators    []*fields.FieldValidator `json:"validators"`
-	FieldValidatorsMap map[string]*fields.FieldValidator
+func (v *validator) Init(object string, agreementFields *sync.Map, errors chan string) {
+	v.errors = errors
+	v.object = object
+
+	v.fields = make(map[string]*fields.FieldValidator)
+	for _, field := range v.fieldValidators.Validators {
+		field.Init(object, agreementFields, errors)
+		v.fields[field.FieldName] = field
+	}
 }
 
-func (v *validator) GetValidatorClass(data []byte) *validatorClass {
-	vc := &validatorClass{}
+func (v *validator) Validate(data map[string]interface{}) {
+	waiter := new(sync.WaitGroup)
 
-	err := json.Unmarshal(data, vc)
-	if err != nil {
-		log.Logger.Error(err)
+	for fieldName, fieldContent := range data {
+		fieldValidator, ok := v.fields[fieldName]
+		if !ok {
+			v.errors <- fmt.Sprintf("%s/%s: %v", v.object, fieldName, fieldContent)
+			continue
+		}
+
+		waiter.Add(1)
+		go fieldValidator.ValidateField(fieldContent, waiter)
 	}
 
-	vc.FieldValidatorsMap = map[string]*fields.FieldValidator{}
-	for _, field := range vc.FieldValidators {
-		vc.FieldValidatorsMap[field.FieldName] = field
-	}
-
-	return vc
-}
-
-func (vc *validatorClass) Validate(field interface{}, fieldValidator *fields.FieldValidator, object string) bool {
-	var ok bool
-
-	switch fieldValidator.FieldType {
-	case "string":
-		ok = str_validation.Validate(field, fieldValidator)
-	case "number":
-		ok = num_validation.Validate(field, fieldValidator)
-	case "date":
-		ok = date_validation.Validate(field, fieldValidator)
-	default:
-		log.Logger.Errorf("unknown type: %s for field: %s", fieldValidator.FieldType, fieldValidator.FieldName)
-		ok = false
-	}
-
-	if !ok {
-		log.Logger.Warnf("Не прошла валидация %s/%s: %v", object, fieldValidator.FieldName, field)
-	}
-
-	return ok
+	waiter.Wait()
 }

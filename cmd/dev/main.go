@@ -1,23 +1,23 @@
 package main
 
 import (
-	"net"
-
-	"github.com/bshuster-repo/logrus-logstash-hook"
-	"github.com/sirupsen/logrus"
+	"fmt"
+	"time"
 )
 
 func main() {
-	log := logrus.New()
-	conn, err := net.Dial("tcp", "elk.b2bpolis.ru:5000")
-	if err != nil {
-		log.Fatal(err)
-	}
-	hook := logrustash.New(conn, logrustash.DefaultFormatter(logrus.Fields{"type": "validation"}))
+	fieldDate, _ := time.Parse("2006-01-02", "2021-07-14")
+	println(fmt.Sprintf("%v", fieldDate))
 
-	log.Hooks.Add(hook)
-	ctx := log.WithFields(logrus.Fields{
-		"partner_store": "lo-vf",
-	})
-	ctx.Info("Hello World!")
+	// fieldDate = fieldDate.Truncate(24*time.Hour)
+	// println(fmt.Sprintf("%v", fieldDate))
+
+	t := time.Now()
+	t = t.Truncate(24*time.Hour)
+
+	println(fmt.Sprintf("%v", t))
+
+	println(!fieldDate.After(t))
+	println(!fieldDate.Before(t))
+	println(fieldDate.Equal(t))
 }

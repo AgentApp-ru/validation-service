@@ -15,6 +15,7 @@ import (
 )
 
 func main() {
+
 	config.Init()
 	log.Init()
 

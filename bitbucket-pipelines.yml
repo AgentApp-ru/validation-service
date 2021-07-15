@@ -6,4 +6,4 @@ pipelines:
         script:
         - apk add gcc musl-dev
         - go mod vendor
-        - WORKING_DIR="$(pwd)" CONFIG_PATH="configs/autotest.toml" go test ./...
+        - WORKING_DIR="$(pwd)" CONFIG_PATH="configs/autotest.toml" go test ./... -race
