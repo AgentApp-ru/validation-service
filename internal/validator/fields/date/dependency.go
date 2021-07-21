@@ -117,10 +117,6 @@ func (f *DateDependingFormulaValue) getExpectedDate(selfMap, fieldsMap *sync.Map
 		days = 0 + days
 	}
 
-	if days == 0 {
-		days = -1
-	}
-
 	return initialDate.AddDate(years, months, days), nil
 }
 

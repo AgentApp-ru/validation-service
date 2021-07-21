@@ -8,18 +8,18 @@ import (
 )
 
 type Agreement struct {
-	ps          string
-	agreementID string
-	fields      *sync.Map
-	Errors      []string
-	errors      chan string
+	service string
+	logId   string
+	fields  *sync.Map
+	Errors  []string
+	errors  chan string
 }
 
-func NewAgreement(ps, agreementID string) *Agreement {
+func NewAgreement(service, logId string) *Agreement {
 	a := &Agreement{
-		ps:          ps,
-		agreementID: agreementID,
-		fields:      new(sync.Map),
+		service: service,
+		logId:   logId,
+		fields:  new(sync.Map),
 		Errors:      make([]string, 0),
 	}
 	a.fields.Store("car", new(sync.Map))
@@ -68,7 +68,7 @@ func (a *Agreement) Validate(data map[string]interface{}) {
 
 		if len(a.Errors) > 0 {
 			log.Logger.Warnf(
-				"%s/%s\n\nОшибки: %v\n\nПервоначальный запрос: %v", a.ps, a.agreementID, a.Errors, data,
+				"%s/%s\n\nОшибки: %v\n\nПервоначальный запрос: %v", a.service, a.logId, a.Errors, data,
 			)
 		}
 

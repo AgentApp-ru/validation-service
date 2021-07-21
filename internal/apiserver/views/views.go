@@ -28,18 +28,50 @@ func GetValidationPattern(object string) (interface{}, error) {
 }
 
 func ValidateAgreement(bodyRaw []byte) ([]string, error) {
-	var body map[string]interface{}
+	var (
+		body    map[string]interface{}
+		service string
+		logId   string
+	)
 	if err := json.Unmarshal(bodyRaw, &body); err != nil {
 		return []string{}, err
 	}
 
 	ps, agreementID := getPsAndAgreementID(body)
-	agreement := models.NewAgreement(ps, agreementID)
+	if ps == "" && agreementID == "" {
+		service, logId = getServiceAndLogID(body)
+	} else { // deprecated branch
+		service = ps
+		logId = agreementID
+	}
+
+	agreement := models.NewAgreement(service, logId)
 	agreement.Validate(body)
 
 	return agreement.Errors, nil
 }
 
+func getServiceAndLogID(b map[string]interface{}) (string, string) {
+	var service, logId string
+
+	generalLoaded, ok := b["general"]
+	if ok {
+		general := generalLoaded.(map[string]interface{})
+		serviceRaw, ok := general["service"]
+		if ok {
+			service = serviceRaw.(string)
+		}
+		logIRaw, ok := general["log_id"]
+		if ok {
+			logId = logIRaw.(string)
+		}
+
+	}
+
+	return service, logId
+}
+
+// deprecated
 func getPsAndAgreementID(b map[string]interface{}) (string, string) {
 	var ps, agreementID string
 	generalLoaded, ok := b["general"]
