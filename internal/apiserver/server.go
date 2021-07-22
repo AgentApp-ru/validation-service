@@ -49,7 +49,9 @@ func configureRouter(router *mux.Router) {
 
 	v1Router := apiRouter.PathPrefix("/v1").Subrouter()
 	v1Router.HandleFunc("/validations/car", handleGetValidationPattern("car")).Methods("GET")
-	v1Router.HandleFunc("/validations/person", handleGetValidationPattern("person")).Methods("GET")
+	v1Router.HandleFunc("/validations/person", handleGetValidationPattern("person")).Methods("GET")  // deprecated
+	v1Router.HandleFunc("/validations/insurer", handleGetValidationPattern("insurer")).Methods("GET")
+	v1Router.HandleFunc("/validations/owner", handleGetValidationPattern("owner")).Methods("GET")
 	v1Router.HandleFunc("/validations/driver", handleGetValidationPattern("driver")).Methods("GET")
 	v1Router.HandleFunc("/validations/agreement", handleGetValidationPattern("agreement")).Methods("GET")
 

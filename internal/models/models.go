@@ -7,18 +7,6 @@ import (
 	"validation_service/pkg/log"
 )
 
-var VALIDATION_PATTERN_MATHER map[string]string
-
-func init() {
-	VALIDATION_PATTERN_MATHER = map[string]string{
-		"car":       "car",
-		"owner":     "person",
-		"insurer":   "person",
-		"driver":    "driver",
-		"agreement": "agreement",
-	}
-}
-
 type Agreement struct {
 	service      string
 	logId        string
@@ -118,7 +106,7 @@ func (a *Agreement) validateFields(object string, rawFields interface{}, waiter 
 		fields = rawFields.(map[string]interface{})
 	}
 
-	a.validate(object, VALIDATION_PATTERN_MATHER[object], fields)
+	a.validate(object, object, fields)
 }
 
 func (a *Agreement) validateDriversFields(i int, driversFields map[string]interface{}, waiter *sync.WaitGroup) {
@@ -127,7 +115,7 @@ func (a *Agreement) validateDriversFields(i int, driversFields map[string]interf
 	key := fmt.Sprintf("driver_%d", i)
 
 	a.fields.Store(key, new(sync.Map))
-	a.validate(key, VALIDATION_PATTERN_MATHER["driver"], driversFields)
+	a.validate(key, "driver", driversFields)
 }
 
 func (a *Agreement) validate(object, validationClassPattern string, data map[string]interface{}) {

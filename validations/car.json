@@ -5,8 +5,8 @@
         "field": "car_type",
         "requirements": {
           "required": {
-              "type": "this",
-              "value": true
+            "type": "this",
+            "value": true
           }
         },
         "patterns": [
@@ -27,8 +27,8 @@
         "field": "number_plate",
         "requirements": {
           "required": {
-              "type": "this",
-              "value": false
+            "type": "this",
+            "value": false
           }
         },
         "patterns": [
@@ -393,12 +393,12 @@
         "field": "vin",
         "requirements": {
           "required": {
-              "type": "any",
-              "value": [
-                  "vin",
-                  "body_number",
-                  "chassis_number"
-              ]
+            "type": "any",
+            "value": [
+              "vin",
+              "body_number",
+              "chassis_number"
+            ]
           }
         },
         "patterns": [
@@ -422,12 +422,12 @@
         "field": "body_number",
         "requirements": {
           "required": {
-              "type": "any",
-              "value": [
-                  "vin",
-                  "body_number",
-                  "chassis_number"
-              ]
+            "type": "any",
+            "value": [
+              "vin",
+              "body_number",
+              "chassis_number"
+            ]
           }
         },
         "patterns": [
@@ -458,12 +458,12 @@
         "field": "chassis_number",
         "requirements": {
           "required": {
-              "type": "any",
-              "value": [
-                  "vin",
-                  "body_number",
-                  "chassis_number"
-              ]
+            "type": "any",
+            "value": [
+              "vin",
+              "body_number",
+              "chassis_number"
+            ]
           }
         },
         "patterns": [
@@ -494,8 +494,8 @@
         "field": "diagnostic_chart",
         "requirements": {
           "required": {
-              "type": "depends_on",
-              "value": "diagnostic_chart_valid_to"
+            "type": "depends_on",
+            "value": "diagnostic_chart_valid_to"
           }
         },
         "patterns": [
@@ -525,13 +525,13 @@
         "field": "vehicle_registration",
         "requirements": {
           "required": {
-              "type": "any",
-              "value": [
-                  "vehicle_registration",
-                  "vehicle_passport",
-                  "vehicle_e_passport",
-                  "self_propelled_car_passport"
-              ]
+            "type": "any",
+            "value": [
+              "vehicle_registration",
+              "vehicle_passport",
+              "vehicle_e_passport",
+              "self_propelled_car_passport"
+            ]
           }
         },
         "patterns": [
@@ -578,13 +578,13 @@
         "field": "vehicle_passport",
         "requirements": {
           "required": {
-              "type": "any",
-              "value": [
-                  "vehicle_registration",
-                  "vehicle_passport",
-                  "vehicle_e_passport",
-                  "self_propelled_car_passport"
-              ]
+            "type": "any",
+            "value": [
+              "vehicle_registration",
+              "vehicle_passport",
+              "vehicle_e_passport",
+              "self_propelled_car_passport"
+            ]
           }
         },
         "patterns": [
@@ -631,13 +631,13 @@
         "field": "self_propelled_car_passport",
         "requirements": {
           "required": {
-              "type": "any",
-              "value": [
-                  "vehicle_registration",
-                  "vehicle_passport",
-                  "vehicle_e_passport",
-                  "self_propelled_car_passport"
-              ]
+            "type": "any",
+            "value": [
+              "vehicle_registration",
+              "vehicle_passport",
+              "vehicle_e_passport",
+              "self_propelled_car_passport"
+            ]
           }
         },
         "patterns": [
@@ -693,13 +693,13 @@
         "field": "vehicle_e_passport",
         "requirements": {
           "required": {
-              "type": "any",
-              "value": [
-                  "vehicle_registration",
-                  "vehicle_passport",
-                  "vehicle_e_passport",
-                  "self_propelled_car_passport"
-              ]
+            "type": "any",
+            "value": [
+              "vehicle_registration",
+              "vehicle_passport",
+              "vehicle_e_passport",
+              "self_propelled_car_passport"
+            ]
           }
         },
         "patterns": [
@@ -735,8 +735,8 @@
         "field": "vehicle_passport_mark_title",
         "requirements": {
           "required": {
-              "type": "depends_on",
-              "value": "vehicle_passport_model_title"
+            "type": "depends_on",
+            "value": "vehicle_passport_model_title"
           }
         },
         "enabled_transformers": {
@@ -762,8 +762,8 @@
         "field": "vehicle_passport_model_title",
         "requirements": {
           "required": {
-              "type": "depends_on",
-              "value": "vehicle_passport_mark_title"
+            "type": "depends_on",
+            "value": "vehicle_passport_mark_title"
           }
         },
         "enabled_transformers": {
@@ -789,8 +789,8 @@
         "field": "self_propelled_car_passport_mark_title",
         "requirements": {
           "required": {
-              "type": "depends_on",
-              "value": "self_propelled_car_passport_model_title"
+            "type": "depends_on",
+            "value": "self_propelled_car_passport_model_title"
           }
         },
         "enabled_transformers": {
@@ -816,8 +816,8 @@
         "field": "self_propelled_car_passport_model_title",
         "requirements": {
           "required": {
-              "type": "depends_on",
-              "value": "self_propelled_car_passport_mark_title"
+            "type": "depends_on",
+            "value": "self_propelled_car_passport_mark_title"
           }
         },
         "enabled_transformers": {
@@ -843,8 +843,8 @@
         "field": "max_weight",
         "requirements": {
           "required": {
-              "type": "this",
-              "value": false
+            "type": "this",
+            "value": false
           }
         },
         "patterns": [
@@ -858,8 +858,8 @@
         "field": "max_seats_count",
         "requirements": {
           "required": {
-              "type": "this",
-              "value": false
+            "type": "this",
+            "value": false
           }
         },
         "patterns": [
@@ -873,8 +873,8 @@
         "field": "diagnostic_chart_valid_to",
         "requirements": {
           "required": {
-              "type": "depends_on",
-              "value": "diagnostic_chart"
+            "type": "depends_on",
+            "value": "diagnostic_chart"
           }
         },
         "patterns": [
@@ -894,8 +894,8 @@
         "field": "credential_issue_date",
         "requirements": {
           "required": {
-              "type": "this",
-              "value": true
+            "type": "this",
+            "value": true
           }
         },
         "patterns": [
@@ -923,8 +923,8 @@
         "field": "manufacturing_year",
         "requirements": {
           "required": {
-              "type": "this",
-              "value": true
+            "type": "this",
+            "value": true
           }
         },
         "patterns": [
@@ -949,8 +949,8 @@
         "field": "engine_power",
         "requirements": {
           "required": {
-              "type": "this",
-              "value": true
+            "type": "this",
+            "value": true
           }
         },
         "patterns": [

@@ -4,14 +4,14 @@
       {
         "field": "first_name",
         "requirements": {
-            "required": {
-                "type": "any",
-                "value": [
-                    "first_name",
-                    "first_name_foreign"
-                ]
-            }
-          },
+          "required": {
+            "type": "any",
+            "value": [
+              "first_name",
+              "first_name_foreign"
+            ]
+          }
+        },
         "type": "string",
         "allow_white_spaces": true,
         "enabled_transformers": {
@@ -34,14 +34,14 @@
       {
         "field": "last_name",
         "requirements": {
-            "required": {
-                "type": "any",
-                "value": [
-                    "last_name",
-                    "last_name_foreign"
-                ]
-            }
-          },
+          "required": {
+            "type": "any",
+            "value": [
+              "last_name",
+              "last_name_foreign"
+            ]
+          }
+        },
         "allow_white_spaces": true,
         "enabled_transformers": {
           "camel_case": {},
@@ -64,11 +64,11 @@
       {
         "field": "previous_last_name",
         "requirements": {
-            "required": {
-                "type": "this",
-                "value": false
-            }
-          },
+          "required": {
+            "type": "this",
+            "value": false
+          }
+        },
         "allow_white_spaces": true,
         "enabled_transformers": {
           "camel_case": {},
@@ -91,11 +91,11 @@
       {
         "field": "patronymic",
         "requirements": {
-            "required": {
-                "type": "this",
-                "value": false
-            }
-          },
+          "required": {
+            "type": "this",
+            "value": false
+          }
+        },
         "allow_white_spaces": true,
         "enabled_transformers": {
           "camel_case": {},
@@ -118,11 +118,11 @@
       {
         "field": "birth_date",
         "requirements": {
-            "required": {
-                "type": "this",
-                "value": true
-            }
-          },
+          "required": {
+            "type": "this",
+            "value": true
+          }
+        },
         "patterns": [
           {
             "max": [
@@ -152,14 +152,14 @@
       {
         "field": "driver_license",
         "requirements": {
-            "required": {
-                "type": "any",
-                "value": [
-                    "driver_license",
-                    "foreign_driver_license"
-                ]
-            }
-          },
+          "required": {
+            "type": "any",
+            "value": [
+              "driver_license",
+              "foreign_driver_license"
+            ]
+          }
+        },
         "allow_white_spaces": true,
         "patterns": [
           {
@@ -216,11 +216,11 @@
       {
         "field": "previous_driver_license",
         "requirements": {
-            "required": {
-                "type": "this",
-                "value": false
-            }
-          },
+          "required": {
+            "type": "this",
+            "value": false
+          }
+        },
         "allow_white_spaces": true,
         "patterns": [
           {
@@ -277,14 +277,14 @@
       {
         "field": "foreign_driver_license",
         "requirements": {
-            "required": {
-                "type": "any",
-                "value": [
-                    "driver_license",
-                    "foreign_driver_license"
-                ]
-            }
-          },
+          "required": {
+            "type": "any",
+            "value": [
+              "driver_license",
+              "foreign_driver_license"
+            ]
+          }
+        },
         "allow_white_spaces": true,
         "patterns": [
           {
@@ -323,11 +323,11 @@
       {
         "field": "previous_foreign_driver_license",
         "requirements": {
-            "required": {
-                "type": "this",
-                "value": false
-            }
-          },
+          "required": {
+            "type": "this",
+            "value": false
+          }
+        },
         "allow_white_spaces": true,
         "patterns": [
           {
@@ -366,14 +366,14 @@
       {
         "field": "first_name_foreign",
         "requirements": {
-            "required": {
-                "type": "any",
-                "value": [
-                    "first_name",
-                    "first_name_foreign"
-                ]
-            }
-          },
+          "required": {
+            "type": "any",
+            "value": [
+              "first_name",
+              "first_name_foreign"
+            ]
+          }
+        },
         "enabled_transformers": {
           "camel_case": {},
           "remove_first_whitespace": {}
@@ -395,14 +395,14 @@
       {
         "field": "last_name_foreign",
         "requirements": {
-            "required": {
-                "type": "any",
-                "value": [
-                    "last_name",
-                    "last_name_foreign"
-                ]
-            }
-          },
+          "required": {
+            "type": "any",
+            "value": [
+              "last_name",
+              "last_name_foreign"
+            ]
+          }
+        },
         "enabled_transformers": {
           "camel_case": {},
           "remove_first_whitespace": {}
@@ -424,11 +424,11 @@
       {
         "field": "patronymic_foreign",
         "requirements": {
-            "required": {
-                "type": "this",
-                "value": false
-            }
-          },
+          "required": {
+            "type": "this",
+            "value": false
+          }
+        },
         "enabled_transformers": {
           "camel_case": {},
           "remove_first_whitespace": {}
@@ -450,11 +450,11 @@
       {
         "field": "driving_experience_started",
         "requirements": {
-            "required": {
-                "type": "this",
-                "value": true
-            }
-          },
+          "required": {
+            "type": "this",
+            "value": true
+          }
+        },
         "type": "date",
         "patterns": [
           {
