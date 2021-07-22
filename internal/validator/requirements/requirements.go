@@ -43,7 +43,7 @@ func (r *Requirements) CheckRequired(isFieldPresent bool, selfMap *sync.Map) boo
 			return false
 		}
 
-		return isWaitingForFieldSucceed(value, selfMap)
+		return isWaitingForFieldSucceed(value, selfMap, 2 * time.Second)
 	case "depends_on":
 		var value dependsOn
 		err := json.Unmarshal(r.Required.Value, &value)
@@ -53,9 +53,7 @@ func (r *Requirements) CheckRequired(isFieldPresent bool, selfMap *sync.Map) boo
 			return false
 		}
 
-		fields := make([]string, 0)
-
-		if isWaitingForFieldSucceed(append(fields, string(value)), selfMap) {
+		if isWaitingForFieldSucceed([]string{string(value)}, selfMap, 150 * time.Millisecond) {
 			return isFieldPresent
 		} else {
 			return true
@@ -65,8 +63,8 @@ func (r *Requirements) CheckRequired(isFieldPresent bool, selfMap *sync.Map) boo
 	}
 }
 
-func isWaitingForFieldSucceed(fieldsToWait []string, scopeObjectMap *sync.Map) bool {
-	end := time.Now().Add(2 * time.Second)
+func isWaitingForFieldSucceed(fieldsToWait []string, scopeObjectMap *sync.Map, timeout time.Duration) bool {
+	end := time.Now().Add(timeout)
 
 	for time.Now().Before(end) {
 		for _, key := range fieldsToWait {
