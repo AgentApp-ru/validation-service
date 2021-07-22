@@ -3,6 +3,12 @@
   "validators": [
     {
       "field": "period",
+      "requirements": {
+        "required": {
+            "type": "this",
+            "value": true
+        }
+      },
       "type": "number",
       "patterns": [
         {
@@ -13,6 +19,12 @@
     },
     {
       "field": "start_date",
+      "requirements": {
+        "required": {
+            "type": "this",
+            "value": true
+        }
+      },
       "type": "date",
       "patterns": [
         {
@@ -41,6 +53,12 @@
     },
     {
       "field": "end_date",
+      "requirements": {
+        "required": {
+            "type": "this",
+            "value": true
+        }
+      },
       "type": "date",
       "patterns": [
         {

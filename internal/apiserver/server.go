@@ -92,7 +92,7 @@ func handleValidateAll() http.HandlerFunc {
 			return
 		}
 
-		errorFields, err := views.ValidateAgreement(bodyRaw)
+		absentFields, errorFields, err := views.ValidateAgreement(bodyRaw)
 		if err != nil {
 			http_response.HttpError(w, err)
 			log.Logger.Infof("error duration %v", time.Since(start).Round(time.Second))
@@ -100,6 +100,7 @@ func handleValidateAll() http.HandlerFunc {
 		}
 
 		response := map[string][]string{
+			"absent fields": absentFields,
 			"error fields": errorFields,
 		}
 		http_response.HttpRespond(w, http.StatusOK, response)

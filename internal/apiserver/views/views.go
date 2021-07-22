@@ -27,14 +27,14 @@ func GetValidationPattern(object string) (interface{}, error) {
 	return result, err
 }
 
-func ValidateAgreement(bodyRaw []byte) ([]string, error) {
+func ValidateAgreement(bodyRaw []byte) ([]string, []string, error) {
 	var (
 		body    map[string]interface{}
 		service string
 		logId   string
 	)
 	if err := json.Unmarshal(bodyRaw, &body); err != nil {
-		return []string{}, err
+		return []string{}, []string{}, err
 	}
 
 	ps, agreementID := getPsAndAgreementID(body)
@@ -48,7 +48,7 @@ func ValidateAgreement(bodyRaw []byte) ([]string, error) {
 	agreement := models.NewAgreement(service, logId)
 	agreement.Validate(body)
 
-	return agreement.Errors, nil
+	return agreement.AbsentFields, agreement.Errors, nil
 }
 
 func getServiceAndLogID(b map[string]interface{}) (string, string) {

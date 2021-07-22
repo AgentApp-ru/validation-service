@@ -16,6 +16,7 @@ type (
 		fieldValidators *fieldValidators
 		fields          map[string]*fields.FieldValidator
 		errors          chan string
+		absentFields    chan string
 		object          string
 	}
 )
@@ -33,19 +34,27 @@ func (v *validator) New(data []byte) error {
 	return nil
 }
 
-func (v *validator) Init(object string, agreementFields *sync.Map, errors chan string) {
+func (v *validator) Init(object string, agreementFields *sync.Map, errors, absentFields chan string) {
 	v.errors = errors
+	v.absentFields = absentFields
 	v.object = object
 
 	v.fields = make(map[string]*fields.FieldValidator)
 	for _, field := range v.fieldValidators.Validators {
-		field.Init(object, agreementFields, errors)
+		field.Init(object, agreementFields, errors, absentFields)
 		v.fields[field.FieldName] = field
 	}
 }
 
 func (v *validator) Validate(data map[string]interface{}) {
 	waiter := new(sync.WaitGroup)
+
+	for fieldName, fieldValidator := range v.fields {
+		waiter.Add(1)
+		go fieldValidator.CheckRequirementField(data[fieldName], waiter)
+	}
+
+	waiter.Wait()
 
 	for fieldName, fieldContent := range data {
 		fieldValidator, ok := v.fields[fieldName]
