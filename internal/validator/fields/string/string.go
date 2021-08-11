@@ -33,6 +33,7 @@ type (
 	}
 
 	StringValidator struct {
+		fieldName        string
 		objectMap        *sync.Map
 		allFieldsMap     *sync.Map
 		errors           chan string
@@ -47,6 +48,7 @@ func New() *StringValidator {
 }
 
 func (sv *StringValidator) Init(
+	fieldName string,
 	objectMap,
 	allFieldsMap *sync.Map,
 	errors chan string,
@@ -54,6 +56,7 @@ func (sv *StringValidator) Init(
 	patterns json.RawMessage,
 	allowWhiteSpaces bool,
 ) {
+	sv.fieldName = fieldName
 	sv.objectMap = objectMap
 	sv.allFieldsMap = allFieldsMap
 	sv.errors = errors
@@ -70,7 +73,7 @@ func (sv *StringValidator) Validate(field interface{}) bool {
 	)
 
 	if strField, ok = field.(string); !ok {
-		log.Logger.Error("type conversion failed")
+		log.Logger.Errorf("type conversion failed: %s -> %v", sv.fieldName, field)
 		return false
 	}
 

@@ -15,6 +15,7 @@ type (
 	}
 
 	DateValidator struct {
+		fieldName        string
 		objectMap        *sync.Map
 		allFieldsMap     *sync.Map
 		errors           chan string
@@ -39,6 +40,7 @@ func New() *DateValidator {
 }
 
 func (dv *DateValidator) Init(
+	fieldName        string,
 	objectMap,
 	allFieldsMap *sync.Map,
 	errors chan string,
@@ -46,6 +48,7 @@ func (dv *DateValidator) Init(
 	patterns json.RawMessage,
 	allowWhiteSpaces bool,
 ) {
+	dv.fieldName = fieldName
 	dv.objectMap = objectMap
 	dv.allFieldsMap = allFieldsMap
 	dv.errors = errors
@@ -64,7 +67,7 @@ func (dv *DateValidator) Validate(field interface{}) bool {
 	)
 
 	if strField, ok = field.(string); !ok {
-		log.Logger.Error("type conversion failed")
+		log.Logger.Errorf("type conversion failed: %s -> %v", dv.fieldName, field)
 		return false
 	}
 

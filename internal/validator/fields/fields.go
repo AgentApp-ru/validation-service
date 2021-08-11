@@ -27,7 +27,7 @@ type (
 	}
 
 	fieldvalidatorImpl interface {
-		Init(*sync.Map, *sync.Map, chan string, *json.RawMessage, json.RawMessage, bool)
+		Init(string, *sync.Map, *sync.Map, chan string, *json.RawMessage, json.RawMessage, bool)
 		Validate(interface{}) bool
 	}
 )
@@ -78,6 +78,7 @@ func (fv *FieldValidator) ValidateField(field interface{}, waiter *sync.WaitGrou
 	}
 
 	fieldvalidatorImpl.Init(
+		fmt.Sprintf("%s/%s", fv.object, fv.FieldName),
 		fv.objectMap,
 		fv.agreementFieldsMap,
 		fv.errors,

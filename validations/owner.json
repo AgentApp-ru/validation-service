@@ -1,601 +1,645 @@
 {
-    "$schema": "./schema.json",
-    "validators": [
-      {
-        "field": "first_name",
-        "requirements": {
-          "required": {
-            "type": "any",
-            "value": [
-              "first_name",
-              "first_name_foreign"
-            ]
-          }
-        },
-        "enabled_transformers": {
-          "camel_case": {},
-          "remove_first_whitespace": {}
-        },
-        "patterns": [
-          {
-            "name": "name",
-            "patterns": [
-              {
-                "chars": "[а-яА-ЯёЁ\\s-'`]",
-                "max": 60,
-                "min": 1
-              }
-            ]
-          }
-        ],
-        "type": "string"
+  "$schema": "./schema.json",
+  "validators": [
+    {
+      "field": "first_name",
+      "requirements": {
+        "required": {
+          "type": "any",
+          "value": [
+            "first_name",
+            "first_name_foreign"
+          ]
+        }
       },
-      {
-        "field": "last_name",
-        "requirements": {
-          "required": {
-            "type": "any",
-            "value": [
-              "last_name",
-              "last_name_foreign"
-            ]
-          }
-        },
-        "enabled_transformers": {
-          "camel_case": {},
-          "remove_first_whitespace": {}
-        },
-        "patterns": [
-          {
-            "name": "name",
-            "patterns": [
-              {
-                "chars": "[а-яА-ЯёЁ\\s-'`]",
-                "max": 60,
-                "min": 0
-              }
-            ]
-          }
-        ],
-        "type": "string"
+      "enabled_transformers": {
+        "camel_case": {},
+        "remove_first_whitespace": {}
       },
-      {
-        "field": "patronymic",
-        "requirements": {
-          "required": {
-            "type": "this",
-            "value": false
-          }
-        },
-        "enabled_transformers": {
-          "camel_case": {},
-          "remove_first_whitespace": {}
-        },
-        "patterns": [
-          {
-            "name": "name",
-            "patterns": [
-              {
-                "chars": "[а-яА-ЯёЁ\\s-'`]",
-                "max": 60,
-                "min": 0
-              }
-            ]
-          }
-        ],
-        "type": "string"
+      "patterns": [
+        {
+          "name": "name",
+          "patterns": [
+            {
+              "chars": "[а-яА-ЯёЁ\\s-'`]",
+              "max": 60,
+              "min": 1
+            }
+          ]
+        }
+      ],
+      "type": "string"
+    },
+    {
+      "field": "last_name",
+      "requirements": {
+        "required": {
+          "type": "any",
+          "value": [
+            "last_name",
+            "last_name_foreign"
+          ]
+        }
       },
-      {
-        "field": "first_name_foreign",
-        "requirements": {
-          "required": {
-            "type": "any",
-            "value": [
-              "first_name",
-              "first_name_foreign"
-            ]
-          }
-        },
-        "enabled_transformers": {
-          "camel_case": {},
-          "remove_first_whitespace": {}
-        },
-        "patterns": [
-          {
-            "name": "name",
-            "patterns": [
-              {
-                "chars": "[А-Яа-яЁёA-Za-z\\s\\-]",
-                "max": 60,
-                "min": 1
-              }
-            ]
-          }
-        ],
-        "type": "string"
+      "enabled_transformers": {
+        "camel_case": {},
+        "remove_first_whitespace": {}
       },
-      {
-        "field": "last_name_foreign",
-        "requirements": {
-          "required": {
-            "type": "any",
-            "value": [
-              "last_name",
-              "last_name_foreign"
-            ]
-          }
-        },
-        "enabled_transformers": {
-          "camel_case": {},
-          "remove_first_whitespace": {}
-        },
-        "patterns": [
-          {
-            "name": "name",
-            "patterns": [
-              {
-                "chars": "[А-Яа-яЁёA-Za-z\\s\\-]",
-                "max": 60,
-                "min": 0
-              }
-            ]
-          }
-        ],
-        "type": "string"
+      "patterns": [
+        {
+          "name": "name",
+          "patterns": [
+            {
+              "chars": "[а-яА-ЯёЁ\\s-'`]",
+              "max": 60,
+              "min": 0
+            }
+          ]
+        }
+      ],
+      "type": "string"
+    },
+    {
+      "field": "patronymic",
+      "requirements": {
+        "required": {
+          "type": "this",
+          "value": false
+        }
       },
-      {
-        "field": "patronymic_foreign",
-        "requirements": {
-          "required": {
-            "type": "this",
-            "value": false
-          }
-        },
-        "enabled_transformers": {
-          "camel_case": {},
-          "remove_first_whitespace": {}
-        },
-        "patterns": [
-          {
-            "name": "name",
-            "patterns": [
-              {
-                "chars": "[А-Яа-яЁёA-Za-z\\s\\-]",
-                "max": 60,
-                "min": 0
-              }
-            ]
-          }
-        ],
-        "type": "string"
+      "enabled_transformers": {
+        "camel_case": {},
+        "remove_first_whitespace": {}
       },
-      {
-        "field": "birth_date",
-        "requirements": {
-          "required": {
-            "type": "this",
-            "value": true
-          }
-        },
-        "type": "date",
-        "patterns": [
-          {
-            "max": [
-              {
-                "type": "depending_formula",
-                "value": {
-                  "depending": {
-                    "type": "now",
-                    "value": null
-                  },
-                  "operation": "subtract",
-                  "value": 18,
-                  "unit": "year"
-                }
-              }
-            ],
-            "min": [
-              {
-                "type": "date",
-                "value": "1923-01-01"
-              }
-            ]
-          }
-        ]
+      "patterns": [
+        {
+          "name": "name",
+          "patterns": [
+            {
+              "chars": "[а-яА-ЯёЁ\\s-'`]",
+              "max": 60,
+              "min": 0
+            }
+          ]
+        }
+      ],
+      "type": "string"
+    },
+    {
+      "field": "first_name_foreign",
+      "requirements": {
+        "required": {
+          "type": "any",
+          "value": [
+            "first_name",
+            "first_name_foreign"
+          ]
+        }
       },
-      {
-        "field": "russian_internal_passport",
-        "requirements": {
-          "required": {
-            "type": "any",
-            "value": [
-              "russian_internal_passport",
-              "foreign_external_passport"
-            ]
-          }
-        },
-        "type": "string",
-        "allow_white_spaces": true,
-        "patterns": [
-          {
-            "name": "series",
-            "patterns": [
-              {
-                "chars": "[0-9]",
-                "max": 2
-              },
-              {
-                "chars": "[0-9]",
-                "max": 2
-              }
-            ]
-          },
-          {
-            "name": "number",
-            "patterns": [
-              {
-                "chars": "[0-9]",
-                "max": 6
-              }
-            ]
-          }
-        ]
+      "enabled_transformers": {
+        "camel_case": {},
+        "remove_first_whitespace": {}
       },
-      {
-        "field": "foreign_external_passport",
-        "requirements": {
-          "required": {
-            "type": "any",
-            "value": [
-              "russian_internal_passport",
-              "foreign_external_passport"
-            ]
-          }
-        },
-        "allow_white_spaces": false,
-        "patterns": [
-          {
-            "name": "series",
-            "patterns": [
-              {
-                "chars": "[A-Z\\d]",
-                "max": 10,
-                "min": 1
-              }
-            ]
-          },
-          {
-            "name": "number",
-            "patterns": [
-              {
-                "chars": "[A-Z\\d]",
-                "max": 10,
-                "min": 3
-              }
-            ]
-          }
-        ],
-        "type": "string"
+      "patterns": [
+        {
+          "name": "name",
+          "patterns": [
+            {
+              "chars": "[А-Яа-яЁёA-Za-z\\s\\-]",
+              "max": 60,
+              "min": 1
+            }
+          ]
+        }
+      ],
+      "type": "string"
+    },
+    {
+      "field": "last_name_foreign",
+      "requirements": {
+        "required": {
+          "type": "any",
+          "value": [
+            "last_name",
+            "last_name_foreign"
+          ]
+        }
       },
-      {
-        "field": "credential__issue_date",
-        "requirements": {
-          "required": {
-            "type": "this",
-            "value": true
-          }
-        },
-        "patterns": [
-          {
-            "max": [
-              {
-                "type": "now",
-                "value": null
-              }
-            ],
-            "min": [
-              {
-                "type": "depending_formula",
-                "value": {
-                  "depending": {
-                    "type": "depending",
-                    "value": {
-                      "scope": "self",
-                      "key": "birth_date"
-                    }
-                  },
-                  "operation": "add",
-                  "value": 14,
-                  "unit": "year"
-                }
-              }
-            ]
-          }
-        ],
-        "type": "date"
+      "enabled_transformers": {
+        "camel_case": {},
+        "remove_first_whitespace": {}
       },
-      {
-        "field": "credential__issue_point",
-        "requirements": {
-          "required": {
-            "type": "this",
-            "value": true
-          }
-        },
-        "patterns": [
-          {
-            "name": "issue_point",
-            "patterns": [
-              {
-                "chars": "[а-яА-ЯёЁ\\s'`.0-9N/№-]",
-                "max": 255,
-                "min": 1
-              }
-            ]
-          }
-        ],
-        "type": "string"
+      "patterns": [
+        {
+          "name": "name",
+          "patterns": [
+            {
+              "chars": "[А-Яа-яЁёA-Za-z\\s\\-]",
+              "max": 60,
+              "min": 0
+            }
+          ]
+        }
+      ],
+      "type": "string"
+    },
+    {
+      "field": "patronymic_foreign",
+      "requirements": {
+        "required": {
+          "type": "this",
+          "value": false
+        }
       },
-      {
-        "field": "address",
-        "requirements": {
-          "required": {
-            "type": "this",
-            "value": true
-          }
-        },
-        "patterns": [
-          {
-            "name": "address",
-            "patterns": [
-              {
-                "chars": "[а-яА-ЯёЁ0-9/\\(\\)\\s№,.'`N<>-]",
-                "max": 1000,
-                "min": 5
-              }
-            ]
-          }
-        ],
-        "type": "string"
+      "enabled_transformers": {
+        "camel_case": {},
+        "remove_first_whitespace": {}
       },
-      {
-        "field": "phone",
-        "requirements": {
-          "required": {
-            "type": "this",
-            "value": false
-          }
-        },
-        "enabled_transformers": {
-          "remove_chars": {
-            "chars": "[-+()\\s]"
-          }
-        },
-        "patterns": [
-          {
-            "name": "phone",
-            "patterns": [
-              {
-                "chars": "[0-9]",
-                "max": 18,
-                "min": 11
-              }
-            ]
-          }
-        ],
-        "type": "string"
+      "patterns": [
+        {
+          "name": "name",
+          "patterns": [
+            {
+              "chars": "[А-Яа-яЁёA-Za-z\\s\\-]",
+              "max": 60,
+              "min": 0
+            }
+          ]
+        }
+      ],
+      "type": "string"
+    },
+    {
+      "field": "birth_date",
+      "requirements": {
+        "required": {
+          "type": "this",
+          "value": true
+        }
       },
-      {
-        "field": "email",
-        "requirements": {
-          "required": {
-            "type": "this",
-            "value": false
-          }
+      "type": "date",
+      "patterns": [
+        {
+          "max": [
+            {
+              "type": "depending_formula",
+              "value": {
+                "depending": {
+                  "type": "now",
+                  "value": null
+                },
+                "operation": "subtract",
+                "value": 18,
+                "unit": "year"
+              }
+            }
+          ],
+          "min": [
+            {
+              "type": "date",
+              "value": "1923-01-01"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "field": "russian_internal_passport",
+      "requirements": {
+        "required": {
+          "type": "any",
+          "value": [
+            "russian_internal_passport",
+            "foreign_external_passport"
+          ]
+        }
+      },
+      "type": "string",
+      "allow_white_spaces": true,
+      "patterns": [
+        {
+          "name": "series",
+          "patterns": [
+            {
+              "chars": "[0-9]",
+              "max": 2
+            },
+            {
+              "chars": "[0-9]",
+              "max": 2
+            }
+          ]
         },
-        "patterns": [
-          {
-            "name": "local-part",
-            "patterns": [
-              {
-                "chars": "[a-zA-Z0-9_+-]",
-                "max": 68,
-                "min": 1
+        {
+          "name": "number",
+          "patterns": [
+            {
+              "chars": "[0-9]",
+              "max": 6
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "field": "foreign_external_passport",
+      "requirements": {
+        "required": {
+          "type": "any",
+          "value": [
+            "russian_internal_passport",
+            "foreign_external_passport"
+          ]
+        }
+      },
+      "allow_white_spaces": false,
+      "patterns": [
+        {
+          "name": "series",
+          "patterns": [
+            {
+              "chars": "[A-Z\\d]",
+              "max": 10,
+              "min": 1
+            }
+          ]
+        },
+        {
+          "name": "number",
+          "patterns": [
+            {
+              "chars": "[A-Z\\d]",
+              "max": 10,
+              "min": 3
+            }
+          ]
+        }
+      ],
+      "type": "string"
+    },
+    {
+      "field": "credential__issue_date",
+      "requirements": {
+        "required": {
+          "type": "this",
+          "value": true
+        }
+      },
+      "patterns": [
+        {
+          "max": [
+            {
+              "type": "now",
+              "value": null
+            }
+          ],
+          "min": [
+            {
+              "type": "depending_formula",
+              "value": {
+                "depending": {
+                  "type": "depending",
+                  "value": {
+                    "scope": "self",
+                    "key": "birth_date"
+                  }
+                },
+                "operation": "add",
+                "value": 14,
+                "unit": "year"
               }
-            ]
-          },
-          {
-            "name": "local-part",
-            "patterns": [
-              {
-                "chars": "[a-zA-Z0-9_+-]",
-                "max": 68,
-                "min": 1
-              },
-              {
-                "chars": "[\\.]",
-                "max": 1,
-                "min": 1
-              },
-              {
-                "chars": "[a-zA-Z0-9_+-]",
-                "max": 68,
-                "min": 1
-              }
-            ]
-          },
-          {
-            "name": "local-part",
-            "patterns": [
-              {
-                "chars": "[a-zA-Z0-9_+-]",
-                "max": 68,
-                "min": 1
-              },
-              {
-                "chars": "[\\.]",
-                "max": 1,
-                "min": 1
-              },
-              {
-                "chars": "[a-zA-Z0-9_+-]",
-                "max": 68,
-                "min": 1
-              },
-              {
-                "chars": "[\\.]",
-                "max": 1,
-                "min": 1
-              },
-              {
-                "chars": "[a-zA-Z0-9_+-]",
-                "max": 68,
-                "min": 1
-              }
-            ]
-          },
-          {
-            "name": "local-part",
-            "patterns": [
-              {
-                "chars": "[a-zA-Z0-9_+-]",
-                "max": 68,
-                "min": 1
-              },
-              {
-                "chars": "[\\.]",
-                "max": 1,
-                "min": 1
-              },
-              {
-                "chars": "[a-zA-Z0-9_+-]",
-                "max": 68,
-                "min": 1
-              },
-              {
-                "chars": "[\\.]",
-                "max": 1,
-                "min": 1
-              },
-              {
-                "chars": "[a-zA-Z0-9_+-]",
-                "max": 68,
-                "min": 1
-              },
-              {
-                "chars": "[\\.]",
-                "max": 1,
-                "min": 1
-              },
-              {
-                "chars": "[a-zA-Z0-9_+-]",
-                "max": 68,
-                "min": 1
-              }
-            ]
-          },
-          {
-            "name": "divider",
-            "patterns": [
-              {
-                "chars": "[@]",
-                "max": 1,
-                "min": 1
-              }
-            ]
-          },
-          {
-            "name": "domain",
-            "patterns": [
-              {
-                "chars": "[a-zA-Z0-9-]",
-                "max": 18,
-                "min": 2
-              },
-              {
-                "chars": "[\\.]",
-                "max": 1,
-                "min": 1
-              },
-              {
-                "chars": "[a-zA-Z0-9-]",
-                "max": 18,
-                "min": 2
-              }
-            ]
-          },
-          {
-            "name": "domain",
-            "patterns": [
-              {
-                "chars": "[a-zA-Z0-9-]",
-                "max": 18,
-                "min": 2
-              },
-              {
-                "chars": "[\\.]",
-                "max": 1,
-                "min": 1
-              },
-              {
-                "chars": "[a-zA-Z0-9-]",
-                "max": 18,
-                "min": 2
-              },
-              {
-                "chars": "[\\.]",
-                "max": 1,
-                "min": 1
-              },
-              {
-                "chars": "[a-zA-Z0-9-]",
-                "max": 18,
-                "min": 2
-              }
-            ]
-          },
-          {
-            "name": "domain",
-            "patterns": [
-              {
-                "chars": "[a-zA-Z0-9-]",
-                "max": 18,
-                "min": 2
-              },
-              {
-                "chars": "[\\.]",
-                "max": 1,
-                "min": 1
-              },
-              {
-                "chars": "[a-zA-Z0-9-]",
-                "max": 18,
-                "min": 2
-              },
-              {
-                "chars": "[\\.]",
-                "max": 1,
-                "min": 1
-              },
-              {
-                "chars": "[a-zA-Z0-9-]",
-                "max": 18,
-                "min": 2
-              },
-              {
-                "chars": "[\\.]",
-                "max": 1,
-                "min": 1
-              },
-              {
-                "chars": "[a-zA-Z0-9-]",
-                "max": 18,
-                "min": 2
-              }
-            ]
-          }
-        ],
-        "type": "string"
-      }
-    ]
-  }
+            }
+          ]
+        }
+      ],
+      "type": "date"
+    },
+    {
+      "field": "credential__issue_point",
+      "requirements": {
+        "required": {
+          "type": "this",
+          "value": true
+        }
+      },
+      "patterns": [
+        {
+          "name": "issue_point",
+          "patterns": [
+            {
+              "chars": "[а-яА-ЯёЁ\\s'`.0-9№-]",
+              "max": 255,
+              "min": 1
+            }
+          ]
+        }
+      ],
+      "type": "string"
+    },
+    {
+      "field": "registration_address",
+      "requirements": {
+        "required": {
+          "type": "this",
+          "value": true
+        }
+      },
+      "patterns": [
+        {
+          "name": "address",
+          "patterns": [
+            {
+              "chars": "[а-яА-ЯёЁ0-9/\\(\\)\\s№,.'`-]",
+              "max": 1000,
+              "min": 5
+            }
+          ]
+        }
+      ],
+      "type": "string"
+    },
+    {
+      "field": "actual_address",
+      "requirements": {
+        "required": {
+          "type": "this",
+          "value": true
+        }
+      },
+      "patterns": [
+        {
+          "name": "address",
+          "patterns": [
+            {
+              "chars": "[а-яА-ЯёЁ0-9/\\(\\)\\s№,.'`-]",
+              "max": 1000,
+              "min": 5
+            }
+          ]
+        }
+      ],
+      "type": "string"
+    },
+    {
+      "field": "address",
+      "requirements": {
+        "required": {
+          "type": "this",
+          "value": false
+        }
+      },
+      "patterns": [
+        {
+          "name": "address",
+          "patterns": [
+            {
+              "chars": "[а-яА-ЯёЁ0-9/\\(\\)\\s№,.'`-]",
+              "max": 1000,
+              "min": 5
+            }
+          ]
+        }
+      ],
+      "type": "string"
+    },
+    {
+      "field": "phone",
+      "requirements": {
+        "required": {
+          "type": "this",
+          "value": false
+        }
+      },
+      "enabled_transformers": {
+        "remove_chars": {
+          "chars": "[-+()\\s]"
+        }
+      },
+      "patterns": [
+        {
+          "name": "phone",
+          "patterns": [
+            {
+              "chars": "[0-9]",
+              "max": 18,
+              "min": 11
+            }
+          ]
+        }
+      ],
+      "type": "string"
+    },
+    {
+      "field": "email",
+      "requirements": {
+        "required": {
+          "type": "this",
+          "value": false
+        }
+      },
+      "patterns": [
+        {
+          "name": "local-part",
+          "patterns": [
+            {
+              "chars": "[a-zA-Z0-9_+-]",
+              "max": 68,
+              "min": 1
+            }
+          ]
+        },
+        {
+          "name": "local-part",
+          "patterns": [
+            {
+              "chars": "[a-zA-Z0-9_+-]",
+              "max": 68,
+              "min": 1
+            },
+            {
+              "chars": "[\\.]",
+              "max": 1,
+              "min": 1
+            },
+            {
+              "chars": "[a-zA-Z0-9_+-]",
+              "max": 68,
+              "min": 1
+            }
+          ]
+        },
+        {
+          "name": "local-part",
+          "patterns": [
+            {
+              "chars": "[a-zA-Z0-9_+-]",
+              "max": 68,
+              "min": 1
+            },
+            {
+              "chars": "[\\.]",
+              "max": 1,
+              "min": 1
+            },
+            {
+              "chars": "[a-zA-Z0-9_+-]",
+              "max": 68,
+              "min": 1
+            },
+            {
+              "chars": "[\\.]",
+              "max": 1,
+              "min": 1
+            },
+            {
+              "chars": "[a-zA-Z0-9_+-]",
+              "max": 68,
+              "min": 1
+            }
+          ]
+        },
+        {
+          "name": "local-part",
+          "patterns": [
+            {
+              "chars": "[a-zA-Z0-9_+-]",
+              "max": 68,
+              "min": 1
+            },
+            {
+              "chars": "[\\.]",
+              "max": 1,
+              "min": 1
+            },
+            {
+              "chars": "[a-zA-Z0-9_+-]",
+              "max": 68,
+              "min": 1
+            },
+            {
+              "chars": "[\\.]",
+              "max": 1,
+              "min": 1
+            },
+            {
+              "chars": "[a-zA-Z0-9_+-]",
+              "max": 68,
+              "min": 1
+            },
+            {
+              "chars": "[\\.]",
+              "max": 1,
+              "min": 1
+            },
+            {
+              "chars": "[a-zA-Z0-9_+-]",
+              "max": 68,
+              "min": 1
+            }
+          ]
+        },
+        {
+          "name": "divider",
+          "patterns": [
+            {
+              "chars": "[@]",
+              "max": 1,
+              "min": 1
+            }
+          ]
+        },
+        {
+          "name": "domain",
+          "patterns": [
+            {
+              "chars": "[a-zA-Z0-9-]",
+              "max": 18,
+              "min": 2
+            },
+            {
+              "chars": "[\\.]",
+              "max": 1,
+              "min": 1
+            },
+            {
+              "chars": "[a-zA-Z0-9-]",
+              "max": 18,
+              "min": 2
+            }
+          ]
+        },
+        {
+          "name": "domain",
+          "patterns": [
+            {
+              "chars": "[a-zA-Z0-9-]",
+              "max": 18,
+              "min": 2
+            },
+            {
+              "chars": "[\\.]",
+              "max": 1,
+              "min": 1
+            },
+            {
+              "chars": "[a-zA-Z0-9-]",
+              "max": 18,
+              "min": 2
+            },
+            {
+              "chars": "[\\.]",
+              "max": 1,
+              "min": 1
+            },
+            {
+              "chars": "[a-zA-Z0-9-]",
+              "max": 18,
+              "min": 2
+            }
+          ]
+        },
+        {
+          "name": "domain",
+          "patterns": [
+            {
+              "chars": "[a-zA-Z0-9-]",
+              "max": 18,
+              "min": 2
+            },
+            {
+              "chars": "[\\.]",
+              "max": 1,
+              "min": 1
+            },
+            {
+              "chars": "[a-zA-Z0-9-]",
+              "max": 18,
+              "min": 2
+            },
+            {
+              "chars": "[\\.]",
+              "max": 1,
+              "min": 1
+            },
+            {
+              "chars": "[a-zA-Z0-9-]",
+              "max": 18,
+              "min": 2
+            },
+            {
+              "chars": "[\\.]",
+              "max": 1,
+              "min": 1
+            },
+            {
+              "chars": "[a-zA-Z0-9-]",
+              "max": 18,
+              "min": 2
+            }
+          ]
+        }
+      ],
+      "type": "string"
+    }
+  ]
+}

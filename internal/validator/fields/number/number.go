@@ -12,6 +12,7 @@ type (
 		Max int `json:"max"`
 	}
 	NumberValidator struct {
+		fieldName        string
 		objectMap        *sync.Map
 		allFieldsMap     *sync.Map
 		errors           chan string
@@ -26,6 +27,7 @@ func New() *NumberValidator {
 }
 
 func (nv *NumberValidator) Init(
+	fieldName        string,
 	objectMap,
 	allFieldsMap *sync.Map,
 	errors chan string,
@@ -33,6 +35,7 @@ func (nv *NumberValidator) Init(
 	patterns json.RawMessage,
 	allowWhiteSpaces bool,
 ) {
+	nv.fieldName = fieldName
 	nv.objectMap = objectMap
 	nv.allFieldsMap = allFieldsMap
 	nv.errors = errors
@@ -50,7 +53,7 @@ func (nv *NumberValidator) Validate(field interface{}) bool {
 	)
 
 	if floatField, ok = field.(float64); !ok {
-		log.Logger.Error("type conversion failed")
+		log.Logger.Errorf("type conversion failed: %s -> %v", nv.fieldName, field)
 		return false
 	}
 
