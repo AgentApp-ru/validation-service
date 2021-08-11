@@ -27,11 +27,9 @@ build: .login
 	${INFO} "Building app..."
 	@docker pull "${IMAGE_PATH}:${QA}" || true
 	@docker pull "${IMAGE_PATH}:${LATEST}" || true
-	@docker build -f "${DOCKERFILE}" -t "${IMAGE_PATH}:compile-stage.${QA}" --cache-from="${IMAGE_PATH}:compile-stage.${QA}" --cache-from="${IMAGE_PATH}:${QA}" --build-arg TARGET=${TARGET} --target compile-image .
-	@docker build -f "${DOCKERFILE}" -t "${IMAGE_PATH}:${QA}" --cache-from="${IMAGE_PATH}:${QA}" --cache-from="${IMAGE_PATH}:compile-stage.${QA}" --cache-from="${IMAGE_PATH}:${LATEST}" --build-arg VCS_REF="${VCS_REF}" --build-arg BUILD_DATE="${BUILD_DATE}" --target runtime-image .
+	@DOCKER_BUILDKIT=1 docker build -f "${DOCKERFILE}" -t "${IMAGE_PATH}:${QA}" --progress=plain --cache-from="${IMAGE_PATH}:${QA}" --cache-from="${IMAGE_PATH}:compile-stage.${QA}" --cache-from="${IMAGE_PATH}:${LATEST}" --build-arg VCS_REF="${VCS_REF}" --build-arg BUILD_DATE="${BUILD_DATE}" --target runtime-image .
 	${INFO} "Built"
 	${INFO} "Pushing app to docker registry..."
-	@docker push "${IMAGE_PATH}:compile-stage.${QA}"
 	@docker push "${IMAGE_PATH}:${QA}"
 	${INFO} "Pushed"
 

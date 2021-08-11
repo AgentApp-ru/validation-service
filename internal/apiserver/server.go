@@ -49,7 +49,9 @@ func configureRouter(router *mux.Router) {
 
 	v1Router := apiRouter.PathPrefix("/v1").Subrouter()
 	v1Router.HandleFunc("/validations/car", handleGetValidationPattern("car")).Methods("GET")
-	v1Router.HandleFunc("/validations/person", handleGetValidationPattern("person")).Methods("GET")
+	v1Router.HandleFunc("/validations/person", handleGetValidationPattern("person")).Methods("GET")  // deprecated
+	v1Router.HandleFunc("/validations/insurer", handleGetValidationPattern("insurer")).Methods("GET")
+	v1Router.HandleFunc("/validations/owner", handleGetValidationPattern("owner")).Methods("GET")
 	v1Router.HandleFunc("/validations/driver", handleGetValidationPattern("driver")).Methods("GET")
 	v1Router.HandleFunc("/validations/agreement", handleGetValidationPattern("agreement")).Methods("GET")
 
@@ -92,7 +94,7 @@ func handleValidateAll() http.HandlerFunc {
 			return
 		}
 
-		errorFields, err := views.ValidateAgreement(bodyRaw)
+		absentFields, errorFields, err := views.ValidateAgreement(bodyRaw)
 		if err != nil {
 			http_response.HttpError(w, err)
 			log.Logger.Infof("error duration %v", time.Since(start).Round(time.Second))
@@ -100,6 +102,7 @@ func handleValidateAll() http.HandlerFunc {
 		}
 
 		response := map[string][]string{
+			"absent fields": absentFields,
 			"error fields": errorFields,
 		}
 		http_response.HttpRespond(w, http.StatusOK, response)

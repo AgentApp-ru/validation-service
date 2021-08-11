@@ -1,129 +1,103 @@
 {
-  "$schema": "./_schema.json",
-  "validators": [
-    {
-      "field": "period",
-      "type": "number",
-      "patterns": [
-        {
-          "max": 12,
-          "min": 3
-        }
-      ]
-    },
-    {
-      "field": "start_date",
-      "type": "date",
-      "patterns": [
-        {
-          "min": [
-            {
-              "type": "now",
-              "value": null
-            }
-          ],
-          "max": [
-            {
-              "type": "depending_formula",
-              "value": {
-                "depending": {
-                  "type": "now",
-                  "value": null
-                },
-                "operation": "add",
-                "value": 3,
-                "unit": "month"
+    "$schema": "./_schema.json",
+    "validators": [
+      {
+        "field": "period",
+        "requirements": {
+          "required": {
+            "type": "this",
+            "value": true
+          }
+        },
+        "type": "number",
+        "patterns": [
+          {
+            "max": 12,
+            "min": 3
+          }
+        ]
+      },
+      {
+        "field": "start_date",
+        "requirements": {
+          "required": {
+            "type": "this",
+            "value": true
+          }
+        },
+        "type": "date",
+        "patterns": [
+          {
+            "min": [
+              {
+                "type": "now",
+                "value": null
               }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "field": "end_date",
-      "type": "date",
-      "patterns": [
-        {
-          "min": [
-            {
-              "type": "depending_condition_formula",
-              "value": {
-                "depending": {
-                  "type": "depending",
-                  "value": {
-                    "scope": "self",
-                    "key": "start_date"
-                  }
-                },
-                "operation": "add",
+            ],
+            "max": [
+              {
+                "type": "depending_formula",
                 "value": {
-                  "field": {
-                    "scope": "self",
-                    "key": "period"
+                  "depending": {
+                    "type": "now",
+                    "value": null
                   },
-                  "condition": {
-                    "type": "equals",
-                    "items": {
-                      "3": 3,
-                      "4": 4,
-                      "5": 5,
-                      "6": 6,
-                      "7": 7,
-                      "8": 8,
-                      "9": 9,
-                      "10": 10,
-                      "11": 11,
-                      "12": 12,
-                      "13": 13
-                    },
-                    "default": 12
-                  }
-                },
-                "unit": "month"
+                  "operation": "add",
+                  "value": 3,
+                  "unit": "month"
+                }
               }
-            }
-          ],
-          "max": [
-            {
-              "type": "depending_condition_formula",
-              "value": {
-                "depending": {
-                  "type": "depending",
-                  "value": {
-                    "scope": "self",
-                    "key": "start_date"
-                  }
-                },
-                "operation": "add",
+            ]
+          }
+        ]
+      },
+      {
+        "field": "end_date",
+        "requirements": {
+          "required": {
+            "type": "this",
+            "value": true
+          }
+        },
+        "type": "date",
+        "patterns": [
+          {
+            "min": [
+              {
+                "type": "depending_formula",
                 "value": {
-                  "field": {
-                    "scope": "self",
-                    "key": "period"
+                  "depending": {
+                    "type": "depending",
+                    "value": {
+                      "scope": "self",
+                      "key": "start_date"
+                    }
                   },
-                  "condition": {
-                    "type": "equals",
-                    "items": {
-                      "3": 3,
-                      "4": 4,
-                      "5": 5,
-                      "6": 6,
-                      "7": 7,
-                      "8": 8,
-                      "9": 9,
-                      "10": 10,
-                      "11": 11,
-                      "12": 12,
-                      "13": 13
-                    },
-                    "default": 12
-                  }
-                },
-                "unit": "month"
+                  "operation": "add",
+                  "value": 364,
+                  "unit": "day"
+                }
               }
-            }
-          ]
-        }
-      ]
-    }
-  ]
-}
+            ],
+            "max": [
+              {
+                "type": "depending_formula",
+                "value": {
+                  "depending": {
+                    "type": "depending",
+                    "value": {
+                      "scope": "self",
+                      "key": "start_date"
+                    }
+                  },
+                  "operation": "add",
+                  "value": 365,
+                  "unit": "day"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }

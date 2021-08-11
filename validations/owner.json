@@ -3,6 +3,15 @@
     "validators": [
       {
         "field": "first_name",
+        "requirements": {
+          "required": {
+            "type": "any",
+            "value": [
+              "first_name",
+              "first_name_foreign"
+            ]
+          }
+        },
         "enabled_transformers": {
           "camel_case": {},
           "remove_first_whitespace": {}
@@ -23,6 +32,15 @@
       },
       {
         "field": "last_name",
+        "requirements": {
+          "required": {
+            "type": "any",
+            "value": [
+              "last_name",
+              "last_name_foreign"
+            ]
+          }
+        },
         "enabled_transformers": {
           "camel_case": {},
           "remove_first_whitespace": {}
@@ -43,6 +61,12 @@
       },
       {
         "field": "patronymic",
+        "requirements": {
+          "required": {
+            "type": "this",
+            "value": false
+          }
+        },
         "enabled_transformers": {
           "camel_case": {},
           "remove_first_whitespace": {}
@@ -63,6 +87,15 @@
       },
       {
         "field": "first_name_foreign",
+        "requirements": {
+          "required": {
+            "type": "any",
+            "value": [
+              "first_name",
+              "first_name_foreign"
+            ]
+          }
+        },
         "enabled_transformers": {
           "camel_case": {},
           "remove_first_whitespace": {}
@@ -83,6 +116,15 @@
       },
       {
         "field": "last_name_foreign",
+        "requirements": {
+          "required": {
+            "type": "any",
+            "value": [
+              "last_name",
+              "last_name_foreign"
+            ]
+          }
+        },
         "enabled_transformers": {
           "camel_case": {},
           "remove_first_whitespace": {}
@@ -103,6 +145,12 @@
       },
       {
         "field": "patronymic_foreign",
+        "requirements": {
+          "required": {
+            "type": "this",
+            "value": false
+          }
+        },
         "enabled_transformers": {
           "camel_case": {},
           "remove_first_whitespace": {}
@@ -123,6 +171,12 @@
       },
       {
         "field": "birth_date",
+        "requirements": {
+          "required": {
+            "type": "this",
+            "value": true
+          }
+        },
         "type": "date",
         "patterns": [
           {
@@ -151,6 +205,15 @@
       },
       {
         "field": "russian_internal_passport",
+        "requirements": {
+          "required": {
+            "type": "any",
+            "value": [
+              "russian_internal_passport",
+              "foreign_external_passport"
+            ]
+          }
+        },
         "type": "string",
         "allow_white_spaces": true,
         "patterns": [
@@ -180,6 +243,15 @@
       },
       {
         "field": "foreign_external_passport",
+        "requirements": {
+          "required": {
+            "type": "any",
+            "value": [
+              "russian_internal_passport",
+              "foreign_external_passport"
+            ]
+          }
+        },
         "allow_white_spaces": false,
         "patterns": [
           {
@@ -207,6 +279,12 @@
       },
       {
         "field": "credential__issue_date",
+        "requirements": {
+          "required": {
+            "type": "this",
+            "value": true
+          }
+        },
         "patterns": [
           {
             "max": [
@@ -238,12 +316,18 @@
       },
       {
         "field": "credential__issue_point",
+        "requirements": {
+          "required": {
+            "type": "this",
+            "value": true
+          }
+        },
         "patterns": [
           {
             "name": "issue_point",
             "patterns": [
               {
-                "chars": "[а-яА-ЯёЁ\\s-'`.0-9№]",
+                "chars": "[а-яА-ЯёЁ\\s'`.0-9N/№-]",
                 "max": 255,
                 "min": 1
               }
@@ -254,12 +338,18 @@
       },
       {
         "field": "address",
+        "requirements": {
+          "required": {
+            "type": "this",
+            "value": true
+          }
+        },
         "patterns": [
           {
             "name": "address",
             "patterns": [
               {
-                "chars": "[а-яА-ЯёЁ0-9-/\\(\\)\\s№,.'`]",
+                "chars": "[а-яА-ЯёЁ0-9/\\(\\)\\s№,.'`N<>-]",
                 "max": 1000,
                 "min": 5
               }
@@ -270,6 +360,12 @@
       },
       {
         "field": "phone",
+        "requirements": {
+          "required": {
+            "type": "this",
+            "value": false
+          }
+        },
         "enabled_transformers": {
           "remove_chars": {
             "chars": "[-+()\\s]"
@@ -291,6 +387,12 @@
       },
       {
         "field": "email",
+        "requirements": {
+          "required": {
+            "type": "this",
+            "value": false
+          }
+        },
         "patterns": [
           {
             "name": "local-part",

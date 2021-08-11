@@ -117,10 +117,6 @@ func (f *DateDependingFormulaValue) getExpectedDate(selfMap, fieldsMap *sync.Map
 		days = 0 + days
 	}
 
-	if days == 0 {
-		days = -1
-	}
-
 	return initialDate.AddDate(years, months, days), nil
 }
 
@@ -180,12 +176,8 @@ func waitingForValue(scope, key string, selfMap, fieldsMap *sync.Map) interface{
 		scopeObjectMap = scopeObjectMapLoaded.(*sync.Map)
 	}
 
-	end := time.Now().Add(10 * time.Second)
-	for time.Now().Before(end) {
-		if value, ok := scopeObjectMap.Load(key); ok {
-			return value
-		}
-		time.Sleep(300 * time.Millisecond)
+	if value, ok := scopeObjectMap.Load(key); ok {
+		return value
 	}
 
 	return nil
