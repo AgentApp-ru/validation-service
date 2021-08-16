@@ -2,7 +2,6 @@ package validator
 
 import (
 	"encoding/json"
-	"fmt"
 	"sync"
 	"validation_service/internal/validator/fields"
 )
