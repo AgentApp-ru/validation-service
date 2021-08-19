@@ -1,31 +1,21 @@
 package main
 
+import (
+	"time"
+	"validation_service/pkg/config"
+	"validation_service/pkg/log"
+)
+
 func main() {
-	// true | true => true
-	// true | false => false
-	// false | true => true
-	// false | false => true
+	config.Init()
+	log.Init()
 
-	// a := make(map[string]interface{})
+	i := 1
+	for {
+		log.Logger.Infof("test %d", i)
+		i++
 
-	// asd := a["asd"]
+		time.Sleep(5 * time.Second)
+	}
 
-	// println(asd)
-	// println(asd == nil)
-	// fmt.Printf("%T", asd)
-
-	// fieldDate, _ := time.Parse("2006-01-02", "2021-07-14")
-	// println(fmt.Sprintf("%v", fieldDate))
-
-	// // fieldDate = fieldDate.Truncate(24*time.Hour)
-	// // println(fmt.Sprintf("%v", fieldDate))
-
-	// t := time.Now()
-	// t = t.Truncate(24*time.Hour)
-
-	// println(fmt.Sprintf("%v", t))
-
-	// println(!fieldDate.After(t))
-	// println(!fieldDate.Before(t))
-	// println(fieldDate.Equal(t))
 }
