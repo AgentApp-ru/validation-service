@@ -494,47 +494,8 @@
       "field": "diagnostic_chart",
       "requirements": {
         "required": {
-          "type": "depending_condition_formula",
-          "value": {
-            "type": "depending_formula",
-            "value": {
-              "depending": {
-                "type": "depending_formula",
-                "value": {
-                  "depending": {
-                    "type": "now",
-                    "value": null,
-                    "value_type": "date"
-                  },
-                  "operation": "subtract",
-                  "value": {
-                    "type": "plain",
-                    "value": 4,
-                    "value_type": "int"
-                  },
-                  "unit": "year"
-                },
-                "value_type": "date"
-              },
-              "operation": "cmp",
-              "value": {
-                "type": "depending",
-                "value": {
-                  "scope": "self",
-                  "key": "manufacturing_year"
-                },
-                "value_type": "date"
-              },
-              "unit": null
-            },
-            "condition": {
-              "type": "equals",
-              "items": {
-                "1": true
-              },
-              "default": false
-            }
-          }
+          "type": "this",
+          "value": false
         }
       },
       "patterns": [

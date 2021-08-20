@@ -173,7 +173,7 @@ func getInitalValue(cType string, cValue json.RawMessage, scopeObjectMap *sync.M
 		}
 		initial_value := waitingForValue(dependingValue.Key, scopeObjectMap)
 		if initial_value == nil {
-			return nil, fmt.Errorf("empty depending value")
+			return nil, fmt.Errorf("empty depending value: %s", dependingValue.Key)
 		}
 		return initial_value, nil
 	}
@@ -230,7 +230,7 @@ func getInitalSecondValueForFormula(dependency dependency, scopeObjectMap *sync.
 		}
 		value = waitingForValue(dependingValueWithType.Key, scopeObjectMap)
 		if value == nil {
-			return nil, fmt.Errorf("empty depending value")
+			return nil, fmt.Errorf("!! empty depending value: %s", dependingValueWithType.Key)
 		}
 	case "depending_formula":
 		value, err = getValueFromDependingFormula(dependency.Value, scopeObjectMap)
@@ -252,7 +252,7 @@ func calculate(
 	var (
 		initialValueDate time.Time
 		secondValueDate  time.Time
-		secondValueInt int
+		secondValueInt   int
 	)
 
 	switch initialValueType {
