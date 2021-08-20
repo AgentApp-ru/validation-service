@@ -1,103 +1,103 @@
 {
-    "$schema": "./_schema.json",
-    "validators": [
-      {
-        "field": "period",
-        "requirements": {
-          "required": {
-            "type": "this",
-            "value": true
-          }
-        },
-        "type": "number",
-        "patterns": [
-          {
-            "max": 12,
-            "min": 3
-          }
-        ]
+  "$schema": "./_schema.json",
+  "validators": [
+    {
+      "field": "period",
+      "patterns": [
+        {
+          "max": 12,
+          "min": 3
+        }
+      ],
+      "requirements": {
+        "required": {
+          "type": "this",
+          "value": true
+        }
       },
-      {
-        "field": "start_date",
-        "requirements": {
-          "required": {
-            "type": "this",
-            "value": true
-          }
-        },
-        "type": "date",
-        "patterns": [
-          {
-            "min": [
-              {
-                "type": "now",
-                "value": null
+      "type": "number"
+    },
+    {
+      "field": "start_date",
+      "patterns": [
+        {
+          "max": [
+            {
+              "type": "depending_formula",
+              "value": {
+                "depending": {
+                  "type": "now",
+                  "value": null
+                },
+                "operation": "add",
+                "unit": "day",
+                "value": 60
               }
-            ],
-            "max": [
-              {
-                "type": "depending_formula",
-                "value": {
-                  "depending": {
-                    "type": "now",
-                    "value": null
-                  },
-                  "operation": "add",
-                  "value": 3,
-                  "unit": "month"
-                }
-              }
-            ]
-          }
-        ]
+            }
+          ],
+          "min": [
+            {
+              "type": "now",
+              "value": null
+            }
+          ]
+        }
+      ],
+      "requirements": {
+        "required": {
+          "type": "this",
+          "value": true
+        }
       },
-      {
-        "field": "end_date",
-        "requirements": {
-          "required": {
-            "type": "this",
-            "value": true
-          }
-        },
-        "type": "date",
-        "patterns": [
-          {
-            "min": [
-              {
-                "type": "depending_formula",
-                "value": {
-                  "depending": {
-                    "type": "depending",
-                    "value": {
-                      "scope": "self",
-                      "key": "start_date"
-                    }
-                  },
-                  "operation": "add",
-                  "value": 364,
-                  "unit": "day"
-                }
+      "type": "date"
+    },
+    {
+      "field": "end_date",
+      "patterns": [
+        {
+          "max": [
+            {
+              "type": "depending_formula",
+              "value": {
+                "depending": {
+                  "type": "depending",
+                  "value": {
+                    "key": "start_date",
+                    "scope": "self"
+                  }
+                },
+                "operation": "add",
+                "unit": "day",
+                "value": 365
               }
-            ],
-            "max": [
-              {
-                "type": "depending_formula",
-                "value": {
-                  "depending": {
-                    "type": "depending",
-                    "value": {
-                      "scope": "self",
-                      "key": "start_date"
-                    }
-                  },
-                  "operation": "add",
-                  "value": 365,
-                  "unit": "day"
-                }
+            }
+          ],
+          "min": [
+            {
+              "type": "depending_formula",
+              "value": {
+                "depending": {
+                  "type": "depending",
+                  "value": {
+                    "key": "start_date",
+                    "scope": "self"
+                  }
+                },
+                "operation": "add",
+                "unit": "day",
+                "value": 364
               }
-            ]
-          }
-        ]
-      }
-    ]
-  }
+            }
+          ]
+        }
+      ],
+      "requirements": {
+        "required": {
+          "type": "this",
+          "value": true
+        }
+      },
+      "type": "date"
+    }
+  ]
+}

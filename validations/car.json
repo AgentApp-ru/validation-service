@@ -493,11 +493,11 @@
     {
       "field": "diagnostic_chart",
       "requirements": {
-        "required": {
-          "type": "this",
-          "value": false
-        }
-      },
+          "required": {
+            "type": "this",
+            "value": false
+          }
+        },
       "patterns": [
         {
           "name": "number",
@@ -735,7 +735,7 @@
       "field": "vehicle_passport_mark_title",
       "requirements": {
         "required": {
-          "type": "depends_on",
+          "type": "this",
           "value": false
         }
       },
