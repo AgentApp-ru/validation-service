@@ -391,6 +391,7 @@
     },
     {
       "field": "vin",
+      "max_consecutive_similar_symbols": 8,
       "requirements": {
         "required": {
           "type": "any",
@@ -420,6 +421,7 @@
     },
     {
       "field": "body_number",
+      "max_consecutive_similar_symbols": 8,
       "requirements": {
         "required": {
           "type": "any",
@@ -456,6 +458,7 @@
     },
     {
       "field": "chassis_number",
+      "max_consecutive_similar_symbols": 8,
       "requirements": {
         "required": {
           "type": "any",
@@ -493,11 +496,11 @@
     {
       "field": "diagnostic_chart",
       "requirements": {
-          "required": {
-            "type": "this",
-            "value": false
-          }
-        },
+        "required": {
+          "type": "this",
+          "value": false
+        }
+      },
       "patterns": [
         {
           "name": "number",
@@ -980,6 +983,23 @@
         }
       },
       "patterns": [
+        {
+          "type": "depending_condition_formula",
+          "value": {
+            "type": "depending",
+            "value": {
+              "scope": "self",
+              "key": "car_type"
+            },
+            "condition": {
+              "type": "starts_with",
+              "items": {
+                "D": true
+              },
+              "default": false
+            }
+          }
+        },
         {
           "max": 999,
           "min": 10
