@@ -87,8 +87,10 @@ func (sv *Validator) Validate(field interface{}) bool {
 		preparedField = strField
 	}
 
-	if !isValidatedForSimilarSymbols(preparedField, sv.maxConsecutiveSimilarSymbols) {
-		return false
+	if sv.maxConsecutiveSimilarSymbols != 0 {
+		if !isValidatedForSimilarSymbols(preparedField, sv.maxConsecutiveSimilarSymbols) {
+			return false
+		}
 	}
 
 	if err := json.Unmarshal([]byte(sv.patterns), &stringPatterns); err != nil {
