@@ -874,26 +874,33 @@
       "field": "max_seats_count",
       "requirements": {
         "required": {
-          "type": "depending_condition_formula",
-          "value": {
-            "type": "depending",
-            "value": {
-              "scope": "self",
-              "key": "car_type"
-            },
-            "condition": {
-              "type": "starts_with",
-              "items": {
-                "D": true
-              },
-              "default": false
-            }
-          }
+          "type": "this",
+          "value": true
         }
       },
       "patterns": [
         {
-          "max": 16
+          "max": 17,
+          "min": 1,
+          "condition": {
+            "value": {
+              "scope": "self",
+              "key": "car_type"
+            },
+            "expression": "starts_with",
+            "statement": [
+              {
+                "value": "B",
+                "max": 9,
+                "min": 2
+              },
+              {
+                "value": "D",
+                "max": 17,
+                "min": 10
+              }
+            ]
+          }
         }
       ],
       "type": "number"

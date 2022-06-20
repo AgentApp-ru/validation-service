@@ -171,7 +171,7 @@ func getInitalValue(cType string, cValue json.RawMessage, scopeObjectMap *sync.M
 		if err != nil {
 			return nil, err
 		}
-		initial_value := waitingForValue(dependingValue.Key, scopeObjectMap)
+		initial_value := WaitingForValue(dependingValue.Key, scopeObjectMap)
 		if initial_value == nil {
 			return nil, fmt.Errorf("empty depending value: %s", dependingValue.Key)
 		}
@@ -197,14 +197,7 @@ func getValueFromDependingFormula(value json.RawMessage, scopeObjectMap *sync.Ma
 	if err != nil {
 		return nil, err
 	}
-	result, err := calculate(
-		initialValue,
-		secondValue,
-		dependingFormulaValue.Dependency.ValueType,
-		dependingFormulaValue.Value.ValueType,
-		dependingFormulaValue.Operation,
-		dependingFormulaValue.Unit,
-	)
+	result, err := calculate(initialValue, secondValue, dependingFormulaValue.Dependency.ValueType, dependingFormulaValue.Value.ValueType, dependingFormulaValue.Operation)
 
 	return result, err
 }
@@ -228,7 +221,7 @@ func getInitalSecondValueForFormula(dependency dependency, scopeObjectMap *sync.
 		if err != nil {
 			return nil, err
 		}
-		value = waitingForValue(dependingValueWithType.Key, scopeObjectMap)
+		value = WaitingForValue(dependingValueWithType.Key, scopeObjectMap)
 		if value == nil {
 			return nil, fmt.Errorf("!! empty depending value: %s", dependingValueWithType.Key)
 		}
@@ -244,11 +237,7 @@ func getInitalSecondValueForFormula(dependency dependency, scopeObjectMap *sync.
 	return value, nil
 }
 
-func calculate(
-	initialValue, secondValue interface{},
-	initialValueType, secondValueType string,
-	operation, unit string,
-) (interface{}, error) {
+func calculate(initialValue, secondValue interface{}, initialValueType, secondValueType, operation string) (interface{}, error) {
 	var (
 		initialValueDate time.Time
 		secondValueDate  time.Time
@@ -285,7 +274,7 @@ func calculate(
 	}
 }
 
-func waitingForValue(key string, selfMap *sync.Map) interface{} {
+func WaitingForValue(key string, selfMap *sync.Map) interface{} {
 	if value, ok := selfMap.Load(key); ok {
 		return value
 	}
