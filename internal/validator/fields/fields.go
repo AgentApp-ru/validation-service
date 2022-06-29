@@ -13,21 +13,22 @@ import (
 
 type (
 	FieldValidator struct {
-		FieldName          string                    `json:"field"`
-		FieldType          string                    `json:"type"`
-		Requirements       requirements.Requirements `json:"requirements"`
-		Transformers       *json.RawMessage          `json:"enabled_transformers"`
-		AllowWhiteSpaces   bool                      `json:"allow_white_spaces"`
-		Patterns           json.RawMessage           `json:"patterns"`
-		object             string
-		objectMap          *sync.Map
-		agreementFieldsMap *sync.Map
-		errors             chan string
-		absentFields       chan string
+		FieldName                    string                    `json:"field"`
+		FieldType                    string                    `json:"type"`
+		Requirements                 requirements.Requirements `json:"requirements"`
+		Transformers                 *json.RawMessage          `json:"enabled_transformers"`
+		AllowWhiteSpaces             bool                      `json:"allow_white_spaces"`
+		MaxConsecutiveSimilarSymbols int                       `json:"max_consecutive_similar_symbols"`
+		Patterns                     json.RawMessage           `json:"patterns"`
+		object                       string
+		objectMap                    *sync.Map
+		agreementFieldsMap           *sync.Map
+		errors                       chan string
+		absentFields                 chan string
 	}
 
-	fieldvalidatorImpl interface {
-		Init(string, *sync.Map, *sync.Map, chan string, *json.RawMessage, json.RawMessage, bool)
+	fieldValidatorImpl interface {
+		Init(string, *sync.Map, *sync.Map, chan string, *json.RawMessage, json.RawMessage, bool, int)
 		Validate(interface{}) bool
 	}
 )
@@ -45,12 +46,12 @@ func (fv *FieldValidator) Init(object string, agreementFields *sync.Map, errors,
 func (fv *FieldValidator) CheckRequirementField(field interface{}, waiter *sync.WaitGroup) {
 	defer waiter.Done()
 
-	isfieldPresent := field != nil
-	if isfieldPresent {
+	isFieldPresent := field != nil
+	if isFieldPresent {
 		fv.objectMap.Store(fv.FieldName, field)
 	}
 
-	if !fv.Requirements.CheckRequired(isfieldPresent, fv.objectMap) {
+	if !fv.Requirements.CheckRequired(isFieldPresent, fv.objectMap) {
 		fv.absentFields <- fmt.Sprintf("%s/%s", fv.object, fv.FieldName)
 		return
 	}
@@ -60,24 +61,24 @@ func (fv *FieldValidator) ValidateField(field interface{}, waiter *sync.WaitGrou
 	defer waiter.Done()
 
 	var (
-		ok                 bool
-		fieldvalidatorImpl fieldvalidatorImpl
+		ok             bool
+		fieldValidator fieldValidatorImpl
 	)
 
 	switch fv.FieldType {
 	case "string":
-		fieldvalidatorImpl = str_validation.New()
+		fieldValidator = str_validation.New()
 	case "number":
-		fieldvalidatorImpl = num_validation.New()
+		fieldValidator = num_validation.New()
 	case "date":
-		fieldvalidatorImpl = date_validation.New()
+		fieldValidator = date_validation.New()
 	default:
 		log.Logger.Errorf("unknown type: %s for field: %s", fv.FieldType, fv.FieldName)
 		fv.errors <- fmt.Sprintf("%s/%s: %v", fv.object, fv.FieldName, field)
 		return
 	}
 
-	fieldvalidatorImpl.Init(
+	fieldValidator.Init(
 		fmt.Sprintf("%s/%s", fv.object, fv.FieldName),
 		fv.objectMap,
 		fv.agreementFieldsMap,
@@ -85,8 +86,9 @@ func (fv *FieldValidator) ValidateField(field interface{}, waiter *sync.WaitGrou
 		fv.Transformers,
 		fv.Patterns,
 		fv.AllowWhiteSpaces,
+		fv.MaxConsecutiveSimilarSymbols,
 	)
-	ok = fieldvalidatorImpl.Validate(field)
+	ok = fieldValidator.Validate(field)
 
 	if !ok {
 		fv.errors <- fmt.Sprintf("%s/%s: %v", fv.object, fv.FieldName, field)

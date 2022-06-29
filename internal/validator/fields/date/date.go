@@ -40,13 +40,14 @@ func New() *DateValidator {
 }
 
 func (dv *DateValidator) Init(
-	fieldName        string,
+	fieldName string,
 	objectMap,
 	allFieldsMap *sync.Map,
 	errors chan string,
 	transformers *json.RawMessage,
 	patterns json.RawMessage,
 	allowWhiteSpaces bool,
+	_ int,
 ) {
 	dv.fieldName = fieldName
 	dv.objectMap = objectMap

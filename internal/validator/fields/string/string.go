@@ -19,7 +19,7 @@ type (
 		Max    int    `json:"max"`
 	}
 
-	StringPattern struct {
+	Field struct {
 		Name     string     `json:"name"`
 		Patterns []*Pattern `json:"patterns"`
 	}
@@ -32,22 +32,23 @@ type (
 		CharsToRemove *CharsToRemove `json:"remove_chars"`
 	}
 
-	StringValidator struct {
-		fieldName        string
-		objectMap        *sync.Map
-		allFieldsMap     *sync.Map
-		errors           chan string
-		transformers     *json.RawMessage
-		patterns         json.RawMessage
-		allowWhiteSpaces bool
+	Validator struct {
+		fieldName                    string
+		objectMap                    *sync.Map
+		allFieldsMap                 *sync.Map
+		errors                       chan string
+		transformers                 *json.RawMessage
+		patterns                     json.RawMessage
+		allowWhiteSpaces             bool
+		maxConsecutiveSimilarSymbols int
 	}
 )
 
-func New() *StringValidator {
-	return new(StringValidator)
+func New() *Validator {
+	return new(Validator)
 }
 
-func (sv *StringValidator) Init(
+func (sv *Validator) Init(
 	fieldName string,
 	objectMap,
 	allFieldsMap *sync.Map,
@@ -55,6 +56,7 @@ func (sv *StringValidator) Init(
 	transformers *json.RawMessage,
 	patterns json.RawMessage,
 	allowWhiteSpaces bool,
+	maxConsecutiveSimilarSymbols int,
 ) {
 	sv.fieldName = fieldName
 	sv.objectMap = objectMap
@@ -63,11 +65,12 @@ func (sv *StringValidator) Init(
 	sv.transformers = transformers
 	sv.patterns = patterns
 	sv.allowWhiteSpaces = allowWhiteSpaces
+	sv.maxConsecutiveSimilarSymbols = maxConsecutiveSimilarSymbols
 }
 
-func (sv *StringValidator) Validate(field interface{}) bool {
+func (sv *Validator) Validate(field interface{}) bool {
 	var (
-		stringPatterns []*StringPattern
+		stringPatterns []*Field
 		ok             bool
 		strField       string
 	)
@@ -82,6 +85,12 @@ func (sv *StringValidator) Validate(field interface{}) bool {
 		preparedField = prepare(strField, *sv.transformers)
 	} else {
 		preparedField = strField
+	}
+
+	if sv.maxConsecutiveSimilarSymbols != 0 {
+		if !isValidatedForSimilarSymbols(preparedField, sv.maxConsecutiveSimilarSymbols) {
+			return false
+		}
 	}
 
 	if err := json.Unmarshal([]byte(sv.patterns), &stringPatterns); err != nil {
@@ -120,7 +129,28 @@ func in(slice []string, val string) bool {
 	return false
 }
 
-func isValidatedWithGroups(preparedField string, stringPatterns []*StringPattern, allowWhiteSpaces bool) bool {
+func isValidatedForSimilarSymbols(preparedField string, maxConsecutiveSimilarSymbols int) bool {
+	var (
+		currentChar rune
+		count       = 0
+	)
+
+	for _, v := range preparedField {
+		if v == currentChar {
+			count++
+		} else {
+			count = 1
+		}
+		currentChar = v
+
+		if count > maxConsecutiveSimilarSymbols {
+			return false
+		}
+	}
+	return true
+}
+
+func isValidatedWithGroups(preparedField string, stringPatterns []*Field, allowWhiteSpaces bool) bool {
 	groups := []string{}
 	for _, stringPattern := range stringPatterns {
 		if !in(groups, stringPattern.Name) {

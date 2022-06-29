@@ -40,11 +40,15 @@ func TestInitValidator(t *testing.T) {
 	}
 
 	errors := make(chan string)
-	v.Init("object", &sync.Map{}, errors)
+	absents := make(chan string)
+	v.Init("object", &sync.Map{}, errors, absents)
 	if v.object != "object" {
 		t.Errorf("expected: 'object' actual '%s'", v.object)
 	}
 	if v.errors != errors {
 		t.Errorf("errors chan should be equal to received")
+	}
+	if v.absentFields != absents {
+		t.Errorf("absents chan should be equal to received")
 	}
 }

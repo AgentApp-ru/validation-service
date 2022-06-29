@@ -6,6 +6,24 @@ import (
 	"testing"
 )
 
+func TestInvalidTooManyConsecutiveSymbolsString(t *testing.T) {
+	field := "тоВВВВарищ"
+	maxSymbols := 3
+
+	if isValidatedForSimilarSymbols(field, maxSymbols) {
+		t.Errorf("should be invalid string: '%s' for '%d' max similar symbols", field, maxSymbols)
+	}
+}
+
+func TestValidTooManyConsecutiveSymbolsString(t *testing.T) {
+	field := "тоВВВарищ"
+	maxSymbols := 3
+
+	if !isValidatedForSimilarSymbols(field, maxSymbols) {
+		t.Errorf("should be valid string: '%s' for '%d' max similar symbols", field, maxSymbols)
+	}
+}
+
 func TestValidateValidString(t *testing.T) {
 	field := unicodeString("русский")
 	min := 3

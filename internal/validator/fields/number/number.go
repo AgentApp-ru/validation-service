@@ -7,11 +7,11 @@ import (
 )
 
 type (
-	IntPattern struct {
+	Pattern struct {
 		Min int `json:"min"`
 		Max int `json:"max"`
 	}
-	NumberValidator struct {
+	Validator struct {
 		fieldName        string
 		objectMap        *sync.Map
 		allFieldsMap     *sync.Map
@@ -22,18 +22,19 @@ type (
 	}
 )
 
-func New() *NumberValidator {
-	return new(NumberValidator)
+func New() *Validator {
+	return new(Validator)
 }
 
-func (nv *NumberValidator) Init(
-	fieldName        string,
+func (nv *Validator) Init(
+	fieldName string,
 	objectMap,
 	allFieldsMap *sync.Map,
 	errors chan string,
 	transformers *json.RawMessage,
 	patterns json.RawMessage,
 	allowWhiteSpaces bool,
+	_ int,
 ) {
 	nv.fieldName = fieldName
 	nv.objectMap = objectMap
@@ -44,12 +45,12 @@ func (nv *NumberValidator) Init(
 	nv.allowWhiteSpaces = allowWhiteSpaces
 }
 
-func (nv *NumberValidator) Validate(field interface{}) bool {
+func (nv *Validator) Validate(field interface{}) bool {
 	var (
-		floatField  float64
-		intField    int
-		ok          bool
-		intPatterns []*IntPattern
+		floatField float64
+		intField   int
+		ok         bool
+		patterns   []*Pattern
 	)
 
 	if floatField, ok = field.(float64); !ok {
@@ -57,12 +58,12 @@ func (nv *NumberValidator) Validate(field interface{}) bool {
 		return false
 	}
 
-	if err := json.Unmarshal([]byte(nv.patterns), &intPatterns); err != nil {
+	if err := json.Unmarshal([]byte(nv.patterns), &patterns); err != nil {
 		log.Logger.Error("Ошибка при ")
 		return false
 	}
 
-	pattern := intPatterns[0]
+	pattern := patterns[0]
 
 	intField = int(floatField)
 	if pattern.Min > intField || intField > pattern.Max {

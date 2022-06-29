@@ -33,7 +33,7 @@ func Init() {
 }
 
 func (c *consulStorage) Get(object string) ([]byte, error) {
-	pair, _, err := c.kv.Get(fmt.Sprintf("VALIDATIONS/%s", strings.ToUpper(object)), nil)
+	pair, _, err := c.kv.Get(fmt.Sprintf("VALIDATIONS/%s/%s", strings.ToUpper(config.Settings.Env), strings.ToUpper(object)), nil)
 	if err != nil {
 		return nil, err
 	}

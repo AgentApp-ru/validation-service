@@ -246,6 +246,9 @@
         "allow_white_spaces": {
           "type": "boolean"
         },
+        "max_consecutive_similar_symbols": {
+          "type": "number"
+        },
         "enabled_transformers": {
           "type": "object",
           "additionalProperties": false,
@@ -338,12 +341,16 @@
               "patterns"
             ]
           }
+        },
+        "requirements": {
+          "$ref": "#/definitions/requirements"
         }
       },
       "required": [
         "type",
         "patterns",
-        "field"
+        "field",
+        "requirements"
       ]
     },
     "date_validator": {
@@ -384,12 +391,16 @@
               "min"
             ]
           }
+        },
+        "requirements": {
+          "$ref": "#/definitions/requirements"
         }
       },
       "required": [
         "type",
         "patterns",
-        "field"
+        "field",
+        "requirements"
       ]
     },
     "number_validator": {
@@ -438,11 +449,143 @@
               }
             ]
           }
+        },
+        "requirements": {
+          "$ref": "#/definitions/requirements"
         }
       },
       "required": [
-        "type"
+        "type",
+        "requirements"
       ]
+    },
+    "requirements": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "required": {
+          "$ref": "#/definitions/required"
+        }
+      },
+      "required": [
+        "required"
+      ],
+      "title": "requirements"
+    },
+    "required": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "value": {
+          "$ref": "#/definitions/value_union"
+        }
+      },
+      "required": [
+        "type",
+        "value"
+      ],
+      "title": "required"
+    },
+    "value_union": {
+      "anyOf": [
+        {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        {
+          "type": "boolean"
+        },
+        {
+          "$ref": "#/definitions/requirement_depending_condition"
+        },
+        {
+          "type": "null"
+        },
+        {
+          "type": "string"
+        }
+      ],
+      "title": "value_union"
+    },
+    "requirement_depending_condition": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "key": {
+          "type": "string"
+        },
+        "scope": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "value": {
+          "$ref": "#/definitions/depending_condition_value"
+        },
+        "condition": {
+          "$ref": "#/definitions/depending_condition"
+        }
+      },
+      "required": [],
+      "title": "requirement_depending_condition"
+    },
+    "depending_condition": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "items": {
+          "$ref": "#/definitions/depending_condition_items"
+        },
+        "default": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "default",
+        "items",
+        "type"
+      ],
+      "title": "depending_condition"
+    },
+    "depending_condition_items": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "C": {
+          "type": "boolean"
+        },
+        "D": {
+          "type": "boolean"
+        }
+      },
+      "required": [],
+      "title": "PurpleItems"
+    },
+    "depending_condition_value": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "key": {
+          "type": "string"
+        },
+        "scope": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "key",
+        "scope"
+      ],
+      "title": "depending_condition_value"
     }
   }
 }
