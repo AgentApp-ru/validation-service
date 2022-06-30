@@ -75,7 +75,7 @@ func (nv *Validator) Validate(field interface{}) bool {
 	}
 
 	if err := json.Unmarshal([]byte(nv.patterns), &patterns); err != nil {
-		log.Logger.Error("Ошибка при ")
+		log.Logger.Error("Ошибка при парсинге json.")
 		return false
 	}
 
@@ -84,7 +84,7 @@ func (nv *Validator) Validate(field interface{}) bool {
 	if pattern.Condition.Statement != nil {
 		initialValue := requirements.WaitingForValue(pattern.Condition.Value.Key, nv.objectMap)
 		if initialValue == nil {
-			log.Logger.Error("Ошибка при ")
+			log.Logger.Error("Ошибка при извлечении значения параметра requirements.requirement.value.condition.value")
 			return false
 		}
 		checkCondition(pattern, initialValue)

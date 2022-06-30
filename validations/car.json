@@ -874,8 +874,21 @@
       "field": "max_seats_count",
       "requirements": {
         "required": {
-          "type": "this",
-          "value": true
+          "type": "depending_condition_formula",
+          "value": {
+            "type": "depending",
+            "value": {
+              "scope": "self",
+              "key": "car_type"
+            },
+            "condition": {
+              "type": "starts_with",
+              "items": {
+                "D": true
+              },
+              "default": false
+            }
+          }
         }
       },
       "patterns": [
