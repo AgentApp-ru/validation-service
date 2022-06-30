@@ -893,7 +893,27 @@
       },
       "patterns": [
         {
-          "max": 16
+          "max": 17,
+          "min": 1,
+          "condition": {
+            "value": {
+              "scope": "self",
+              "key": "car_type"
+            },
+            "expression": "starts_with",
+            "statement": [
+              {
+                "value": "B",
+                "max": 9,
+                "min": 2
+              },
+              {
+                "value": "D",
+                "max": 17,
+                "min": 10
+              }
+            ]
+          }
         }
       ],
       "type": "number"
