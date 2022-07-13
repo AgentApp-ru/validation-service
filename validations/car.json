@@ -392,6 +392,7 @@
     {
       "field": "vin",
       "max_consecutive_similar_symbols": 8,
+      "max_duplicated_symbols": 8,
       "requirements": {
         "required": {
           "type": "any",

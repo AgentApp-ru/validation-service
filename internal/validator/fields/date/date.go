@@ -39,16 +39,7 @@ func New() *DateValidator {
 	return new(DateValidator)
 }
 
-func (dv *DateValidator) Init(
-	fieldName string,
-	objectMap,
-	allFieldsMap *sync.Map,
-	errors chan string,
-	transformers *json.RawMessage,
-	patterns json.RawMessage,
-	allowWhiteSpaces bool,
-	_ int,
-) {
+func (dv *DateValidator) Init(fieldName string, objectMap *sync.Map, allFieldsMap *sync.Map, errors chan string, transformers *json.RawMessage, patterns json.RawMessage, allowWhiteSpaces bool, _ int, _ int) {
 	dv.fieldName = fieldName
 	dv.objectMap = objectMap
 	dv.allFieldsMap = allFieldsMap

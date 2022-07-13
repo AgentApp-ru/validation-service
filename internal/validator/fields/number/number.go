@@ -42,16 +42,7 @@ func New() *Validator {
 	return new(Validator)
 }
 
-func (nv *Validator) Init(
-	fieldName string,
-	objectMap,
-	allFieldsMap *sync.Map,
-	errors chan string,
-	transformers *json.RawMessage,
-	patterns json.RawMessage,
-	allowWhiteSpaces bool,
-	_ int,
-) {
+func (nv *Validator) Init(fieldName string, objectMap *sync.Map, allFieldsMap *sync.Map, errors chan string, transformers *json.RawMessage, patterns json.RawMessage, allowWhiteSpaces bool, _ int, _ int) {
 	nv.fieldName = fieldName
 	nv.objectMap = objectMap
 	nv.allFieldsMap = allFieldsMap
