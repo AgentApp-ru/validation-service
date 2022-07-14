@@ -24,6 +24,24 @@ func TestValidTooManyConsecutiveSymbolsString(t *testing.T) {
 	}
 }
 
+func TestInvalidTooManyDuplicatedSymbolsString(t *testing.T) {
+	field := "мануфактура"
+	maxSymbols := 2
+
+	if isValidatedForDuplicatedSymbols(field, maxSymbols) {
+		t.Errorf("should be valid string: '%s' for '%d' max similar symbols", field, maxSymbols)
+	}
+}
+
+func TestValidTooManyDuplicatedSymbolsString(t *testing.T) {
+	field := "мануфактура"
+	maxSymbols := 3
+
+	if !isValidatedForDuplicatedSymbols(field, maxSymbols) {
+		t.Errorf("should be valid string: '%s' for '%d' max similar symbols", field, maxSymbols)
+	}
+}
+
 func TestValidateValidString(t *testing.T) {
 	field := unicodeString("русский")
 	min := 3

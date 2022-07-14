@@ -48,6 +48,7 @@ func (dv *DateValidator) Init(
 	patterns json.RawMessage,
 	allowWhiteSpaces bool,
 	_ int,
+	_ int,
 ) {
 	dv.fieldName = fieldName
 	dv.objectMap = objectMap
