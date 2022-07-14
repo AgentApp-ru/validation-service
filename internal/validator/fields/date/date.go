@@ -41,7 +41,7 @@ func New() *DateValidator {
 
 func (dv *DateValidator) Init(
 	fieldName string,
-	objectMap *sync.Map,
+	objectMap,
 	allFieldsMap *sync.Map,
 	errors chan string,
 	transformers *json.RawMessage,

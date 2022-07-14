@@ -44,7 +44,7 @@ func New() *Validator {
 
 func (nv *Validator) Init(
 	fieldName string,
-	objectMap *sync.Map,
+	objectMap,
 	allFieldsMap *sync.Map,
 	errors chan string,
 	transformers *json.RawMessage,
