@@ -289,13 +289,7 @@
         {
           "max": [
             {
-              "type": "now",
-              "value": null
-            }
-          ],
-          "min": [
-            {
-              "type": "depending_formula",
+              "type": "depending_condition_formula",
               "value": {
                 "depending": {
                   "type": "depending",
@@ -305,8 +299,33 @@
                   }
                 },
                 "operation": "add",
-                "value": 14,
-                "unit": "year"
+                "unit": "year",
+                "condition": {
+                  "type": "range",
+                  "items": [20, 45]
+                },
+                "direction": "right_border"
+              }
+            }
+          ],
+          "min": [
+            {
+              "type": "depending_condition_formula",
+              "value": {
+                "depending": {
+                  "type": "depending",
+                  "value": {
+                    "scope": "self",
+                    "key": "birth_date"
+                  }
+                },
+                "operation": "add",
+                "unit": "year",
+                "condition": {
+                  "type": "range",
+                  "items": [14, 20, 45]
+                },
+                "direction": "left_border"
               }
             }
           ]

@@ -32,7 +32,11 @@ func getPlainNow(rawValue json.RawMessage) (time.Time, bool) {
 
 func getDepending(rawValue json.RawMessage, selfMap, fieldsMap *sync.Map) (time.Time, bool) {
 	var value DependingValue
-	json.Unmarshal(rawValue, &value)
+	err := json.Unmarshal(rawValue, &value)
+	if err != nil {
+		log.Logger.Error("Ошибка парсинга JSON")
+		return time.Time{}, false
+	}
 
 	dependingValue := waitingForValue(value.Scope, value.Key, selfMap, fieldsMap)
 	if dependingValue == nil {
@@ -50,7 +54,11 @@ func getDepending(rawValue json.RawMessage, selfMap, fieldsMap *sync.Map) (time.
 
 func getDependingFormula(rawValue json.RawMessage, selfMap, fieldsMap *sync.Map) (time.Time, bool) {
 	var formula DateDependingFormulaValue
-	json.Unmarshal(rawValue, &formula)
+	err := json.Unmarshal(rawValue, &formula)
+	if err != nil {
+		log.Logger.Error("Ошибка парсинга JSON")
+		return time.Time{}, false
+	}
 
 	expectedDate, err := formula.getExpectedDate(selfMap, fieldsMap)
 	if err != nil {
@@ -62,14 +70,71 @@ func getDependingFormula(rawValue json.RawMessage, selfMap, fieldsMap *sync.Map)
 }
 
 func getDependingConditionFormula(rawValue json.RawMessage, selfMap, fieldsMap *sync.Map) (time.Time, bool) {
-	var formula DateDependingConditionFormulaValue
-	json.Unmarshal(rawValue, &formula)
+	type (
+		expectedDate struct {
+			Value time.Time
+			Sub   int
+		}
+	)
+	var (
+		formula DateDependingConditionFormulaValue
+		result  expectedDate
+	)
 
-	expectedDate, err := formula.getExpectedDate(selfMap, fieldsMap)
+	err := json.Unmarshal(rawValue, &formula)
 	if err != nil {
-		log.Logger.Errorf("Ошибка при расчёте формулы: %s", err.Error())
+		log.Logger.Error("Ошибка парсинга JSON")
 		return time.Time{}, false
 	}
 
-	return expectedDate, true
+	switch formula.Condition.Type {
+	case "range":
+		var today = time.Now()
+		result.Value = today
+		for _, item := range formula.Condition.Items {
+			dv := DateDependingFormulaValue{
+				formula.Dependency,
+				formula.Operation,
+				item,
+				formula.Unit}
+			date, err := dv.getExpectedDate(selfMap, fieldsMap)
+			if err != nil {
+				log.Logger.Errorf("Ошибка при расчёте формулы: %s", err.Error())
+				return time.Time{}, false
+			}
+
+			switch formula.Direction {
+			case "left_border":
+				if date.Before(today) {
+					var item = expectedDate{Value: date, Sub: int(today.Sub(date))}
+					if result.Sub == 0 || item.Sub < result.Sub {
+						result = item
+					}
+
+				}
+			case "right_border":
+				if date.After(today) {
+					var item = expectedDate{Value: date, Sub: int(today.Sub(date))}
+					if result.Sub == 0 || item.Sub > result.Sub {
+						result = item
+					}
+				}
+			}
+		}
+	default:
+		dv := DateDependingFormulaValue{
+			formula.Dependency,
+			formula.Operation,
+			formula.Condition.Default,
+			formula.Unit}
+
+		date, err := dv.getExpectedDate(selfMap, fieldsMap)
+		if err != nil {
+			log.Logger.Errorf("Ошибка при расчёте формулы: %s", err.Error())
+			return time.Time{}, false
+		}
+		result.Value = date
+	}
+	log.Logger.Infof("%s := %s", formula.Direction, result.Value)
+	return result.Value, true
 }
