@@ -385,7 +385,7 @@
                   "type": "range",
                   "items": [20, 45]
                 },
-                "direction": "right_border"
+                "direction": "lte"
               }
             }
           ],
@@ -406,7 +406,7 @@
                   "type": "range",
                   "items": [14, 20, 45]
                 },
-                "direction": "left_border"
+                "direction": "gte"
               }
             }
           ]
