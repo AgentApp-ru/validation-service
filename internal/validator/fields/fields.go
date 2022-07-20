@@ -19,6 +19,7 @@ type (
 		Transformers                 *json.RawMessage          `json:"enabled_transformers"`
 		AllowWhiteSpaces             bool                      `json:"allow_white_spaces"`
 		MaxConsecutiveSimilarSymbols int                       `json:"max_consecutive_similar_symbols"`
+		MaxDuplicatedSymbols         int                       `json:"max_duplicated_symbols"`
 		Patterns                     json.RawMessage           `json:"patterns"`
 		object                       string
 		objectMap                    *sync.Map
@@ -28,7 +29,7 @@ type (
 	}
 
 	fieldValidatorImpl interface {
-		Init(string, *sync.Map, *sync.Map, chan string, *json.RawMessage, json.RawMessage, bool, int)
+		Init(string, *sync.Map, *sync.Map, chan string, *json.RawMessage, json.RawMessage, bool, int, int)
 		Validate(interface{}) bool
 	}
 )
@@ -87,6 +88,7 @@ func (fv *FieldValidator) ValidateField(field interface{}, waiter *sync.WaitGrou
 		fv.Patterns,
 		fv.AllowWhiteSpaces,
 		fv.MaxConsecutiveSimilarSymbols,
+		fv.MaxDuplicatedSymbols,
 	)
 	ok = fieldValidator.Validate(field)
 

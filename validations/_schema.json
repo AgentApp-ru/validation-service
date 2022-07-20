@@ -249,6 +249,9 @@
         "max_consecutive_similar_symbols": {
           "type": "number"
         },
+        "max_duplicated_symbols": {
+          "type": "number"
+        },
         "enabled_transformers": {
           "type": "object",
           "additionalProperties": false,
