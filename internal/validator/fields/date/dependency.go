@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"sync"
 	"time"
-	"validation_service/pkg/log"
 )
 
 type (
@@ -22,47 +21,19 @@ type (
 	}
 
 	condition struct {
-		Type    string         `json:"type"`
-		Items   map[string]int `json:"items"`
-		Default int            `json:"default"`
-	}
-
-	conditionValue struct {
-		Field     DependingValue `json:"field"`
-		Condition condition      `json:"condition"`
+		Type    string `json:"type"`
+		Items   []int  `json:"items"`
+		Default int    `json:"default"`
 	}
 
 	DateDependingConditionFormulaValue struct {
-		Dependency     dependency     `json:"depending"`
-		Operation      string         `json:"operation"`
-		ConditionValue conditionValue `json:"value"`
-		Unit           string         `json:"unit"`
+		Dependency dependency `json:"depending"`
+		Condition  condition  `json:"condition"`
+		Operation  string     `json:"operation"`
+		Unit       string     `json:"unit"`
+		Direction  string     `json:"direction"`
 	}
 )
-
-func (c *condition) getItem(searchedValue string) (int, error) {
-	switch c.Type {
-	case "equals":
-		item, ok := c.Items[searchedValue]
-		if !ok {
-			return c.Default, nil
-		}
-		return item, nil
-	default:
-		log.Logger.Errorf("unknown condition type: %s", c.Type)
-		return c.Default, nil
-	}
-}
-
-func (c *conditionValue) getItem(selfMap, fieldsMap *sync.Map) (int, error) {
-	value := waitingForValue(c.Field.Scope, c.Field.Key, selfMap, fieldsMap)
-	if value == nil {
-		value = "default"
-	}
-	searchedValue := fmt.Sprintf("%v", value)
-
-	return c.Condition.getItem(searchedValue)
-}
 
 func (d *dependency) getInitialDate(selfMap, fieldsMap *sync.Map) (time.Time, error) {
 	switch d.Type {
@@ -115,49 +86,6 @@ func (f *DateDependingFormulaValue) getExpectedDate(selfMap, fieldsMap *sync.Map
 		years = 0 + years
 		months = 0 + months
 		days = 0 + days
-	}
-
-	return initialDate.AddDate(years, months, days), nil
-}
-
-func (f *DateDependingConditionFormulaValue) getExpectedDate(selfMap, fieldsMap *sync.Map) (time.Time, error) {
-	var (
-		years, months, days int
-	)
-
-	initialDate, err := f.Dependency.getInitialDate(selfMap, fieldsMap)
-	// println(fmt.Sprintf("initial %v", initialDate))
-	if err != nil {
-		return time.Time{}, err
-	}
-
-	item, err := f.ConditionValue.getItem(selfMap, fieldsMap)
-	if err != nil {
-		return time.Time{}, err
-	}
-
-	switch f.Unit {
-	case "year":
-		years = item
-	case "month":
-		months = item
-	case "day":
-		days = item
-	}
-
-	switch f.Operation {
-	case "subtract":
-		years = 0 - years
-		months = 0 - months
-		days = 0 - days
-	case "add":
-		years = 0 + years
-		months = 0 + months
-		days = 0 + days
-	}
-
-	if days == 0 {
-		days = -1
 	}
 
 	return initialDate.AddDate(years, months, days), nil
