@@ -1017,12 +1017,6 @@
       "field": "engine_power",
       "requirements": {
         "required": {
-          "type": "this",
-          "value": true
-        }
-      },
-      "patterns": [
-        {
           "type": "depending_condition_formula",
           "value": {
             "type": "depending",
