@@ -87,6 +87,24 @@
             },
             {
               "chars": "[0-9]",
+              "min": 2,
+              "max": 3
+            }
+          ]
+        },
+        {
+          "name": "number",
+          "patterns": [
+            {
+              "chars": "[АВЕКМНОРСТУХ]",
+              "max": 2
+            },
+            {
+              "chars": "[0-9]",
+              "max": 3
+            },
+            {
+              "chars": "[0-9]",
               "max": 5
             }
           ]
@@ -865,6 +883,7 @@
       },
       "patterns": [
         {
+          "min": 100,
           "max": 100000
         }
       ],
@@ -1014,15 +1033,18 @@
             "condition": {
               "type": "starts_with",
               "items": {
-                "D": true
+                "C": false,
+                "D": false
               },
-              "default": false
+              "default": true
             }
           }
-        },
+        }
+      },
+      "patterns": [
         {
           "max": 999,
-          "min": 10
+          "min": 20
         }
       ],
       "type": "number"
