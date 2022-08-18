@@ -91,6 +91,10 @@ func (sv *Validator) Validate(field interface{}) bool {
 		preparedField = strField
 	}
 
+	if preparedField == "" {
+		return false
+	}
+
 	if sv.maxConsecutiveSimilarSymbols != 0 {
 		if !isValidatedForSimilarSymbols(preparedField, sv.maxConsecutiveSimilarSymbols) {
 			return false
