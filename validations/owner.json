@@ -389,13 +389,7 @@
         {
           "max": [
             {
-              "type": "now",
-              "value": null
-            }
-          ],
-          "min": [
-            {
-              "type": "depending_formula",
+              "type": "depending_condition_formula",
               "value": {
                 "depending": {
                   "type": "depending",
@@ -405,8 +399,61 @@
                   }
                 },
                 "operation": "add",
-                "value": 14,
-                "unit": "year"
+                "unit": "year",
+                "value": {
+                  "depending": {
+                    "type": "now"
+                  },
+                  "type": "diff-intervals",
+                  "direction": "gte",
+                  "intervals":[
+                    {
+                      "diff": 45,
+                      "value": 100
+                    },
+                    {
+                      "diff": 20,
+                      "value": 45
+                    }
+                  ],
+                  "unit": "year",
+                  "default": 20
+                }
+              }
+            }
+          ],
+          "min": [
+            {
+              "type": "depending_condition_formula",
+              "value": {
+                "depending": {
+                  "type": "depending",
+                  "value": {
+                    "scope": "self",
+                    "key": "birth_date"
+                  }
+                },
+                "operation": "add",
+                "unit": "year",
+                "value": {
+                  "depending": {
+                    "type": "now"
+                  },
+                  "type": "diff-intervals",
+                  "direction": "lte",
+                  "intervals":[
+                    {
+                      "diff": 20,
+                      "value": 14
+                    },
+                    {
+                      "diff": 45,
+                      "value": 20
+                    }
+                  ],
+                  "unit": "year",
+                  "default": 45
+                }
               }
             }
           ]

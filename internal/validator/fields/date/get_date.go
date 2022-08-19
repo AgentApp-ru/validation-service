@@ -76,44 +76,72 @@ func getDependingFormula(rawValue json.RawMessage, selfMap, fieldsMap *sync.Map)
 	return expectedDate, true
 }
 
+func _getExpectedDate(selfMap, fieldsMap *sync.Map, formula DateDependingConditionFormulaValue, value int) time.Time {
+	dv := DateDependingFormulaValue{
+		formula.Dependency,
+		formula.Operation,
+		value,
+		formula.Unit}
+	date, err := dv.getExpectedDate(selfMap, fieldsMap)
+	if err != nil {
+		log.Logger.Errorf("Ошибка при расчёте формулы: %s", err.Error())
+		return time.Time{}
+	}
+	return date
+}
+
 func getRangeExpectedDate(formula DateDependingConditionFormulaValue, selfMap, fieldsMap *sync.Map) (time.Time, bool) {
 	var (
-		today  time.Time
-		result expectedDate
+		dependingDate time.Time
+		result        expectedDate
 	)
 
-	today = time.Now()
-	result.Value = today
-
-	for _, item := range formula.Condition.Items {
-		dv := DateDependingFormulaValue{
-			formula.Dependency,
-			formula.Operation,
-			item,
-			formula.Unit}
-		date, err := dv.getExpectedDate(selfMap, fieldsMap)
-		if err != nil {
-			log.Logger.Errorf("Ошибка при расчёте формулы: %s", err.Error())
-			return time.Time{}, false
-		}
-
-		switch formula.Direction {
-		case "gte":
-			if date.Before(today) {
-				var item = expectedDate{Value: date, Sub: int(today.Sub(date))}
-				if result.Sub == 0 || item.Sub < result.Sub {
-					result = item
-				}
-			}
-		case "lte":
-			if date.After(today) {
-				var item = expectedDate{Value: date, Sub: int(today.Sub(date))}
-				if item.Sub > result.Sub {
-					result = item
-				}
-			}
-		}
+	switch formula.Value.Depending.Type {
+	case "now":
+		dependingDate = time.Now()
+	default:
 	}
+
+	result.Value = dependingDate
+
+	for _, inter := range formula.Value.Intervals {
+		date := _getExpectedDate(selfMap, fieldsMap, formula, inter.Value)
+		result.Sub = int(dependingDate.Sub(date).Seconds() / 31536000)
+
+		switch formula.Value.Direction {
+		case "gte":
+			if date.Before(dependingDate) {
+				continue
+			}
+
+			if result.Sub >= inter.Diff {
+				date = _getExpectedDate(selfMap, fieldsMap, formula, formula.Value.Default)
+			} else {
+				date = _getExpectedDate(selfMap, fieldsMap, formula, inter.Value)
+			}
+
+			result = expectedDate{Value: date, Sub: int(date.Sub(dependingDate).Seconds() / 31536000)}
+
+		case "lte":
+			if date.After(dependingDate) {
+				continue
+			}
+
+			if result.Sub <= inter.Diff {
+				date = _getExpectedDate(selfMap, fieldsMap, formula, inter.Value)
+			} else {
+				date = _getExpectedDate(selfMap, fieldsMap, formula, formula.Value.Default)
+			}
+
+			result = expectedDate{Value: date, Sub: int(dependingDate.Sub(date).Seconds() / 31536000)}
+		}
+
+	}
+
+	if result.Value.After(dependingDate) {
+		result.Value = dependingDate
+	}
+
 	return result.Value, true
 }
 
@@ -130,8 +158,8 @@ func getDependingConditionFormula(rawValue json.RawMessage, selfMap, fieldsMap *
 		return time.Time{}, false
 	}
 
-	switch formula.Condition.Type {
-	case "range":
+	switch formula.Value.Type {
+	case "diff-intervals":
 		ExpectedDate, ok = getRangeExpectedDate(formula, selfMap, fieldsMap)
 	default:
 		ExpectedDate, ok = getDefaultExpectedDate(formula, selfMap, fieldsMap)
@@ -144,7 +172,7 @@ func getDefaultExpectedDate(formula DateDependingConditionFormulaValue, selfMap,
 	dv := DateDependingFormulaValue{
 		formula.Dependency,
 		formula.Operation,
-		formula.Condition.Default,
+		formula.Value.Default,
 		formula.Unit}
 
 	date, err := dv.getExpectedDate(selfMap, fieldsMap)

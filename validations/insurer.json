@@ -381,11 +381,25 @@
                 },
                 "operation": "add",
                 "unit": "year",
-                "condition": {
-                  "type": "range",
-                  "items": [20, 45]
-                },
-                "direction": "lte"
+                "value": {
+                  "depending": {
+                    "type": "now"
+                  },
+                  "type": "diff-intervals",
+                  "direction": "gte",
+                  "intervals":[
+                    {
+                      "diff": 45,
+                      "value": 100
+                    },
+                    {
+                      "diff": 20,
+                      "value": 45
+                    }
+                  ],
+                  "unit": "year",
+                  "default": 20
+                }
               }
             }
           ],
@@ -402,11 +416,25 @@
                 },
                 "operation": "add",
                 "unit": "year",
-                "condition": {
-                  "type": "range",
-                  "items": [14, 20, 45]
-                },
-                "direction": "gte"
+                "value": {
+                  "depending": {
+                    "type": "now"
+                  },
+                  "type": "diff-intervals",
+                  "direction": "lte",
+                  "intervals":[
+                    {
+                      "diff": 20,
+                      "value": 14
+                    },
+                    {
+                      "diff": 45,
+                      "value": 20
+                    }
+                  ],
+                  "unit": "year",
+                  "default": 45
+                }
               }
             }
           ]
