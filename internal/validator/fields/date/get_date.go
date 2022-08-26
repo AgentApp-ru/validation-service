@@ -7,6 +7,8 @@ import (
 	"validation_service/pkg/log"
 )
 
+const secondsInYear = 31536000
+
 type (
 	expectedDate struct {
 		Value time.Time
@@ -91,58 +93,48 @@ func _getExpectedDate(selfMap, fieldsMap *sync.Map, formula DateDependingConditi
 }
 
 func getRangeExpectedDate(formula DateDependingConditionFormulaValue, selfMap, fieldsMap *sync.Map) (time.Time, bool) {
-	var (
-		dependingDate time.Time
-		result        expectedDate
-	)
-
-	switch formula.Value.Depending.Type {
-	case "now":
-		dependingDate = time.Now()
-	default:
-	}
-
-	result.Value = dependingDate
+	var result expectedDate
+	var dependingDate = _getDependingDate(formula)
+	var defaultDate = _getExpectedDate(selfMap, fieldsMap, formula, formula.Value.Default)
 
 	for _, inter := range formula.Value.Intervals {
 		date := _getExpectedDate(selfMap, fieldsMap, formula, inter.Value)
-		result.Sub = int(dependingDate.Sub(date).Seconds() / 31536000)
-
+		result = expectedDate{Value: dependingDate, Sub: int(dependingDate.Sub(date).Seconds() / secondsInYear)}
 		switch formula.Value.Direction {
 		case "gte":
 			if date.Before(dependingDate) {
 				continue
 			}
-
 			if result.Sub >= inter.Diff {
-				date = _getExpectedDate(selfMap, fieldsMap, formula, formula.Value.Default)
-			} else {
-				date = _getExpectedDate(selfMap, fieldsMap, formula, inter.Value)
+				date = defaultDate
 			}
-
-			result = expectedDate{Value: date, Sub: int(date.Sub(dependingDate).Seconds() / 31536000)}
+			result = expectedDate{Value: date, Sub: int(date.Sub(dependingDate).Seconds() / secondsInYear)}
 
 		case "lte":
 			if date.After(dependingDate) {
 				continue
 			}
-
-			if result.Sub <= inter.Diff {
-				date = _getExpectedDate(selfMap, fieldsMap, formula, inter.Value)
-			} else {
-				date = _getExpectedDate(selfMap, fieldsMap, formula, formula.Value.Default)
+			if result.Sub >= inter.Diff {
+				date = defaultDate
 			}
-
-			result = expectedDate{Value: date, Sub: int(dependingDate.Sub(date).Seconds() / 31536000)}
+			result = expectedDate{Value: date, Sub: int(dependingDate.Sub(date).Seconds() / secondsInYear)}
 		}
-
 	}
-
 	if result.Value.After(dependingDate) {
 		result.Value = dependingDate
 	}
 
 	return result.Value, true
+}
+
+func _getDependingDate(formula DateDependingConditionFormulaValue) time.Time {
+	switch formula.Value.Depending.Type {
+	case "now":
+		return time.Now()
+	default:
+	}
+
+	return time.Now()
 }
 
 func getDependingConditionFormula(rawValue json.RawMessage, selfMap, fieldsMap *sync.Map) (time.Time, bool) {
