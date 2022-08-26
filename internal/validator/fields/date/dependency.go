@@ -20,18 +20,29 @@ type (
 		Unit       string     `json:"unit"`
 	}
 
-	condition struct {
-		Type    string `json:"type"`
-		Items   []int  `json:"items"`
-		Default int    `json:"default"`
+	intervals struct {
+		Diff  int `json:"diff"`
+		Value int `json:"value"`
+	}
+
+	depending struct {
+		Type string `json:"type"`
+	}
+
+	value struct {
+		Depending depending   `json:"depending"`
+		Type      string      `json:"type"`
+		Direction string      `json:"direction"`
+		Intervals []intervals `json:"intervals"`
+		Unit      string      `json:"unit"`
+		Default   int         `json:"default"`
 	}
 
 	DateDependingConditionFormulaValue struct {
 		Dependency dependency `json:"depending"`
-		Condition  condition  `json:"condition"`
 		Operation  string     `json:"operation"`
 		Unit       string     `json:"unit"`
-		Direction  string     `json:"direction"`
+		Value      value      `json:"value"`
 	}
 )
 
