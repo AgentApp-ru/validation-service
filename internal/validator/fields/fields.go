@@ -66,6 +66,10 @@ func (fv *FieldValidator) ValidateField(field interface{}, waiter *sync.WaitGrou
 		fieldValidator fieldValidatorImpl
 	)
 
+	if field == nil {
+		return
+	}
+
 	switch fv.FieldType {
 	case "string":
 		fieldValidator = str_validation.New()
