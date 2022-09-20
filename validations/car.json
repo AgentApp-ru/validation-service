@@ -87,6 +87,24 @@
             },
             {
               "chars": "[0-9]",
+              "min": 2,
+              "max": 3
+            }
+          ]
+        },
+        {
+          "name": "number",
+          "patterns": [
+            {
+              "chars": "[АВЕКМНОРСТУХ]",
+              "max": 2
+            },
+            {
+              "chars": "[0-9]",
+              "max": 3
+            },
+            {
+              "chars": "[0-9]",
               "max": 5
             }
           ]
@@ -392,6 +410,7 @@
     {
       "field": "vin",
       "max_consecutive_similar_symbols": 8,
+      "max_duplicated_symbols": 8,
       "requirements": {
         "required": {
           "type": "any",
@@ -865,6 +884,7 @@
       },
       "patterns": [
         {
+          "min": 100,
           "max": 100000
         }
       ],
@@ -998,12 +1018,6 @@
       "field": "engine_power",
       "requirements": {
         "required": {
-          "type": "this",
-          "value": true
-        }
-      },
-      "patterns": [
-        {
           "type": "depending_condition_formula",
           "value": {
             "type": "depending",
@@ -1014,15 +1028,18 @@
             "condition": {
               "type": "starts_with",
               "items": {
-                "D": true
+                "C": false,
+                "D": false
               },
-              "default": false
+              "default": true
             }
           }
-        },
+        }
+      },
+      "patterns": [
         {
           "max": 999,
-          "min": 10
+          "min": 20
         }
       ],
       "type": "number"

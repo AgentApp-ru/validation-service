@@ -23,7 +23,7 @@
             {
               "chars": "[а-яА-ЯёЁ\\s-'`]",
               "max": 60,
-              "min": 1
+              "min": 2
             }
           ]
         }
@@ -52,7 +52,7 @@
             {
               "chars": "[а-яА-ЯёЁ\\s-'`]",
               "max": 60,
-              "min": 0
+              "min": 2
             }
           ]
         }
@@ -78,7 +78,7 @@
             {
               "chars": "[а-яА-ЯёЁ\\s-'`]",
               "max": 60,
-              "min": 0
+              "min": 2
             }
           ]
         }
@@ -107,7 +107,7 @@
             {
               "chars": "[А-Яа-яЁёA-Za-z\\s\\-]",
               "max": 60,
-              "min": 1
+              "min": 2
             }
           ]
         }
@@ -136,7 +136,7 @@
             {
               "chars": "[А-Яа-яЁёA-Za-z\\s\\-]",
               "max": 60,
-              "min": 0
+              "min": 2
             }
           ]
         }
@@ -162,7 +162,7 @@
             {
               "chars": "[А-Яа-яЁёA-Za-z\\s\\-]",
               "max": 60,
-              "min": 0
+              "min": 2
             }
           ]
         }
@@ -340,8 +340,8 @@
       "field": "russian_internal_passport__issue_point",
       "requirements": {
         "required": {
-          "type": "depends_on",
-          "value": "russian_internal_passport"
+          "type": "this",
+          "value": false
         }
       },
       "patterns": [
@@ -370,13 +370,7 @@
         {
           "max": [
             {
-              "type": "now",
-              "value": null
-            }
-          ],
-          "min": [
-            {
-              "type": "depending_formula",
+              "type": "depending_condition_formula",
               "value": {
                 "depending": {
                   "type": "depending",
@@ -386,8 +380,61 @@
                   }
                 },
                 "operation": "add",
-                "value": 14,
-                "unit": "year"
+                "unit": "year",
+                "value": {
+                  "depending": {
+                    "type": "now"
+                  },
+                  "type": "diff-intervals",
+                  "direction": "gte",
+                  "intervals":[
+                    {
+                      "diff": 45,
+                      "value": 100
+                    },
+                    {
+                      "diff": 20,
+                      "value": 45
+                    }
+                  ],
+                  "unit": "year",
+                  "default": 20
+                }
+              }
+            }
+          ],
+          "min": [
+            {
+              "type": "depending_condition_formula",
+              "value": {
+                "depending": {
+                  "type": "depending",
+                  "value": {
+                    "scope": "self",
+                    "key": "birth_date"
+                  }
+                },
+                "operation": "add",
+                "unit": "year",
+                "value": {
+                  "depending": {
+                    "type": "now"
+                  },
+                  "type": "diff-intervals",
+                  "direction": "lte",
+                  "intervals":[
+                    {
+                      "diff": 20,
+                      "value": 14
+                    },
+                    {
+                      "diff": 45,
+                      "value": 20
+                    }
+                  ],
+                  "unit": "year",
+                  "default": 45
+                }
               }
             }
           ]
@@ -467,7 +514,7 @@
           "name": "address",
           "patterns": [
             {
-              "chars": "[а-яА-ЯёЁ0-9/\\(\\)\\s№,.'`-]",
+              "chars": "[а-яА-ЯёЁ0-9/\\(\\)\\s№,.'`_-]",
               "max": 1000,
               "min": 5
             }
@@ -489,7 +536,7 @@
           "name": "address",
           "patterns": [
             {
-              "chars": "[а-яА-ЯёЁ0-9/\\(\\)\\s№,.'`-]",
+              "chars": "[а-яА-ЯёЁ0-9/\\(\\)\\s№,.'`_-]",
               "max": 1000,
               "min": 5
             }
@@ -680,7 +727,37 @@
               "min": 1
             },
             {
+              "chars": "[a-zA-Z0-9]",
+              "max": 18,
+              "min": 2
+            }
+          ]
+        },
+        {
+          "name": "domain",
+          "patterns": [
+            {
               "chars": "[a-zA-Z0-9-]",
+              "max": 18,
+              "min": 2
+            },
+            {
+              "chars": "[\\.]",
+              "max": 1,
+              "min": 1
+            },
+            {
+              "chars": "[a-zA-Z0-9-]",
+              "max": 18,
+              "min": 2
+            },
+            {
+              "chars": "[\\.]",
+              "max": 1,
+              "min": 1
+            },
+            {
+              "chars": "[a-zA-Z0-9]",
               "max": 18,
               "min": 2
             }
@@ -713,16 +790,6 @@
               "chars": "[a-zA-Z0-9-]",
               "max": 18,
               "min": 2
-            }
-          ]
-        },
-        {
-          "name": "domain",
-          "patterns": [
-            {
-              "chars": "[a-zA-Z0-9-]",
-              "max": 18,
-              "min": 2
             },
             {
               "chars": "[\\.]",
@@ -730,27 +797,7 @@
               "min": 1
             },
             {
-              "chars": "[a-zA-Z0-9-]",
-              "max": 18,
-              "min": 2
-            },
-            {
-              "chars": "[\\.]",
-              "max": 1,
-              "min": 1
-            },
-            {
-              "chars": "[a-zA-Z0-9-]",
-              "max": 18,
-              "min": 2
-            },
-            {
-              "chars": "[\\.]",
-              "max": 1,
-              "min": 1
-            },
-            {
-              "chars": "[a-zA-Z0-9-]",
+              "chars": "[a-zA-Z0-9]",
               "max": 18,
               "min": 2
             }

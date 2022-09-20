@@ -51,6 +51,7 @@ func (nv *Validator) Init(
 	patterns json.RawMessage,
 	allowWhiteSpaces bool,
 	_ int,
+	_ int,
 ) {
 	nv.fieldName = fieldName
 	nv.objectMap = objectMap

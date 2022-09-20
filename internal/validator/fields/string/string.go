@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math"
 	"regexp"
+	"strings"
 	"sync"
 	"validation_service/pkg/log"
 )
@@ -41,6 +42,7 @@ type (
 		patterns                     json.RawMessage
 		allowWhiteSpaces             bool
 		maxConsecutiveSimilarSymbols int
+		maxDuplicatedSymbols         int
 	}
 )
 
@@ -57,6 +59,7 @@ func (sv *Validator) Init(
 	patterns json.RawMessage,
 	allowWhiteSpaces bool,
 	maxConsecutiveSimilarSymbols int,
+	maxDuplicatedSymbols int,
 ) {
 	sv.fieldName = fieldName
 	sv.objectMap = objectMap
@@ -66,6 +69,7 @@ func (sv *Validator) Init(
 	sv.patterns = patterns
 	sv.allowWhiteSpaces = allowWhiteSpaces
 	sv.maxConsecutiveSimilarSymbols = maxConsecutiveSimilarSymbols
+	sv.maxDuplicatedSymbols = maxDuplicatedSymbols
 }
 
 func (sv *Validator) Validate(field interface{}) bool {
@@ -87,8 +91,18 @@ func (sv *Validator) Validate(field interface{}) bool {
 		preparedField = strField
 	}
 
+	if preparedField == "" {
+		return false
+	}
+
 	if sv.maxConsecutiveSimilarSymbols != 0 {
 		if !isValidatedForSimilarSymbols(preparedField, sv.maxConsecutiveSimilarSymbols) {
+			return false
+		}
+	}
+
+	if sv.maxDuplicatedSymbols != 0 {
+		if !isValidatedForDuplicatedSymbols(preparedField, sv.maxDuplicatedSymbols) {
 			return false
 		}
 	}
@@ -127,6 +141,15 @@ func in(slice []string, val string) bool {
 		}
 	}
 	return false
+}
+
+func isValidatedForDuplicatedSymbols(preparedField string, maxDuplicateSymbols int) bool {
+	for _, char := range preparedField {
+		if strings.Count(preparedField, string(char)) > maxDuplicateSymbols {
+			return false
+		}
+	}
+	return true
 }
 
 func isValidatedForSimilarSymbols(preparedField string, maxConsecutiveSimilarSymbols int) bool {
