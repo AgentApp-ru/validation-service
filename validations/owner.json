@@ -359,8 +359,8 @@
       "field": "russian_internal_passport__issue_point",
       "requirements": {
         "required": {
-          "type": "depends_on",
-          "value": "russian_internal_passport"
+          "type": "this",
+          "value": false
         }
       },
       "patterns": [
