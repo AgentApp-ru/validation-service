@@ -65,7 +65,6 @@ func getServiceAndLogID(b map[string]interface{}) (string, string) {
 		if ok {
 			logId = logIRaw.(string)
 		}
-
 	}
 
 	return service, logId

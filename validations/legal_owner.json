@@ -1,0 +1,27 @@
+{
+  "$schema": "./_schema.json",
+  "validators": [
+    {
+      "field": "inn",
+      "requirements": {
+        "required": {
+          "type": "this",
+          "value": true
+        }
+      },
+      "type": "string",
+      "allow_white_spaces": false,
+      "patterns": [
+        {
+          "name": "inn",
+          "patterns": [
+            {
+              "chars": "[0-9]",
+              "max": 10
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

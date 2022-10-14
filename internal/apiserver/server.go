@@ -49,16 +49,15 @@ func configureRouter(router *mux.Router) {
 
 	v1Router := apiRouter.PathPrefix("/v1").Subrouter()
 	v1Router.HandleFunc("/validations/car", handleGetValidationPattern("car")).Methods("GET")
-	v1Router.HandleFunc("/validations/person", handleGetValidationPattern("person")).Methods("GET")  // deprecated
+	v1Router.HandleFunc("/validations/person", handleGetValidationPattern("person")).Methods("GET") // deprecated
 	v1Router.HandleFunc("/validations/insurer", handleGetValidationPattern("insurer")).Methods("GET")
+	v1Router.HandleFunc("/validations/legal_insurer", handleGetValidationPattern("legal_insurer")).Methods("GET")
 	v1Router.HandleFunc("/validations/owner", handleGetValidationPattern("owner")).Methods("GET")
+	v1Router.HandleFunc("/validations/legal_owner", handleGetValidationPattern("legal_owner")).Methods("GET")
 	v1Router.HandleFunc("/validations/driver", handleGetValidationPattern("driver")).Methods("GET")
 	v1Router.HandleFunc("/validations/agreement", handleGetValidationPattern("agreement")).Methods("GET")
 
 	v1Router.HandleFunc("/validations", handleValidateAll()).Methods("POST")
-	// v1Router.HandleFunc("/validations/car", handleValidate("car")).Methods("POST")
-	// v1Router.HandleFunc("/validations/person", handleValidate("person")).Methods("POST")
-	// v1Router.HandleFunc("/validations/driver", handleValidate("driver")).Methods("POST")
 }
 
 func handlePing() http.HandlerFunc {
@@ -103,7 +102,7 @@ func handleValidateAll() http.HandlerFunc {
 
 		response := map[string][]string{
 			"absent fields": absentFields,
-			"error fields": errorFields,
+			"error fields":  errorFields,
 		}
 		http_response.HttpRespond(w, http.StatusOK, response)
 		log.Logger.Infof("duration %v", time.Since(start).Round(time.Second))
