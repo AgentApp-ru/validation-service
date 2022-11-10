@@ -25,17 +25,19 @@ type (
 		Value int `json:"value"`
 	}
 
-	depending struct {
-		Type string `json:"type"`
+	offset struct {
+		Value int    `json:"value"`
+		Unit  string `json:"unit"`
 	}
 
 	value struct {
-		Depending depending   `json:"depending"`
+		Depending dependency  `json:"depending"`
 		Type      string      `json:"type"`
 		Direction string      `json:"direction"`
 		Intervals []intervals `json:"intervals"`
 		Unit      string      `json:"unit"`
 		Default   int         `json:"default"`
+		Offset    offset      `json:"offset"`
 	}
 
 	DateDependingConditionFormulaValue struct {

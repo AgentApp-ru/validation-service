@@ -189,7 +189,7 @@
                   "value": null
                 },
                 "operation": "subtract",
-                "value": 18,
+                "value": 14,
                 "unit": "year"
               }
             }
@@ -334,7 +334,7 @@
       "type": "date"
     },
     {
-      "field": "credential__issue_point",
+      "field": "russian_internal_passport__issue_point",
       "requirements": {
         "required": {
           "type": "this",
@@ -356,7 +356,7 @@
       "type": "string"
     },
     {
-      "field": "russian_internal_passport__issue_point",
+      "field": "foreign_external_passport__issue_point",
       "requirements": {
         "required": {
           "type": "this",
@@ -368,7 +368,7 @@
           "name": "issue_point",
           "patterns": [
             {
-              "chars": "[а-яА-ЯёЁ\\s'`.0-9№-]",
+              "chars": "[a-zA-Z\\s'`.0-9№-]",
               "max": 255,
               "min": 1
             }
@@ -417,7 +417,11 @@
                     }
                   ],
                   "unit": "year",
-                  "default": 20
+                  "default": 20,
+                  "offset": {
+                    "value": 90,
+                    "unit": "day"
+                  }
                 }
               }
             }
@@ -452,7 +456,11 @@
                     }
                   ],
                   "unit": "year",
-                  "default": 45
+                  "default": 45,
+                  "offset": {
+                    "value": 90,
+                    "unit": "day"
+                  }
                 }
               }
             }
@@ -460,28 +468,6 @@
         }
       ],
       "type": "date"
-    },
-    {
-      "field": "foreign_external_passport__issue_point",
-      "requirements": {
-        "required": {
-          "type": "depends_on",
-          "value": "foreign_external_passport"
-        }
-      },
-      "patterns": [
-        {
-          "name": "issue_point",
-          "patterns": [
-            {
-              "chars": "[a-zA-Z\\s'`.0-9№-]",
-              "max": 255,
-              "min": 1
-            }
-          ]
-        }
-      ],
-      "type": "string"
     },
     {
       "field": "foreign_external_passport__issue_date",
@@ -824,6 +810,28 @@
         }
       ],
       "type": "string"
+    },
+    {
+      "field": "inn",
+      "requirements": {
+        "required": {
+          "type": "this",
+          "value": false
+        }
+      },
+      "type": "string",
+      "allow_white_spaces": false,
+      "patterns": [
+        {
+          "name": "inn",
+          "patterns": [
+            {
+              "chars": "[0-9]",
+              "max": 12
+            }
+          ]
+        }
+      ]
     }
   ]
 }
