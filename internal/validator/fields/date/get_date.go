@@ -9,13 +9,6 @@ import (
 
 const secondsInYear = 31536000
 
-type (
-	expectedDate struct {
-		Value time.Time
-		Sub   int
-	}
-)
-
 func getPlainDate(rawValue json.RawMessage) (time.Time, bool) {
 	var value DateDateValue
 	err := json.Unmarshal(rawValue, &value)
@@ -92,49 +85,94 @@ func _getExpectedDate(selfMap, fieldsMap *sync.Map, formula DateDependingConditi
 	return date
 }
 
-func getRangeExpectedDate(formula DateDependingConditionFormulaValue, selfMap, fieldsMap *sync.Map) (time.Time, bool) {
-	var result expectedDate
-	var dependingDate = _getDependingDate(formula)
-	var defaultDate = _getExpectedDate(selfMap, fieldsMap, formula, formula.Value.Default)
-
-	for _, inter := range formula.Value.Intervals {
-		date := _getExpectedDate(selfMap, fieldsMap, formula, inter.Value)
-		result = expectedDate{Value: dependingDate, Sub: int(dependingDate.Sub(date).Seconds() / secondsInYear)}
-		switch formula.Value.Direction {
-		case "gte":
-			if date.Before(dependingDate) {
-				continue
-			}
-			if result.Sub >= inter.Diff {
-				date = defaultDate
-			}
-			result = expectedDate{Value: date, Sub: int(date.Sub(dependingDate).Seconds() / secondsInYear)}
-
-		case "lte":
-			if date.After(dependingDate) {
-				continue
-			}
-			if result.Sub >= inter.Diff {
-				date = defaultDate
-			}
-			result = expectedDate{Value: date, Sub: int(dependingDate.Sub(date).Seconds() / secondsInYear)}
-		}
-	}
-	if result.Value.After(dependingDate) {
-		result.Value = dependingDate
+func getOffsetDate(date time.Time, formula DateDependingConditionFormulaValue) time.Time {
+	var offset int
+	switch formula.Value.Direction {
+	case "lte":
+		offset = -formula.Value.Offset.Value
+	case "gte":
+		offset = formula.Value.Offset.Value
 	}
 
-	return result.Value, true
+	switch formula.Value.Offset.Unit {
+	case "day":
+		return date.AddDate(0, 0, offset)
+	case "month":
+		return date.AddDate(0, offset, 0)
+	case "year":
+		return date.AddDate(offset, 0, 0)
+	default:
+		return date
+	}
 }
 
-func _getDependingDate(formula DateDependingConditionFormulaValue) time.Time {
+func getRangeExpectedDate(formula DateDependingConditionFormulaValue, selfMap, fieldsMap *sync.Map) (time.Time, bool) {
+	result := _getExpectedDate(selfMap, fieldsMap, formula, formula.Value.Default)
+	dependingDate := _getDependingDate(formula, selfMap, fieldsMap)
+	dependingValueDate, _ := formula.Dependency.getInitialDate(selfMap, fieldsMap)
+	diff := int(dependingDate.Sub(dependingValueDate).Seconds()) / secondsInYear
+
+	//check birthday
+	if dependingDate.Day() == dependingValueDate.Day() && dependingDate.Month() == dependingValueDate.Month() {
+		return dependingDate.AddDate(0, 0, -1), true
+	}
+
+	for _, inter := range formula.Value.Intervals {
+		switch formula.Value.Direction {
+		case "gte":
+			if diff > inter.Diff {
+				newResult := _getExpectedDate(selfMap, fieldsMap, formula, inter.Value)
+				if result.Before(newResult) {
+					result = newResult
+				}
+			}
+		case "lte":
+			if diff < inter.Diff {
+				newResult := _getExpectedDate(selfMap, fieldsMap, formula, inter.Value)
+				if result.After(newResult) {
+					result = newResult
+				}
+			}
+		}
+	}
+
+	result = getOffsetDate(result, formula)
+
+	if result.After(dependingDate) {
+		result = CurrentDate()
+	}
+
+	return result, true
+}
+
+func _getDependingDate(formula DateDependingConditionFormulaValue, selfMap, fieldsMap *sync.Map) time.Time {
 	switch formula.Value.Depending.Type {
 	case "now":
-		return time.Now()
+		return CurrentDate()
+	case "depending_formula":
+		var dv = DateDependingFormulaValue{}
+		err := json.Unmarshal(formula.Value.Depending.Value, &dv)
+		if err != nil {
+			log.Logger.Errorf("Ошибка парсинга JSON: %s", formula.Dependency.Value)
+			return time.Now()
+		}
+
+		expectedDate, err := dv.getExpectedDate(selfMap, fieldsMap)
+		if err != nil {
+			log.Logger.Errorf("Ошибка при расчёте формулы: %s", err.Error())
+			return time.Now()
+		}
+		return expectedDate
 	default:
 	}
 
 	return time.Now()
+}
+
+var CurrentDate = func() time.Time {
+	now := time.Now()
+	year, month, day := now.Date()
+	return time.Date(year, month, day, 0, 0, 0, 0, time.UTC)
 }
 
 func getDependingConditionFormula(rawValue json.RawMessage, selfMap, fieldsMap *sync.Map) (time.Time, bool) {
