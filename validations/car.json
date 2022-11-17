@@ -923,11 +923,6 @@
             "expression": "starts_with",
             "statement": [
               {
-                "value": "B",
-                "max": 9,
-                "min": 2
-              },
-              {
                 "value": "D",
                 "max": 17,
                 "min": 10

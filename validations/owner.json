@@ -334,7 +334,7 @@
       "type": "date"
     },
     {
-      "field": "russian_internal_passport__issue_point",
+      "field": "credential__issue_point",
       "requirements": {
         "required": {
           "type": "this",
@@ -356,7 +356,7 @@
       "type": "string"
     },
     {
-      "field": "foreign_external_passport__issue_point",
+      "field": "russian_internal_passport__issue_point",
       "requirements": {
         "required": {
           "type": "this",
@@ -368,7 +368,7 @@
           "name": "issue_point",
           "patterns": [
             {
-              "chars": "[a-zA-Z\\s'`.0-9№-]",
+              "chars": "[а-яА-ЯёЁ\\s'`.0-9№-]",
               "max": 255,
               "min": 1
             }
@@ -392,10 +392,18 @@
               "type": "depending_condition_formula",
               "value": {
                 "depending": {
-                  "type": "depending",
+                  "type": "depending_formula",
                   "value": {
-                    "scope": "self",
-                    "key": "birth_date"
+                    "depending": {
+                      "type": "depending",
+                      "value": {
+                        "scope": "self",
+                        "key": "birth_date"
+                      }
+                    },
+                    "operation": "add",
+                    "value": 90,
+                    "unit": "day"
                   }
                 },
                 "operation": "add",
@@ -417,11 +425,7 @@
                     }
                   ],
                   "unit": "year",
-                  "default": 20,
-                  "offset": {
-                    "value": 90,
-                    "unit": "day"
-                  }
+                  "default": 20
                 }
               }
             }
@@ -431,10 +435,18 @@
               "type": "depending_condition_formula",
               "value": {
                 "depending": {
-                  "type": "depending",
+                  "type": "depending_formula",
                   "value": {
-                    "scope": "self",
-                    "key": "birth_date"
+                    "depending": {
+                      "type": "depending",
+                      "value": {
+                        "scope": "self",
+                        "key": "birth_date"
+                      }
+                    },
+                    "operation": "subtract",
+                    "value": 90,
+                    "unit": "day"
                   }
                 },
                 "operation": "add",
@@ -456,11 +468,7 @@
                     }
                   ],
                   "unit": "year",
-                  "default": 45,
-                  "offset": {
-                    "value": 90,
-                    "unit": "day"
-                  }
+                  "default": 45
                 }
               }
             }
@@ -468,6 +476,28 @@
         }
       ],
       "type": "date"
+    },
+    {
+      "field": "foreign_external_passport__issue_point",
+      "requirements": {
+        "required": {
+          "type": "depends_on",
+          "value": "foreign_external_passport"
+        }
+      },
+      "patterns": [
+        {
+          "name": "issue_point",
+          "patterns": [
+            {
+              "chars": "[a-zA-Z\\s'`.0-9№-]",
+              "max": 255,
+              "min": 1
+            }
+          ]
+        }
+      ],
+      "type": "string"
     },
     {
       "field": "foreign_external_passport__issue_date",
@@ -810,28 +840,6 @@
         }
       ],
       "type": "string"
-    },
-    {
-      "field": "inn",
-      "requirements": {
-        "required": {
-          "type": "this",
-          "value": false
-        }
-      },
-      "type": "string",
-      "allow_white_spaces": false,
-      "patterns": [
-        {
-          "name": "inn",
-          "patterns": [
-            {
-              "chars": "[0-9]",
-              "max": 12
-            }
-          ]
-        }
-      ]
     }
   ]
 }

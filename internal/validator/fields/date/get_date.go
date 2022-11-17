@@ -8,6 +8,7 @@ import (
 )
 
 const secondsInYear = 31536000
+const secondsInDay = 86400
 
 func getPlainDate(rawValue json.RawMessage) (time.Time, bool) {
 	var value DateDateValue
@@ -85,49 +86,40 @@ func _getExpectedDate(selfMap, fieldsMap *sync.Map, formula DateDependingConditi
 	return date
 }
 
-func getOffsetDate(date time.Time, formula DateDependingConditionFormulaValue) time.Time {
-	var offset int
-	switch formula.Value.Direction {
-	case "lte":
-		offset = -formula.Value.Offset.Value
-	case "gte":
-		offset = formula.Value.Offset.Value
-	}
-
-	switch formula.Value.Offset.Unit {
-	case "day":
-		return date.AddDate(0, 0, offset)
-	case "month":
-		return date.AddDate(0, offset, 0)
-	case "year":
-		return date.AddDate(offset, 0, 0)
-	default:
-		return date
-	}
-}
-
 func getRangeExpectedDate(formula DateDependingConditionFormulaValue, selfMap, fieldsMap *sync.Map) (time.Time, bool) {
+	var (
+		dependingValueDateWithoutOffset time.Time
+		ok                              bool
+		passed                          bool
+		diff                            int
+	)
 	result := _getExpectedDate(selfMap, fieldsMap, formula, formula.Value.Default)
 	dependingDate := _getDependingDate(formula, selfMap, fieldsMap)
 	dependingValueDate, _ := formula.Dependency.getInitialDate(selfMap, fieldsMap)
-	diff := int(dependingDate.Sub(dependingValueDate).Seconds()) / secondsInYear
-
-	//check birthday
-	if dependingDate.Day() == dependingValueDate.Day() && dependingDate.Month() == dependingValueDate.Month() {
-		return dependingDate.AddDate(0, 0, -1), true
-	}
 
 	for _, inter := range formula.Value.Intervals {
 		switch formula.Value.Direction {
 		case "gte":
-			if diff > inter.Diff {
+			direction := -1
+			if dependingValueDateWithoutOffset, diff, ok, _ = checkOffsetDateValue(formula, dependingValueDate, dependingDate, direction); ok {
+				return dependingValueDateWithoutOffset, ok
+			}
+			if diff >= inter.Diff {
 				newResult := _getExpectedDate(selfMap, fieldsMap, formula, inter.Value)
 				if result.Before(newResult) {
 					result = newResult
 				}
 			}
+
 		case "lte":
-			if diff < inter.Diff {
+			direction := 1
+			if dependingValueDateWithoutOffset, diff, ok, passed = checkOffsetDateValue(formula, dependingValueDate, dependingDate, direction); ok {
+				return dependingValueDateWithoutOffset, ok
+			}
+			if passed {
+				break
+			}
+			if diff <= inter.Diff {
 				newResult := _getExpectedDate(selfMap, fieldsMap, formula, inter.Value)
 				if result.After(newResult) {
 					result = newResult
@@ -136,13 +128,48 @@ func getRangeExpectedDate(formula DateDependingConditionFormulaValue, selfMap, f
 		}
 	}
 
-	result = getOffsetDate(result, formula)
-
 	if result.After(dependingDate) {
 		result = CurrentDate()
 	}
 
 	return result, true
+}
+
+func checkOffsetDateValue(formula DateDependingConditionFormulaValue, dependingValueDate, dependingDate time.Time, direction int) (time.Time, int, bool, bool) {
+	//check birthday
+	var (
+		dv                              DateDependingFormulaValue
+		dependingValueDateWithoutOffset time.Time
+		diff                            int
+	)
+	err := json.Unmarshal(formula.Dependency.Value, &dv)
+	if err != nil {
+		return time.Time{}, 0, false, false
+	}
+
+	dependingValueDateWithoutOffset = dependingValueDate.AddDate(0, 0, dv.Value*direction)
+	diff = int(dependingDate.Sub(dependingValueDateWithoutOffset).Seconds()) / secondsInYear
+	for _, inter := range formula.Value.Intervals {
+		if inter.Diff == diff || inter.Value == diff {
+			if dependingValueDateWithoutOffset.Day() == dependingDate.Day() && dependingValueDateWithoutOffset.Month() == dependingDate.Month() {
+				return dependingDate.AddDate(0, 0, direction), diff, true, false
+			}
+
+			offsetDate := time.Date(
+				dependingDate.Year(),
+				dependingValueDateWithoutOffset.Month(),
+				dependingValueDateWithoutOffset.Day(),
+				0, 0, 0, 0, time.UTC,
+			)
+			offsetDays := int(dependingDate.Sub(offsetDate).Seconds()) / secondsInDay
+
+			if offsetDays > dv.Value {
+				return time.Time{}, diff, false, true
+			}
+		}
+	}
+
+	return time.Time{}, diff, false, false
 }
 
 func _getDependingDate(formula DateDependingConditionFormulaValue, selfMap, fieldsMap *sync.Map) time.Time {
