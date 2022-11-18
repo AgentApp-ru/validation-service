@@ -1,9 +1,0 @@
-image: golang:alpine
-
-pipelines:
-  default:
-    - step:
-        script:
-        - apk add gcc musl-dev
-        - go mod vendor
-        - WORKING_DIR="$(pwd)" CONFIG_PATH="configs/autotest.toml" go test ./... -race
