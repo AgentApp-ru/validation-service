@@ -1,0 +1,4 @@
+include:
+  - project: 'infra/pipelines'
+    ref: master
+    file: '/golang/.gitlab-ci.yml'
