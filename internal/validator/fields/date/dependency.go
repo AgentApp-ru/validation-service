@@ -25,11 +25,6 @@ type (
 		Value int `json:"value"`
 	}
 
-	offset struct {
-		Value int    `json:"value"`
-		Unit  string `json:"unit"`
-	}
-
 	value struct {
 		Depending dependency  `json:"depending"`
 		Type      string      `json:"type"`
@@ -37,7 +32,6 @@ type (
 		Intervals []intervals `json:"intervals"`
 		Unit      string      `json:"unit"`
 		Default   int         `json:"default"`
-		Offset    offset      `json:"offset"`
 	}
 
 	DateDependingConditionFormulaValue struct {
@@ -65,6 +59,18 @@ func (d *dependency) getInitialDate(selfMap, fieldsMap *sync.Map) (time.Time, er
 		}
 		expectedDateRaw := value.(string)
 		expectedDate, err := time.Parse("2006-01-02", expectedDateRaw)
+		return expectedDate, err
+	case "depending_formula":
+		var dv = DateDependingFormulaValue{}
+		err := json.Unmarshal(d.Value, &dv)
+		if err != nil {
+			return time.Time{}, err
+		}
+
+		expectedDate, err := dv.getExpectedDate(selfMap, fieldsMap)
+		if err != nil {
+			return time.Time{}, err
+		}
 		return expectedDate, err
 	default:
 		return time.Time{}, fmt.Errorf("no logic for dependency: %v", d.Type)
