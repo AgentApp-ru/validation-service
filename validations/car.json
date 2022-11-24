@@ -913,22 +913,8 @@
       },
       "patterns": [
         {
-          "max": 17,
-          "min": 1,
-          "condition": {
-            "value": {
-              "scope": "self",
-              "key": "car_type"
-            },
-            "expression": "starts_with",
-            "statement": [
-              {
-                "value": "D",
-                "max": 17,
-                "min": 10
-              }
-            ]
-          }
+          "max": 103,
+          "min": 1
         }
       ],
       "type": "number"
